@@ -298,6 +298,80 @@ $text-base: rgba(203, 193, 228, 0.85);
   }
 }
 
+// ── Tracked quest strip ───────────────────────────────────
+.tracked-quest {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 1rem 0.65rem;
+  border-bottom: 1px solid $border;
+  background: rgba(245, 158, 11, 0.04);
+  border-left: 2px solid rgba(245, 158, 11, 0.5);
+  animation: tracked-in 200ms ease;
+  // button reset
+  width: 100%;
+  text-align: left;
+  border-top: none;
+  border-right: none;
+  cursor: pointer;
+  transition: background 150ms ease, border-left-color 150ms ease;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.09);
+    border-left-color: rgba(245, 158, 11, 0.85);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(245, 158, 11, 0.6);
+    outline-offset: -2px;
+  }
+
+  &__label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245, 158, 11, 0.7);
+  }
+
+  &__step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+    mix-blend-mode: screen;
+    filter: brightness(1.2);
+  }
+
+  &__action {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(203, 193, 228, 0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__name {
+    font-size: 0.68rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@keyframes tracked-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-item, .char-card__hp-fill { transition: none; }
 }

@@ -1,0 +1,3 @@
+TODO:
+
+Make CRIT_CHANCE an Unlock + Upgrade tree (House Passive? Potion?)

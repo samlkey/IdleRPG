@@ -13,7 +13,54 @@
       </svg>
     </button>
   </div>
-  <p class="placeholder">Quests content will appear here.</p>
+
+  <!-- In Progress -->
+  @if (inProgressQuests.length) {
+    <section class="quest-section">
+      <div class="quest-section__heading">
+        <span class="quest-section__dot quest-section__dot--in-progress"></span>
+        <h2 class="quest-section__title">In Progress</h2>
+        <span class="quest-section__count">{{ inProgressQuests.length }}</span>
+      </div>
+      <div class="quest-list">
+        @for (quest of inProgressQuests; track quest.id) {
+          <app-quest-card [quest]="quest" />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Available -->
+  @if (availableQuests.length) {
+    <section class="quest-section">
+      <div class="quest-section__heading">
+        <span class="quest-section__dot quest-section__dot--available"></span>
+        <h2 class="quest-section__title">Available</h2>
+        <span class="quest-section__count">{{ availableQuests.length }}</span>
+      </div>
+      <div class="quest-list">
+        @for (quest of availableQuests; track quest.id) {
+          <app-quest-card [quest]="quest" />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Completed -->
+  @if (completedQuests.length) {
+    <section class="quest-section quest-section--completed">
+      <div class="quest-section__heading">
+        <span class="quest-section__dot quest-section__dot--completed"></span>
+        <h2 class="quest-section__title">Completed</h2>
+        <span class="quest-section__count">{{ completedQuests.length }}</span>
+      </div>
+      <div class="quest-list">
+        @for (quest of completedQuests; track quest.id) {
+          <app-quest-card [quest]="quest" />
+        }
+      </div>
+    </section>
+  }
 
 </div>
 

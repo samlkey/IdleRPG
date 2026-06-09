@@ -10,27 +10,42 @@
         </svg>
       </div>
       <div class="char-card__info">
-        <span class="char-card__name">{{ character.name }}</span>
+        <span class="char-card__name">{{ playerService.player().name }}</span>
         <div class="char-card__levels">
-          <span class="char-card__level">Total Lvl {{ character.level }}</span>
+          <span class="char-card__level">Total Lvl {{ playerService.totalLevel() }}</span>
           <span class="char-card__combat-level">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"/>
             </svg>
-            Combat {{ character.combatLevel }}
+            Combat {{ playerService.player().combatLevel }}
           </span>
         </div>
       </div>
       <div class="char-card__hp">
         <div class="char-card__hp-label">
           <span>HP</span>
-          <span>{{ character.hp }} / {{ character.maxHp }}</span>
+          <span>{{ playerService.player().hp }} / {{ playerService.player().maxHp }}</span>
         </div>
         <div class="char-card__hp-track">
-          <div class="char-card__hp-fill" [style.width.%]="hpPercent"></div>
+          <div class="char-card__hp-fill" [style.width.%]="playerService.hpPercent()"></div>
         </div>
       </div>
     </div>
+
+    <!-- Tracked quest strip -->
+    @if (playerService.trackedQuest(); as tq) {
+      <button class="tracked-quest" (click)="navigateToTrackedQuest()" type="button"
+        title="Go to {{ tq.questName }}">
+        <span class="tracked-quest__label">Tracking</span>
+        <div class="tracked-quest__step">
+          @if (tq.stepIcon) {
+            <img class="tracked-quest__icon" [src]="tq.stepIcon" [alt]="" aria-hidden="true" />
+          }
+          <span class="tracked-quest__action">{{ tq.stepAction }}</span>
+        </div>
+        <span class="tracked-quest__name">{{ tq.questName }}</span>
+      </button>
+    }
 
     <!-- Scrollable nav -->
     <div class="sidebar__scroll">
@@ -49,8 +64,8 @@
               >
                 <img class="nav-item__pixel-icon" [src]="item.pixelIcon" [alt]="item.label" aria-hidden="true" />
                 <span class="nav-item__label">{{ item.label }}</span>
-                @if (item.badge) {
-                  <span class="nav-item__level">{{ item.badge }}</span>
+                @if (badgeFor(item); as badge) {
+                  <span class="nav-item__level">{{ badge }}</span>
                 }
               </button>
             </li>

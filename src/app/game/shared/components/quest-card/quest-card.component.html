@@ -1,0 +1,207 @@
+<div class="quest-card quest-card--{{ quest().status }}" [class.quest-card--expanded]="expanded()"
+  [attr.data-quest-id]="quest().id">
+
+  <!-- ── Main toggle button ─────────────────────────────── -->
+  <button class="quest-card__toggle" (click)="toggle()" type="button"
+    [attr.aria-expanded]="quest().status === 'in-progress' ? expanded() : null">
+
+    <!-- Header row -->
+    <div class="quest-card__header">
+      @if (quest().icon) {
+        <img class="quest-card__icon" [src]="quest().icon" [alt]="quest().name" aria-hidden="true" />
+      }
+      <span class="quest-card__name">{{ quest().name }}</span>
+      @if (quest().status === 'in-progress') {
+        <button class="quest-card__track" [class.quest-card__track--active]="isTracked"
+          (click)="toggleTrack($event)" type="button"
+          [title]="isTracked ? 'Untrack quest' : 'Track quest'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+            <path d="M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M5.64 18.36l2.12-2.12M16.24 7.76l2.12-2.12"/>
+          </svg>
+        </button>
+      }
+<span class="quest-card__status-pip" [title]="statusLabel" aria-hidden="true"></span>
+      @if (quest().status === 'in-progress' && quest().steps?.length) {
+        <svg class="quest-card__chevron" [class.quest-card__chevron--open]="expanded()"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      }
+    </div>
+
+    <!-- Description -->
+    <p class="quest-card__description">{{ quest().description }}</p>
+
+    <!-- Requirements -->
+    @if (quest().requirements.length) {
+      <div class="quest-card__reqs">
+        @if (skillReqs.length) {
+          <div class="quest-card__req-group">
+            <span class="quest-card__req-group-label">Skills required</span>
+            <div class="quest-card__req-chips">
+              @for (req of skillReqs; track req.skill) {
+                <div class="quest-card__req-chip quest-card__req-chip--skill" [title]="req.skill + ' ' + req.level">
+                  <img class="quest-card__req-icon" [src]="req.icon" [alt]="req.skill" aria-hidden="true" />
+                  <span class="quest-card__req-level">{{ req.level }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @if (questReqs.length) {
+          <div class="quest-card__req-group">
+            <span class="quest-card__req-group-label">Quests required</span>
+            <ul class="quest-card__quest-reqs">
+              @for (req of questReqs; track req.questId) {
+                <li class="quest-card__quest-req">
+                  <svg class="quest-card__quest-req-dot" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true">
+                    <circle cx="4" cy="4" r="3"/>
+                  </svg>
+                  {{ req.questName }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Rewards -->
+    @if (quest().rewards?.length || quest().questPoints) {
+      <div class="quest-card__rewards">
+        <span class="quest-card__req-group-label">Rewards</span>
+        <div class="quest-card__req-chips">
+          @if (quest().questPoints) {
+            <div class="quest-card__req-chip quest-card__req-chip--qp" title="Quest Points">
+              <svg class="quest-card__qp-reward-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <polygon points="8,1 10.5,6 16,6.8 11.9,11 13,16 8,13.2 3,16 4.1,11 0,6.8 5.5,6"/>
+              </svg>
+              <span class="quest-card__req-level">{{ quest().questPoints }} QP</span>
+            </div>
+          }
+          @for (reward of quest().rewards!; track $index) {
+            @if (reward.type === 'skill') {
+              <div class="quest-card__req-chip quest-card__req-chip--reward" [title]="reward.skill">
+                <img class="quest-card__req-icon" [src]="reward.icon" [alt]="reward.skill" aria-hidden="true" />
+                <span class="quest-card__req-level">{{ reward.xp | number }} XP</span>
+              </div>
+            } @else if (reward.type === 'coins') {
+              <div class="quest-card__req-chip quest-card__req-chip--coins" title="Coins">
+                <span class="quest-card__coin-icon" aria-hidden="true">🪙</span>
+                <span class="quest-card__req-level">{{ reward.amount | number }}g</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+  </button>
+
+  <!-- ── Steps panel (in-progress only) ────────────────── -->
+  @if (quest().status === 'in-progress' && expanded() && quest().steps?.length) {
+    <div class="quest-card__steps">
+      @for (step of quest().steps!; track $index; let i = $index, last = $last) {
+        @if (stepState(i) !== 'upcoming') {
+        <div class="quest-card__step quest-card__step--{{ stepState(i) }}">
+
+          <!-- Timeline node + connector -->
+          <div class="quest-card__step-track">
+            <div class="quest-card__step-node">
+              @if (step.completed) {
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 6l3 3 5-5"/>
+                </svg>
+              } @else if (stepState(i) === 'current') {
+                <span class="quest-card__step-pulse" aria-hidden="true"></span>
+              }
+            </div>
+            @if (stepState(i) === 'completed') {
+              <div class="quest-card__step-line"></div>
+            }
+          </div>
+
+          <!-- Step body -->
+          <div class="quest-card__step-body">
+
+            <!-- Dialog box — shown first on the current step if it has dialog -->
+            @if (stepState(i) === 'current' && step.dialog?.length) {
+              <div class="quest-card__dialog" (click)="onDialogClick()">
+
+                <!-- Speaker -->
+                <div class="quest-card__dialog-speaker">
+                  @if (currentDialogLine?.speakerIcon) {
+                    <img class="quest-card__dialog-speaker-icon"
+                      [src]="currentDialogLine!.speakerIcon" alt="" aria-hidden="true" />
+                  } @else {
+                    <svg class="quest-card__dialog-speaker-avatar" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/>
+                    </svg>
+                  }
+                  <span class="quest-card__dialog-speaker-name">{{ currentDialogLine?.speaker }}</span>
+                  <span class="quest-card__dialog-counter">
+                    {{ dialogLineIndex() + 1 }} / {{ currentStep!.dialog!.length }}
+                  </span>
+                </div>
+
+                <!-- Typed text -->
+                <p class="quest-card__dialog-text">
+                  <em>{{ displayedText() }}</em><!--
+                  --><span class="quest-card__dialog-cursor" [class.quest-card__dialog-cursor--hidden]="!isTyping()">▍</span>
+                </p>
+
+                <!-- Footer: progress controls while active, replay button once seen -->
+                <div class="quest-card__dialog-footer">
+                  @if (dialogComplete()) {
+                    <button class="quest-card__dialog-replay" (click)="replayDialog($event)" type="button" title="Replay dialog">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M2 8a6 6 0 1 0 1.5-3.9"/>
+                        <path d="M2 2v4h4"/>
+                      </svg>
+                      Replay
+                    </button>
+                  } @else if (isTyping()) {
+                    <span class="quest-card__dialog-hint">Click to skip</span>
+                  } @else {
+                    <button class="quest-card__dialog-continue" (click)="onContinue($event)" type="button">
+                      {{ hasMoreDialogLines ? 'Continue' : 'Understood' }}
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 8h10M9 4l4 4-4 4"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+
+              </div>
+            }
+
+            <!-- Action + description — revealed only after dialog completes (or no dialog) -->
+            @if (stepState(i) !== 'current' || !step.dialog?.length || dialogComplete()) {
+              <div class="quest-card__step-action-wrap"
+                [class.quest-card__step-action-wrap--reveal]="stepState(i) === 'current' && dialogComplete() && step.dialog?.length">
+                <div class="quest-card__step-action">
+                  @if (step.icon) {
+                    <img class="quest-card__step-icon" [src]="step.icon" [alt]="" aria-hidden="true" />
+                  }
+                  <span>{{ step.action }}</span>
+                </div>
+                <p class="quest-card__step-description">{{ step.description }}</p>
+              </div>
+            }
+
+          </div>
+
+        </div>
+        } <!-- @if not upcoming -->
+      }
+    </div>
+  }
+
+</div>

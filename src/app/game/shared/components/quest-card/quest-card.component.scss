@@ -1,0 +1,538 @@
+$surface:    #111118;
+$surface-lt: #16161f;
+$border:     rgba(255, 255, 255, 0.07);
+$accent:     #7c3aed;
+$accent-lt:  #a78bfa;
+$text-base:  rgba(203, 193, 228, 0.85);
+$text-muted: rgba(203, 193, 228, 0.45);
+
+$status-not-started: rgba(203, 193, 228, 0.25);
+$status-in-progress: #f59e0b;
+$status-completed:   #22c55e;
+
+// ── Card shell ───────────────────────────────────────────
+.quest-card {
+  width: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  // Status-tinted left border
+  &--completed   { border-left: 3px solid $status-completed; }
+  &--in-progress { border-left: 3px solid $status-in-progress; }
+  &--not-started { border-left: 3px solid rgba($accent-lt, 0.3); }
+
+  &--expanded {
+    border-color: rgba($status-in-progress, 0.35);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  &:has(.quest-card__toggle:hover) {
+    border-color: rgba($accent-lt, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: $surface-lt;
+  }
+}
+
+// ── Track button ─────────────────────────────────────────
+.quest-card__track {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: $text-muted;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+
+  svg { width: 12px; height: 12px; }
+
+  &:hover {
+    color: $accent-lt;
+    border-color: rgba($accent-lt, 0.35);
+    background: rgba($accent, 0.1);
+  }
+
+  &--active {
+    color: $status-in-progress;
+    border-color: rgba($status-in-progress, 0.45);
+    background: rgba($status-in-progress, 0.1);
+
+    &:hover {
+      color: $text-muted;
+      border-color: rgba(255, 255, 255, 0.08);
+      background: none;
+    }
+  }
+}
+
+// ── Toggle button (fills card top) ───────────────────────
+.quest-card__toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+
+
+  &:focus-visible {
+    outline: 2px solid $accent-lt;
+    outline-offset: -2px;
+    border-radius: 11px;
+  }
+}
+
+// ── Header row ───────────────────────────────────────────
+.quest-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.quest-card__icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  mix-blend-mode: screen;
+  filter: brightness(1.15);
+}
+
+.quest-card__name {
+  flex: 1;
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2d9f3;
+  letter-spacing: 0.01em;
+}
+
+.quest-card__status-pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  .quest-card--completed   & { background: $status-completed;   box-shadow: 0 0 6px rgba($status-completed, 0.6); }
+  .quest-card--in-progress & { background: $status-in-progress; box-shadow: 0 0 6px rgba($status-in-progress, 0.6); }
+  .quest-card--not-started & { background: $status-not-started; }
+}
+
+.quest-card__chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: $text-muted;
+  transition: transform 200ms ease, color 150ms ease;
+
+  &--open {
+    transform: rotate(180deg);
+    color: $status-in-progress;
+  }
+}
+
+// ── Description ──────────────────────────────────────────
+.quest-card__description {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: $text-muted;
+}
+
+// ── Requirements + Rewards ───────────────────────────────
+.quest-card__reqs,
+.quest-card__rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid $border;
+}
+
+.quest-card__req-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.quest-card__req-group-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.quest-card__req-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.quest-card__req-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.4rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  &--skill  { background: rgba(255, 255, 255, 0.05); }
+  &--reward { background: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.2); }
+  &--coins  { background: rgba(234, 179, 8, 0.08); border-color: rgba(234, 179, 8, 0.25); }
+  &--qp     { background: rgba($accent, 0.1); border-color: rgba($accent-lt, 0.3); }
+}
+
+.quest-card__coin-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.quest-card__qp-reward-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: $accent-lt;
+  opacity: 0.85;
+}
+
+.quest-card__req-icon {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  mix-blend-mode: screen;
+  filter: brightness(1.3);
+}
+
+.quest-card__req-level {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #e2d9f3;
+  font-variant-numeric: tabular-nums;
+}
+
+.quest-card__quest-reqs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.quest-card__quest-req {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: $text-base;
+}
+
+.quest-card__quest-req-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  color: $accent-lt;
+  opacity: 0.7;
+}
+
+// ── Steps panel ──────────────────────────────────────────
+.quest-card__steps {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.25rem 1.1rem 1.25rem;
+  border-top: 1px solid $border;
+  animation: steps-in 180ms ease;
+}
+
+@keyframes steps-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quest-card__step {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+
+  // ── State variants ─────────────────────────────────────
+  &--completed .quest-card__step-action      { color: rgba($text-muted, 0.6); text-decoration: line-through; text-decoration-color: rgba($text-muted, 0.35); }
+  &--completed .quest-card__step-description { opacity: 0.4; }
+  &--completed .quest-card__step-node        { background: rgba($status-completed, 0.15); border-color: rgba($status-completed, 0.5); color: $status-completed; }
+  &--completed .quest-card__step-line        { background: rgba($status-completed, 0.3); }
+
+  &--current   .quest-card__step-action      { color: #e2d9f3; }
+  &--current   .quest-card__step-description { color: $text-muted; }
+  &--current   .quest-card__step-node        { background: rgba($status-in-progress, 0.12); border-color: rgba($status-in-progress, 0.6); }
+  &--current   .quest-card__step-line        { background: $border; }
+
+  &--upcoming  .quest-card__step-action      { color: $text-muted; opacity: 0.45; }
+  &--upcoming  .quest-card__step-description { opacity: 0; height: 0; overflow: hidden; margin: 0; }
+  &--upcoming  .quest-card__step-node        { background: transparent; border-color: $border; }
+  &--upcoming  .quest-card__step-line        { background: $border; opacity: 0.4; }
+}
+
+// Track column: node + vertical connector
+.quest-card__step-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 0.95rem;
+}
+
+.quest-card__step-node {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 150ms ease, border-color 150ms ease;
+
+  svg { width: 10px; height: 10px; }
+}
+
+.quest-card__step-line {
+  width: 1.5px;
+  flex: 1;
+  min-height: 14px;
+  background: $border;
+  margin: 3px 0;
+  border-radius: 1px;
+}
+
+.quest-card__step-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem 0 0.65rem;
+}
+
+.quest-card__step-action-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.75rem;
+
+  &--reveal {
+    animation: action-reveal 300ms ease;
+  }
+}
+
+@keyframes action-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quest-card__step-action {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e2d9f3;
+  transition: color 150ms ease, opacity 150ms ease;
+}
+
+.quest-card__step-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  mix-blend-mode: screen;
+  filter: brightness(1.2);
+}
+
+.quest-card__step-description {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: $text-muted;
+  transition: opacity 150ms ease;
+}
+
+// ── Dialog box ───────────────────────────────────────────
+.quest-card__dialog {
+  margin-top: 0.65rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba($accent-lt, 0.2);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  animation: dialog-in 200ms ease;
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quest-card__dialog-speaker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quest-card__dialog-speaker-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  filter: brightness(1.2);
+  flex-shrink: 0;
+}
+
+.quest-card__dialog-speaker-avatar {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: $accent-lt;
+  opacity: 0.7;
+}
+
+.quest-card__dialog-speaker-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $accent-lt;
+  flex: 1;
+}
+
+.quest-card__dialog-counter {
+  font-size: 0.68rem;
+  color: $text-muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.quest-card__dialog-text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: $text-base;
+  min-height: 2.8em; // prevent layout jumps while typing
+}
+
+.quest-card__dialog-cursor {
+  color: $accent-lt;
+  animation: blink 0.9s step-end infinite;
+  font-style: normal;
+
+  &--hidden {
+    visibility: hidden;
+    animation: none;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.quest-card__dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 28px;
+}
+
+.quest-card__dialog-hint {
+  font-size: 0.7rem;
+  color: $text-muted;
+  font-style: italic;
+  animation: fade-hint 600ms ease infinite alternate;
+}
+
+@keyframes fade-hint {
+  from { opacity: 0.4; }
+  to   { opacity: 0.75; }
+}
+
+.quest-card__dialog-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.9rem;
+  background: rgba($accent, 0.15);
+  border: 1px solid rgba($accent-lt, 0.3);
+  border-radius: 99px;
+  color: $accent-lt;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  animation: continue-in 200ms ease;
+
+  svg { width: 13px; height: 13px; }
+
+  &:hover {
+    background: rgba($accent, 0.3);
+    border-color: rgba($accent-lt, 0.6);
+    color: #fff;
+  }
+}
+
+@keyframes continue-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.quest-card__dialog-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  color: $text-muted;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+
+  svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+  &:hover {
+    color: $accent-lt;
+    border-color: rgba($accent-lt, 0.3);
+    background: rgba($accent, 0.08);
+  }
+}
+
+// Pulsing dot for current step
+.quest-card__step-pulse {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $status-in-progress;
+  box-shadow: 0 0 6px rgba($status-in-progress, 0.7);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}

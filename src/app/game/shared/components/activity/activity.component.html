@@ -1,10 +1,43 @@
 <button
   class="activity-card"
   [class.activity-card--disabled]="disabled()"
+  [class.activity-card--active]="active() && !isCrit()"
+  [class.activity-card--crit]="isCrit()"
   [disabled]="disabled()"
-  (click)="selected.emit()"
+  (click)="onClick()"
   type="button"
 >
+
+  <!-- Crit overlay -->
+  @if (isCrit()) {
+    <div class="activity-card__crit-overlay" aria-live="polite">
+      <!-- Countdown ring -->
+      <div class="activity-card__crit-ring-wrap">
+        <svg class="activity-card__crit-ring" viewBox="0 0 52 52" aria-hidden="true">
+          <!-- Track -->
+          <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(245,158,11,0.15)" stroke-width="4"/>
+          <!-- Countdown arc -->
+          <circle cx="26" cy="26" r="22" fill="none"
+            stroke="#fbbf24" stroke-width="4"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="RING_C"
+            [attr.stroke-dashoffset]="critDashOffset"
+            transform="rotate(-90 26 26)"
+          />
+        </svg>
+        <span class="activity-card__crit-seconds">
+          {{ critSecondsLeft | number:'1.1-1' }}
+        </span>
+      </div>
+      <!-- Label -->
+      <div class="activity-card__crit-label">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <polygon points="8,1 10.2,6 15.5,6.6 11.5,10.4 12.6,15.5 8,12.8 3.4,15.5 4.5,10.4 0.5,6.6 5.8,6"/>
+        </svg>
+        CRIT! Click now
+      </div>
+    </div>
+  }
 
   <!-- Top info -->
   <div class="activity-card__info">
@@ -40,7 +73,7 @@
   <div class="activity-card__progress-track">
     <div
       class="activity-card__progress-fill"
-      [style.width.%]="maxProgress() > 0 ? (progress() / maxProgress()) * 100 : 0"
+      [style.width.%]="progressPct()"
     ></div>
   </div>
 
@@ -55,7 +88,11 @@
       }
     </div>
     <div class="activity-card__progress-label">
-      {{ progress() }} / {{ maxProgress() }}
+      @if (active() || isCrit()) {
+        {{ progressPct() | number:'1.0-0' }}%
+      } @else {
+        0%
+      }
     </div>
   </div>
 

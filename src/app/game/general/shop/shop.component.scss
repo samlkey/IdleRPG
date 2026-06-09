@@ -1,0 +1,48 @@
+$bg:          #09090f;
+$content-pad: 2rem;
+
+// ── Hero banner ──────────────────────────────────────────
+.skill-panel__hero {
+  position: relative;
+  margin: -$content-pad (-$content-pad) 0;
+  height: 220px;
+  overflow: hidden;
+}
+
+.skill-panel__hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.skill-panel__hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba($bg, 0.05)  0%,
+    rgba($bg, 0.2)   45%,
+    rgba($bg, 0.78)  75%,
+    $bg              100%
+  );
+}
+
+.skill-panel__hero .skill-panel__header {
+  position: absolute;
+  bottom: 0;
+  left: $content-pad;
+  right: $content-pad;
+  padding: 0 0 1.25rem;
+  border-bottom: none;
+  z-index: 1;
+
+  .skill-panel__title,
+  .skill-panel__subtitle {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  }
+}
