@@ -1,0 +1,62 @@
+<button
+  class="activity-card"
+  [class.activity-card--disabled]="disabled()"
+  [disabled]="disabled()"
+  (click)="selected.emit()"
+  type="button"
+>
+
+  <!-- Top info -->
+  <div class="activity-card__info">
+    <span class="activity-card__action">{{ action() }}</span>
+    <h2 class="activity-card__target">{{ target() }}</h2>
+    <div class="activity-card__meta">
+      @if (xp()) {
+        <span class="activity-card__xp">{{ xp() }} Skill XP</span>
+      }
+      @if (xp() && duration()) {
+        <span class="activity-card__sep">/</span>
+      }
+      @if (duration()) {
+        <span class="activity-card__duration">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.5"/>
+            <path d="M8 4.5v3.75l2.5 1.5" stroke-linecap="round"/>
+          </svg>
+          {{ duration() }} seconds
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Image -->
+  <div class="activity-card__image-wrap">
+    @if (image()) {
+      <img class="activity-card__image" [src]="image()" alt="" aria-hidden="true" />
+    }
+  </div>
+
+  <!-- Progress bar -->
+  <div class="activity-card__progress-track">
+    <div
+      class="activity-card__progress-fill"
+      [style.width.%]="maxProgress() > 0 ? (progress() / maxProgress()) * 100 : 0"
+    ></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="activity-card__footer">
+    <div class="activity-card__requirements">
+      @for (req of requirements(); track req.skill) {
+        <div class="activity-card__req" [title]="req.skill ? req.skill + ' ' + req.level : ''">
+          <img class="activity-card__req-icon" [src]="req.icon" [alt]="req.skill ?? ''" aria-hidden="true" />
+          <span class="activity-card__req-level">{{ req.level }}</span>
+        </div>
+      }
+    </div>
+    <div class="activity-card__progress-label">
+      {{ progress() }} / {{ maxProgress() }}
+    </div>
+  </div>
+
+</button>

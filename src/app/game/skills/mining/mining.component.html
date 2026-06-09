@@ -1,11 +1,20 @@
 <div class="skill-panel">
-  <div class="skill-panel__header">
-    <svg class="skill-panel__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-    </svg>
-    <div>
-      <h1 class="skill-panel__title">Mining</h1>
-      <p class="skill-panel__subtitle">Extract ores and gems from the earth</p>
+  <div class="skill-panel__hero">
+    <img class="skill-panel__hero-bg" src="assets/backgrounds/mining.png" alt="" aria-hidden="true" />
+    <div class="skill-panel__hero-gradient"></div>
+    <div class="skill-panel__header">
+      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+      <div>
+        <h1 class="skill-panel__title">Mining</h1>
+        <p class="skill-panel__subtitle">Extract ores and gems from the earth</p>
+      </div>
+      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Mining">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -20,4 +29,11 @@
   </div>
 
   <p class="placeholder">Mining actions will appear here.</p>
+
 </div>
+
+@if (helpOpen()) {
+  <app-modal title="Mining" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>Mining allows you to extract ores and gems from rock formations. Mined ores can be smelted via Smithing into bars and crafted into equipment.</p>
+  </app-modal>
+}

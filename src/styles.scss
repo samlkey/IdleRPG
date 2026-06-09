@@ -17,7 +17,6 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 860px;
 
   &__header {
     display: flex;
@@ -38,6 +37,16 @@ html, body {
     padding: 8px;
   }
 
+  &__pixel-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    mix-blend-mode: screen;
+    filter: brightness(1.2) drop-shadow(0 0 6px rgba(167, 139, 250, 0.4));
+  }
+
   &__title {
     margin: 0;
     font-family: 'Georgia', serif;
@@ -45,6 +54,30 @@ html, body {
     font-weight: 700;
     color: #e2d9f3;
     letter-spacing: 0.02em;
+  }
+
+  &__help {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: rgba(203, 193, 228, 0.4);
+    cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+
+    svg { width: 16px; height: 16px; }
+
+    &:hover {
+      color: #a78bfa;
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(124, 58, 237, 0.1);
+    }
   }
 
   &__subtitle {

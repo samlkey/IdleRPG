@@ -1,0 +1,206 @@
+$surface:  #111118;
+$border:   rgba(255, 255, 255, 0.07);
+$accent:   #7c3aed;
+$accent-lt: #a78bfa;
+$text-base: rgba(203, 193, 228, 0.85);
+$text-muted: rgba(203, 193, 228, 0.45);
+
+.activity-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 120ms ease, background 150ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: rgba($accent-lt, 0.45);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
+    background: lighten($surface, 2.5%);
+    transform: translateY(-2px);
+
+    .activity-card__target {
+      color: #fff;
+    }
+
+    .activity-card__image {
+      filter: drop-shadow(0 6px 16px rgba($accent, 0.4));
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.25);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent-lt;
+    outline-offset: 2px;
+  }
+
+  // ── Disabled state ──────────────────────────────────────
+  &--disabled,
+  &:disabled {
+    cursor: not-allowed;
+
+    .activity-card__info,
+    .activity-card__image-wrap,
+    .activity-card__progress-track,
+    .activity-card__progress-label {
+      opacity: 0.35;
+      filter: grayscale(0.6);
+    }
+  }
+
+  // ── Info block ──────────────────────────────────────────
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 1.25rem 1.5rem 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  &__action {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  &__target {
+    margin: 0;
+    font-family: 'Georgia', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e2d9f3;
+    letter-spacing: 0.01em;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-top: 0.1rem;
+  }
+
+  &__xp {
+    color: $text-base;
+    font-weight: 500;
+  }
+
+  &__sep {
+    opacity: 0.4;
+  }
+
+  &__duration {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.6;
+    }
+  }
+
+  // ── Image ───────────────────────────────────────────────
+  &__image-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 1.5rem 1.25rem;
+    min-height: 96px;
+  }
+
+  &__image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  }
+
+  // ── Progress bar ────────────────────────────────────────
+  &__progress-track {
+    width: calc(100% - 2rem);
+    height: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 0 1rem;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $accent, $accent-lt);
+    border-radius: 99px;
+    transition: width 300ms ease;
+  }
+
+  // ── Footer ──────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.6rem 1rem 0.9rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+    min-height: 56px;
+  }
+
+  &__requirements {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__req {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem 0.35rem 0.45rem;
+    cursor: default;
+  }
+
+  &__req-icon {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+    mix-blend-mode: screen;
+    filter: brightness(1.3);
+  }
+
+  &__req-level {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2d9f3;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  &__progress-label {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+}

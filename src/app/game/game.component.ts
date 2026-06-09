@@ -1,16 +1,42 @@
 import { Component, signal, Type } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
+// General
+import { QuestsComponent } from './general/quests/quests.component';
+import { BankComponent } from './general/bank/bank.component';
+import { HouseComponent } from './general/house/house.component';
+// Combat
+import { AttackComponent } from './combat/attack/attack.component';
+import { StrengthComponent } from './combat/strength/strength.component';
+import { DefenceComponent } from './combat/defence/defence.component';
+import { RangedComponent } from './combat/ranged/ranged.component';
+import { MagicComponent } from './combat/magic/magic.component';
+import { HitpointsComponent } from './combat/hitpoints/hitpoints.component';
+// Non-Combat
 import { MiningComponent } from './skills/mining/mining.component';
 import { WoodcuttingComponent } from './skills/woodcutting/woodcutting.component';
 import { FishingComponent } from './skills/fishing/fishing.component';
+import { FiremakingComponent } from './skills/firemaking/firemaking.component';
+import { PrayerComponent } from './skills/prayer/prayer.component';
+import { FarmingComponent } from './skills/farming/farming.component';
+import { CookingComponent } from './skills/cooking/cooking.component';
+import { SmithingComponent } from './skills/smithing/smithing.component';
+import { AgilityComponent } from './skills/agility/agility.component';
+import { HerbloreComponent } from './skills/herblore/herblore.component';
+import { ThievingComponent } from './skills/thieving/thieving.component';
+import { CraftingComponent } from './skills/crafting/crafting.component';
+import { FletchingComponent } from './skills/fletching/fletching.component';
+import { HunterComponent } from './skills/hunter/hunter.component';
+import { SlayerComponent } from './combat/slayer/slayer.component';
+import { ConstructionComponent } from './skills/construction/construction.component';
 
-export type SkillId = 'attack' | 'strength' | 'defence' | 'ranged' | 'magic' | 'mining' | 'woodcutting' | 'fishing';
+export type SkillId = 'attack' | 'strength' | 'defence' | 'ranged' | 'magic' | 'slayer' | 'mining' | 'woodcutting' | 'fishing' | 'firemaking' | 'prayer' | 'hitpoints' | 'farming' | 'cooking' | 'smithing' | 'agility' | 'herblore' | 'thieving' | 'crafting' | 'fletching' | 'hunter' | 'construction';
 export type PanelId = SkillId | 'quests' | 'bank' | 'house' | 'settings';
 
 interface NavSkill {
   id: PanelId;
   label: string;
-  icon: string;
+  pixelIcon: string;
+  badge?: string;
   component?: Type<unknown>;
 }
 
@@ -32,33 +58,47 @@ export class GameComponent {
     {
       label: 'General',
       items: [
-        { id: 'quests', label: 'Quests', icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4' },
-        { id: 'bank',   label: 'Bank',   icon: 'M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11M8 10v11M12 10v11M16 10v11' },
-        { id: 'house',  label: 'House',  icon: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10' },
+        { id: 'quests', label: 'Quests', pixelIcon: 'assets/icons/quests.png', badge: 'QP: 0', component: QuestsComponent },
+        { id: 'bank',   label: 'Bank',   pixelIcon: 'assets/icons/bank.png',                 component: BankComponent },
+        { id: 'house',  label: 'House',  pixelIcon: 'assets/icons/house.png',                component: HouseComponent },
       ],
     },
     {
       label: 'Combat',
       items: [
-        { id: 'attack',   label: 'Attack',   icon: 'M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z' },
-        { id: 'strength', label: 'Strength', icon: 'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7' },
-        { id: 'defence',  label: 'Defence',  icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
-        { id: 'ranged',   label: 'Ranged',   icon: 'M18 8L22 12L18 16M6 8L2 12L6 16M14 4L10 20' },
-        { id: 'magic',    label: 'Magic',    icon: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' },
+        { id: 'attack',    label: 'Attack',    pixelIcon: 'assets/icons/attack.png',    badge: '1/99', component: AttackComponent },
+        { id: 'strength',  label: 'Strength',  pixelIcon: 'assets/icons/strength.png',  badge: '1/99', component: StrengthComponent },
+        { id: 'defence',   label: 'Defence',   pixelIcon: 'assets/icons/defence.png',   badge: '1/99', component: DefenceComponent },
+        { id: 'ranged',    label: 'Ranged',    pixelIcon: 'assets/icons/ranged.png',    badge: '1/99', component: RangedComponent },
+        { id: 'magic',     label: 'Magic',     pixelIcon: 'assets/icons/magic.png',     badge: '1/99', component: MagicComponent },
+        { id: 'prayer',    label: 'Prayer',    pixelIcon: 'assets/icons/prayer.png',    badge: '1/99', component: PrayerComponent },
+        { id: 'hitpoints', label: 'Hitpoints', pixelIcon: 'assets/icons/hitpoints.png', badge: '10/99', component: HitpointsComponent },
+        { id: 'slayer',    label: 'Slayer',    pixelIcon: 'assets/icons/slayer.png',    badge: '1/99',  component: SlayerComponent },
       ],
     },
     {
       label: 'Non-Combat',
       items: [
-        { id: 'mining',      label: 'Mining',      icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', component: MiningComponent },
-        { id: 'woodcutting', label: 'Woodcutting', icon: 'M17 8C8 10 5.9 16.17 3.82 19.82L5.71 21 7 18.93c.78.05 1.53.1 2.29.17A12.36 12.36 0 0 1 12 20c4 0 7-3 7-7a5 5 0 0 0-2-4zM2 2l20 20', component: WoodcuttingComponent },
-        { id: 'fishing',     label: 'Fishing',     icon: 'M18 8a6 6 0 0 1-6 6M3 3l18 18M10.88 10.88A3 3 0 1 0 6.12 6.12M6 18h.01M10 20c-2.5-2.5-3-5-3-8', component: FishingComponent },
+        { id: 'mining',      label: 'Mining',      pixelIcon: 'assets/icons/mining.png',      badge: '1/99', component: MiningComponent },
+        { id: 'woodcutting', label: 'Woodcutting', pixelIcon: 'assets/icons/woodcutting.png', badge: '1/99', component: WoodcuttingComponent },
+        { id: 'fishing',     label: 'Fishing',     pixelIcon: 'assets/icons/fishing.png',     badge: '1/99', component: FishingComponent },
+        { id: 'firemaking',  label: 'Firemaking',  pixelIcon: 'assets/icons/firemaking.png',  badge: '1/99', component: FiremakingComponent },
+        { id: 'farming',     label: 'Farming',     pixelIcon: 'assets/icons/farming.png',     badge: '1/99', component: FarmingComponent },
+        { id: 'cooking',     label: 'Cooking',     pixelIcon: 'assets/icons/cooking.png',     badge: '1/99', component: CookingComponent },
+        { id: 'smithing',   label: 'Smithing',   pixelIcon: 'assets/icons/smithing.png',   badge: '1/99', component: SmithingComponent },
+        { id: 'agility',   label: 'Agility',    pixelIcon: 'assets/icons/agility.png',    badge: '1/99', component: AgilityComponent },
+        { id: 'herblore',  label: 'Herblore',   pixelIcon: 'assets/icons/herblore.png',   badge: '1/99', component: HerbloreComponent },
+        { id: 'thieving',  label: 'Thieving',   pixelIcon: 'assets/icons/thieving.png',   badge: '1/99', component: ThievingComponent },
+        { id: 'crafting',  label: 'Crafting',   pixelIcon: 'assets/icons/crafting.png',   badge: '1/99', component: CraftingComponent },
+        { id: 'fletching', label: 'Fletching',  pixelIcon: 'assets/icons/fletching.png',  badge: '1/99', component: FletchingComponent },
+        { id: 'hunter',       label: 'Hunter',       pixelIcon: 'assets/icons/hunter.png',       badge: '1/99', component: HunterComponent },
+        { id: 'construction', label: 'Construction', pixelIcon: 'assets/icons/construction.png', badge: '1/99', component: ConstructionComponent },
       ],
     },
     {
       label: 'Other',
       items: [
-        { id: 'settings', label: 'Settings', icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 0v0M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z' },
+        { id: 'settings', label: 'Settings', pixelIcon: 'assets/icons/settings.png' },
       ],
     },
   ];

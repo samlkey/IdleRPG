@@ -1,0 +1,24 @@
+<div class="skill-panel">
+  <div class="skill-panel__header">
+    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+    <div>
+      <h1 class="skill-panel__title">Bank</h1>
+      <p class="skill-panel__subtitle">Store and manage your items and gold</p>
+    </div>
+    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Bank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+  <p class="placeholder">Bank content will appear here.</p>
+
+</div>
+
+@if (helpOpen()) {
+  <app-modal title="Bank" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>The Bank lets you store all your items safely. You can access your bank from any bank chest or counter in the world.</p>
+  </app-modal>
+}

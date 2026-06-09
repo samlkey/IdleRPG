@@ -1,12 +1,20 @@
 <div class="skill-panel">
-  <div class="skill-panel__header">
-    <svg class="skill-panel__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M18 8a6 6 0 0 1-6 6M3 3l18 18M10.88 10.88A3 3 0 1 0 6.12 6.12M6 18h.01M10 20c-2.5-2.5-3-5-3-8"/>
-    </svg>
+  <div class="skill-panel__hero">
+    <img class="skill-panel__hero-bg" src="assets/backgrounds/fishing.png" alt="" aria-hidden="true" />
+    <div class="skill-panel__hero-gradient"></div>
+    <div class="skill-panel__header">
+    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
     <div>
       <h1 class="skill-panel__title">Fishing</h1>
       <p class="skill-panel__subtitle">Cast your line and reel in the catch</p>
     </div>
+    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Fishing">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+      </svg>
+    </button>
   </div>
 
   <div class="xp-bar">
@@ -20,4 +28,11 @@
   </div>
 
   <p class="placeholder">Fishing actions will appear here.</p>
+
 </div>
+
+@if (helpOpen()) {
+  <app-modal title="Fishing" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>Fishing lets you catch fish from various fishing spots. Fish can be cooked via the Cooking skill for food that restores Hitpoints during combat.</p>
+  </app-modal>
+}

@@ -1,0 +1,27 @@
+<div class="skill-panel">
+  <div class="skill-panel__hero">
+    <img class="skill-panel__hero-bg" src="assets/backgrounds/house.png" alt="" aria-hidden="true" />
+    <div class="skill-panel__hero-gradient"></div>
+    <div class="skill-panel__header">
+    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+    <div>
+      <h1 class="skill-panel__title">House</h1>
+      <p class="skill-panel__subtitle">Build and furnish your player-owned home</p>
+    </div>
+    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About House">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+  <p class="placeholder">House content will appear here.</p>
+
+</div>
+
+@if (helpOpen()) {
+  <app-modal title="House" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>Your player-owned house can be furnished with useful rooms and furniture. Use the Construction skill to expand and improve it.</p>
+  </app-modal>
+}

@@ -12,7 +12,7 @@
       <div class="char-card__info">
         <span class="char-card__name">{{ character.name }}</span>
         <div class="char-card__levels">
-          <span class="char-card__level">Lvl {{ character.level }}</span>
+          <span class="char-card__level">Total Lvl {{ character.level }}</span>
           <span class="char-card__combat-level">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"/>
@@ -32,7 +32,8 @@
       </div>
     </div>
 
-    <!-- Sections -->
+    <!-- Scrollable nav -->
+    <div class="sidebar__scroll">
     @for (section of sections; track section.label) {
       <div class="sidebar__divider"></div>
       <div class="sidebar__section">
@@ -46,29 +47,29 @@
                 (click)="select(item)"
                 [attr.aria-current]="activePanel() === item.id ? 'page' : null"
               >
-                <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path [attr.d]="item.icon" />
-                </svg>
+                <img class="nav-item__pixel-icon" [src]="item.pixelIcon" [alt]="item.label" aria-hidden="true" />
                 <span class="nav-item__label">{{ item.label }}</span>
+                @if (item.badge) {
+                  <span class="nav-item__level">{{ item.badge }}</span>
+                }
               </button>
             </li>
           }
         </ul>
       </div>
     }
+    </div><!-- /.sidebar__scroll -->
 
   </nav>
 
   <!-- Content panel -->
   <main class="content" role="main">
     @if (activeItem?.component) {
-      <ng-container *ngComponentOutlet="activeItem!.component!" />
+      <ng-container *ngComponentOutlet="activeItem!.component!; inputs: { pixelIcon: activeItem!.pixelIcon }" />
     } @else {
       <div class="skill-panel">
         <div class="skill-panel__header">
-          <svg class="skill-panel__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path [attr.d]="activeItem?.icon" />
-          </svg>
+          <img class="skill-panel__pixel-icon" [src]="activeItem?.pixelIcon" [alt]="activeItem?.label" aria-hidden="true" />
           <div>
             <h1 class="skill-panel__title">{{ activeItem?.label }}</h1>
             <p class="skill-panel__subtitle">Coming soon</p>

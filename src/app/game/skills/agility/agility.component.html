@@ -1,0 +1,38 @@
+<div class="skill-panel">
+  <div class="skill-panel__hero">
+    <img class="skill-panel__hero-bg" src="assets/backgrounds/agility.png" alt="" aria-hidden="true" />
+    <div class="skill-panel__hero-gradient"></div>
+    <div class="skill-panel__header">
+    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+    <div>
+      <h1 class="skill-panel__title">Agility</h1>
+      <p class="skill-panel__subtitle">Run through obstacles with grace</p>
+    </div>
+    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Agility">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="xp-bar">
+    <div class="xp-bar__label">
+      <span>Level 1</span>
+      <span>0 / 83 XP</span>
+    </div>
+    <div class="xp-bar__track">
+      <div class="xp-bar__fill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <p class="placeholder">Agility actions will appear here.</p>
+
+</div>
+
+@if (helpOpen()) {
+  <app-modal title="Agility" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>Agility allows you to traverse obstacles and shortcuts across the world. It also determines how quickly your run energy recovers.</p>
+  </app-modal>
+}
