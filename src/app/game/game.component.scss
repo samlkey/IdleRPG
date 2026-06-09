@@ -1,0 +1,214 @@
+$sidebar-width: 280px;
+$bg: #09090f;
+$surface: #111118;
+$border: rgba(255, 255, 255, 0.07);
+$accent: #7c3aed;
+$text-muted: rgba(203, 193, 228, 0.45);
+$text-base: rgba(203, 193, 228, 0.85);
+
+.game {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: $bg;
+  overflow: hidden;
+}
+
+// ── Sidebar ──────────────────────────────────────────────
+.sidebar {
+  width: $sidebar-width;
+  flex-shrink: 0;
+  height: 100%;
+  background: $surface;
+  border-right: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 0;
+  gap: 0;
+  overflow-y: auto;
+}
+
+.sidebar__divider {
+  height: 1px;
+  background: $border;
+  margin: 0.75rem 0;
+}
+
+.sidebar__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+}
+
+.sidebar__section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+  padding: 0 0.85rem;
+  margin-bottom: 0.15rem;
+}
+
+.sidebar__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+// ── Character card ────────────────────────────────────────
+.char-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0 1rem 0.25rem;
+
+  &__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(159, 18, 57, 0.3));
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(196, 181, 253, 0.7);
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  &__info {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  &__name {
+    font-family: 'Georgia', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2d9f3;
+    letter-spacing: 0.02em;
+  }
+
+  &__levels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    align-items: flex-end;
+  }
+
+  &__level {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgba(245, 158, 11, 0.75);
+    text-transform: uppercase;
+  }
+
+  &__combat-level {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: rgba(239, 68, 68, 0.7);
+
+    svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+    }
+  }
+
+  &__hp {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  &__hp-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: $text-muted;
+    letter-spacing: 0.04em;
+  }
+
+  &__hp-track {
+    height: 5px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  &__hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #16a34a, #4ade80);
+    border-radius: 99px;
+    transition: width 400ms ease;
+  }
+}
+
+// ── Nav item ─────────────────────────────────────────────
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: none;
+  color: $text-muted;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+  text-align: left;
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    color: $text-base;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  &--active {
+    color: #c4b5fd;
+    background: rgba($accent, 0.15);
+    border-color: rgba($accent, 0.3);
+
+    .nav-item__icon { color: #a78bfa; }
+
+    &:hover { background: rgba($accent, 0.2); }
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(167, 139, 250, 0.7);
+    outline-offset: 2px;
+  }
+}
+
+// ── Content panel ─────────────────────────────────────────
+.content {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item, .char-card__hp-fill { transition: none; }
+}

@@ -1,0 +1,41 @@
+<div class="landing">
+  <div class="particles">
+    @for (p of particles; track p) {
+      <div class="particle" [style]="p"></div>
+    }
+  </div>
+
+  <div class="glow-orb glow-orb--top"></div>
+  <div class="glow-orb glow-orb--bottom"></div>
+
+  <main class="hero" role="main">
+    <div class="title-group">
+      <p class="subtitle">⚔ An Epic Adventure Awaits ⚔</p>
+      <h1 class="title">
+        <span class="title-idle">Idle</span>
+        <span class="title-rpg">RPG</span>
+      </h1>
+      <p class="tagline">Conquer kingdoms. Level up. Rule the realm.</p>
+    </div>
+
+    <button
+      class="play-btn"
+      (click)="onPlay()"
+      [class.loading]="isLoading"
+      [disabled]="isLoading"
+      aria-label="Play Idle RPG"
+    >
+      @if (!isLoading) {
+        <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <span>Play Now</span>
+      } @else {
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Loading...</span>
+      }
+    </button>
+
+    <p class="version">v0.1.0 Alpha</p>
+  </main>
+</div>

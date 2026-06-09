@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="glow-orb glow-orb--left"></div>
+  <div class="glow-orb glow-orb--right"></div>
+
+  <header class="header">
+    <button class="back-btn" (click)="back()" aria-label="Back to main menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Back
+    </button>
+    <h1 class="page-title">Choose Your Hero</h1>
+    <div class="spacer"></div>
+  </header>
+
+  <main class="slots-area" role="main">
+    <div class="slots">
+      @for (slot of slots; track slot.id) {
+        <button
+          class="slot"
+          [class.slot--occupied]="slot.occupied"
+          [class.slot--empty]="!slot.occupied"
+          [class.slot--selected]="selectedSlot === slot.id"
+          (click)="select(slot.id)"
+          [attr.aria-label]="slot.occupied ? 'Select ' + slot.name : 'Create new character'"
+          [attr.aria-pressed]="selectedSlot === slot.id"
+        >
+          @if (slot.occupied) {
+            <div class="slot-portrait">
+              <svg class="portrait-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/>
+              </svg>
+              <div class="slot-glow"></div>
+            </div>
+            <div class="slot-info">
+              <span class="slot-name">{{ slot.name }}</span>
+              <span class="slot-class">{{ slot.class }}</span>
+              <span class="slot-level">Level {{ slot.level }}</span>
+            </div>
+          } @else {
+            <div class="slot-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v8M8 12h8"/>
+              </svg>
+            </div>
+            <span class="slot-empty-label">New Hero</span>
+          }
+
+          @if (selectedSlot === slot.id) {
+            <div class="selected-ring" aria-hidden="true"></div>
+          }
+        </button>
+      }
+    </div>
+
+    <button
+      class="enter-btn"
+      [disabled]="selectedSlot === null"
+      (click)="enter()"
+      aria-label="Enter the game"
+    >
+      <span>Enter the Realm</span>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </main>
+</div>
