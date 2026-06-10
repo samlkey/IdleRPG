@@ -14,3 +14,9 @@ Build furniture
 Slayer:
 
 bonuses from slayer masters to certain types of monsters 
+
+
+BUFF IDEAS:
+
+CRIT_CHANCE
+DEPLITION RATE / REGEN RATE

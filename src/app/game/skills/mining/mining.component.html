@@ -28,8 +28,40 @@
     </div>
   </div>
 
-  <p class="placeholder">Mining actions will appear here.</p>
+  <div class="skill-info">
+    <div class="skill-info__item">
+      <span class="skill-info__label">Skill Level</span>
+      <span class="skill-info__value">{{ skillData.level }}/99</span>
+    </div>
+    <div class="skill-info__item">
+      <span class="skill-info__label">Skill XP</span>
+      <span class="skill-info__value">{{ skillData.xp | number }} / {{ skillData.xpToNext | number }}</span>
+    </div>
+    <div class="skill-info__item">
+      <span class="skill-info__label">Current Pickaxe</span>
+      <span class="skill-info__value">{{ currentPickaxe }}</span>
+    </div>
+  </div>
 
+  <div class="activity-grid">
+    @for (rock of rocks; track rock.name) {
+      <app-activity
+        [action]="'Mine'"
+        [target]="rock.name"
+        [xp]="rock.xp"
+        [duration]="rock.time"
+        [image]="rock.src"
+        [skillId]="'mining'"
+        [active]="playerService.mainActivity() === rock.name"
+        [requirements]="rock.level > 1 ? [{ icon: 'assets/icons/mining.png', level: rock.level, skill: 'Mining' }] : []"
+        [disabled]="rock.disabled"
+        [type]="rock.type"
+        [maxCharges]="rock.maxCharges"
+        [replenishTime]="rock.replenishTime"
+        (selected)="selectRock(rock.name)"
+      />
+    }
+  </div>
 </div>
 
 @if (helpOpen()) {

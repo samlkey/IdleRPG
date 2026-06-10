@@ -73,6 +73,8 @@ export interface PlayerData {
   houseLevel: number;
   bankSpace: number;
   gold: number;
+  /** 0–1 probability of a crit window opening per activity cycle */
+  critChance: number;
   equipment: Equipment;
   skills: Record<SkillId, SkillData>;
 }
@@ -94,6 +96,7 @@ const INITIAL_PLAYER: PlayerData = {
   // Refactor this into its own service if we add more bank-related features (e.g. deposits/withdrawals, organizing, etc.)
   bankSpace: 0,
   gold: 100,
+  critChance: 0.4,
   equipment: {
     axe: 'Iron',
     pickaxe: 'Iron',

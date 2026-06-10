@@ -1,6 +1,7 @@
 <button
   class="activity-card"
   [class.activity-card--disabled]="disabled()"
+  [class.activity-card--depleted]="isDepleted"
   [class.activity-card--active]="active() && !isCrit()"
   [class.activity-card--crit]="isCrit()"
   [disabled]="disabled()"
@@ -76,6 +77,26 @@
       [style.width.%]="progressPct()"
     ></div>
   </div>
+
+  <!-- Depletion bar -->
+  @if (type() === 'depletion') {
+    <div class="activity-card__depletion">
+      <div class="activity-card__charges">
+        @for (seg of chargeSegments(); track seg) {
+          <div
+            class="activity-card__charge"
+            [class.activity-card__charge--filled]="seg < charges()"
+            [class.activity-card__charge--replenishing]="seg === charges() && charges() < maxCharges()"
+          >
+            @if (seg === charges() && charges() < maxCharges()) {
+              <div class="activity-card__charge-fill" [style.width.%]="replenishPct()"></div>
+            }
+          </div>
+        }
+      </div>
+      <span class="activity-card__charge-label">{{ charges() }}/{{ maxCharges() }}</span>
+    </div>
+  }
 
   <!-- Footer -->
   <div class="activity-card__footer">
