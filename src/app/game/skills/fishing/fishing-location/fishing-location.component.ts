@@ -1,15 +1,14 @@
 import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { PlayerService } from '../../../services/player.service';
+import { ActivityService } from '../../../services/activity.service';
 
 export interface FishEntry {
   name: string;
   src: string;
   level: number;
   xp: number;
-  /** Average seconds between catch attempts */
   duration: number;
-  /** 0–1 probability of catching on each attempt */
   catchChance: number;
 }
 
@@ -31,29 +30,24 @@ const CRIT_WINDOW_MS = 1500;
 export class FishingLocationComponent implements OnDestroy {
   location = input.required<FishingLocation>();
 
-  readonly playerService = inject(PlayerService);
+  private readonly playerService  = inject(PlayerService);
+  private readonly activityService = inject(ActivityService);
 
   readonly caughtFish    = signal<string | null>(null);
   readonly isCrit        = signal(false);
-  /** 0–1, 1 = just opened, 0 = expired */
   readonly critRemaining = signal(1);
 
   readonly activeFish = computed(() => {
-    const active = this.playerService.mainActivity();
-    if (!active) return null;
-    return this.location().fish.find(f => f.name === active)?.name ?? null;
+    const current = this.activityService.current();
+    if (!current) return null;
+    return this.location().fish.find(f => f.name === current.name)?.name ?? null;
   });
 
-  readonly RING_C      = 2 * Math.PI * 22;
+  readonly RING_C       = 2 * Math.PI * 22;
   readonly CRIT_WINDOW_S = CRIT_WINDOW_MS / 1000;
 
-  get critDashOffset(): number {
-    return this.RING_C * (1 - this.critRemaining());
-  }
-
-  get critSecondsLeft(): number {
-    return this.critRemaining() * this.CRIT_WINDOW_S;
-  }
+  get critDashOffset(): number { return this.RING_C * (1 - this.critRemaining()); }
+  get critSecondsLeft(): number { return this.critRemaining() * this.CRIT_WINDOW_S; }
 
   get isLocationDisabled(): boolean {
     return this.playerService.skill('fishing').level < this.location().levelReq;
@@ -63,7 +57,6 @@ export class FishingLocationComponent implements OnDestroy {
     return this.playerService.skill('fishing').level < fish.level;
   }
 
-  private castTimer:      ReturnType<typeof setTimeout>  | null = null;
   private flashTimer:     ReturnType<typeof setTimeout>  | null = null;
   private critOpenTimer:  ReturnType<typeof setTimeout>  | null = null;
   private critCloseTimer: ReturnType<typeof setTimeout>  | null = null;
@@ -72,53 +65,49 @@ export class FishingLocationComponent implements OnDestroy {
   private critWindowDuration = 0;
 
   constructor() {
+    // Start/stop crit scheduling when active fish changes
     effect(() => {
       const fish = this.activeFish();
       if (fish) {
         const entry = this.location().fish.find(f => f.name === fish)!;
-        this.scheduleCast(entry);
+        const start = this.activityService.cycleStartedAt();
+        if (start !== null && Date.now() - start < 500) {
+          this.scheduleCritWindow(entry.duration * 1000);
+        }
       } else {
-        this.stopAll();
+        this.clearCrit();
         this.caughtFish.set(null);
-        this.isCrit.set(false);
       }
+    }, { allowSignalWrites: true });
+
+    // React to each cycle completing — show caught flash and schedule next crit
+    effect(() => {
+      const result = this.activityService.lastCycleResult();
+      if (!result) return;
+      const fish = this.activeFish();
+      if (!fish) return;
+      const entry = this.location().fish.find(f => f.name === fish)!;
+      this.clearCrit();
+      if (result.caught) this.showCaughtFlash(fish);
+      this.scheduleCritWindow(entry.duration * 1000);
     }, { allowSignalWrites: true });
   }
 
   onRowClick(fish: FishEntry): void {
     if (this.activeFish() === fish.name && this.isCrit()) {
-      // Crit click — guaranteed catch, restart cast
-      this.clearCrit();
-      this.playerService.addXp('fishing', fish.xp);
+      // Crit click — guaranteed catch
+      this.activityService.completeCycleNow();
       this.showCaughtFlash(fish.name);
-      this.scheduleCast(fish);
-    } else {
-      const current = this.playerService.mainActivity();
-      this.playerService.setMainActivity(current === fish.name ? null : fish.name);
-    }
-  }
-
-  // ── Cast cycle ───────────────────────────────────────────────────────────────
-
-  private scheduleCast(entry: FishEntry): void {
-    this.stopCastTimers();
-
-    const jitter  = 0.7 + Math.random() * 0.6;
-    const waitMs  = entry.duration * 1000 * jitter;
-
-    this.scheduleCritWindow(waitMs);
-
-    this.castTimer = setTimeout(() => {
-      if (this.playerService.mainActivity() !== entry.name) return;
       this.clearCrit();
-
-      if (Math.random() < entry.catchChance) {
-        this.playerService.addXp('fishing', entry.xp);
-        this.showCaughtFlash(entry.name);
-      }
-
-      this.scheduleCast(entry);
-    }, waitMs);
+    } else if (this.activeFish() === fish.name) {
+      this.activityService.stop();
+    } else {
+      this.activityService.start({
+        name: fish.name, xp: fish.xp, duration: fish.duration,
+        skillId: 'fishing', skillPanel: 'fishing',
+        catchChance: fish.catchChance,
+      });
+    }
   }
 
   private showCaughtFlash(name: string): void {
@@ -127,13 +116,10 @@ export class FishingLocationComponent implements OnDestroy {
     this.flashTimer = setTimeout(() => this.caughtFish.set(null), 1200);
   }
 
-  // ── Crit window ──────────────────────────────────────────────────────────────
-
-  private scheduleCritWindow(castMs: number): void {
+  private scheduleCritWindow(durationMs: number): void {
     if (Math.random() > this.playerService.player().critChance) return;
-
-    const openAt  = castMs * (0.2 + Math.random() * 0.5);
-    const closeAt = Math.min(openAt + CRIT_WINDOW_MS, castMs - 200);
+    const openAt  = durationMs * (0.2 + Math.random() * 0.5);
+    const closeAt = Math.min(openAt + CRIT_WINDOW_MS, durationMs - 200);
     if (closeAt <= openAt) return;
 
     const windowMs = closeAt - openAt;
@@ -144,7 +130,6 @@ export class FishingLocationComponent implements OnDestroy {
       this.critRemaining.set(1);
       this.isCrit.set(true);
 
-      // Tick countdown
       this.critTickTimer = setInterval(() => {
         const remaining = Math.max(0, this.critCloseAt! - Date.now()) / this.critWindowDuration;
         this.critRemaining.set(remaining);
@@ -163,19 +148,8 @@ export class FishingLocationComponent implements OnDestroy {
     this.critRemaining.set(1);
   }
 
-  // ── Cleanup ──────────────────────────────────────────────────────────────────
-
-  private stopCastTimers(): void {
-    if (this.castTimer) { clearTimeout(this.castTimer); this.castTimer = null; }
-    this.clearCrit();
-  }
-
-  private stopAll(): void {
-    this.stopCastTimers();
-    if (this.flashTimer) { clearTimeout(this.flashTimer); this.flashTimer = null; }
-  }
-
   ngOnDestroy(): void {
-    this.stopAll();
+    this.clearCrit();
+    if (this.flashTimer) { clearTimeout(this.flashTimer); this.flashTimer = null; }
   }
 }

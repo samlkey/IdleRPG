@@ -20,7 +20,7 @@ export class FishingComponent {
 
   readonly locations: FishingLocation[] = [
     {
-      name: 'Starter Shores',
+      name: 'Aurel Shores',
       background: 'assets/backgrounds/fishing_spot_1.png',
       levelReq: 1,
       fish: [

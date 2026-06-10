@@ -1,0 +1,34 @@
+<div class="thieving-location" [class.thieving-location--locked]="isLocationDisabled">
+
+  <div class="thieving-location__hero">
+    <img class="thieving-location__hero-bg" [src]="location().background" alt="" aria-hidden="true" />
+    <div class="thieving-location__hero-overlay"></div>
+    <div class="thieving-location__hero-content">
+      <h3 class="thieving-location__name">{{ location().name }}</h3>
+      @if (location().levelReq > 1) {
+        <div class="thieving-location__level-badge">
+          <img src="assets/icons/thieving.png" alt="" aria-hidden="true" />
+          <span>Level {{ location().levelReq }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="thieving-location__grid">
+    @for (target of location().targets; track target.name) {
+      <app-activity
+        [action]="'Steal from'"
+        [target]="target.name"
+        [xp]="target.xp"
+        [duration]="target.duration"
+        [image]="target.src"
+        [active]="isActive(target)"
+        [requirements]="requirements(target)"
+        [caughtDamage]="target.caughtDamage ?? 2"
+        [disabled]="isTargetDisabled(target)"
+        (selected)="selectTarget(target)"
+      />
+    }
+  </div>
+
+</div>

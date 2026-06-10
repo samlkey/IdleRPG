@@ -1,0 +1,237 @@
+$surface:    #111118;
+$border:     rgba(255, 255, 255, 0.07);
+$accent:     #7c3aed;
+$accent-lt:  #a78bfa;
+$text-base:  rgba(203, 193, 228, 0.85);
+$text-muted: rgba(203, 193, 228, 0.45);
+
+// ── Toolbar ───────────────────────────────────────────────
+
+.bank-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  &__search {
+    position: relative;
+    flex: 1;
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: $text-muted;
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 8px 36px 8px 32px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid $border;
+    border-radius: 8px;
+    color: $text-base;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 150ms ease, background 150ms ease;
+
+    &::placeholder { color: $text-muted; }
+    &::-webkit-search-cancel-button { display: none; }
+
+    &:focus {
+      border-color: rgba($accent-lt, 0.4);
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  &__clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    padding: 0;
+    transition: color 150ms ease;
+
+    svg { width: 12px; height: 12px; }
+    &:hover { color: $text-base; }
+  }
+
+  &__space {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+
+  &__space-label {
+    font-size: 0.7rem;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__space-value {
+    font-size: 0.8rem;
+    color: $text-base;
+    font-weight: 600;
+  }
+}
+
+// ── Tabs ──────────────────────────────────────────────────
+
+.bank-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  border-bottom: 1px solid $border;
+  margin-bottom: -0.5rem;
+
+  &__tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px 10px;
+    background: none;
+    border: none;
+    color: $text-muted;
+    font-size: 0.8rem;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 150ms ease;
+    white-space: nowrap;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      border-radius: 2px 2px 0 0;
+      background: $accent-lt;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+
+    &:hover { color: $text-base; }
+
+    &--active {
+      color: $accent-lt;
+      &::after { opacity: 1; }
+    }
+  }
+
+  &__delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 120ms ease, background 120ms ease;
+    cursor: pointer;
+
+    svg { width: 8px; height: 8px; }
+
+    .bank-tabs__tab:hover & { opacity: 0.5; }
+    &:hover { opacity: 1 !important; background: rgba(239, 68, 68, 0.2); color: #f87171; }
+  }
+
+  &__rename {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba($accent-lt, 0.5);
+    border-radius: 4px;
+    color: $accent-lt;
+    font-size: 0.8rem;
+    font-family: inherit;
+    padding: 1px 5px;
+    width: 90px;
+    outline: none;
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+    margin-left: 2px;
+    background: none;
+    border: 1px solid $border;
+    border-radius: 6px;
+    color: $text-muted;
+    cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+    flex-shrink: 0;
+
+    svg { width: 12px; height: 12px; }
+
+    &:hover {
+      color: $accent-lt;
+      border-color: rgba($accent-lt, 0.4);
+      background: rgba($accent, 0.1);
+    }
+  }
+}
+
+// ── Bank grid ─────────────────────────────────────────────
+
+.bank-grid {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid $border;
+  border-radius: 12px;
+  min-height: 420px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 4px;
+  align-content: start;
+
+  &__empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 4rem 0;
+    color: $text-muted;
+
+    svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.3;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: rgba($text-base, 0.5);
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $text-muted;
+      font-style: italic;
+    }
+  }
+}

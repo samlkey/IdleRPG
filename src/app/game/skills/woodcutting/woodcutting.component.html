@@ -22,11 +22,11 @@
   <div class="xp-bar">
     <div class="xp-bar__label">
       <span>Level {{ skillData.level }}</span>
-      <span>{{ skillData.xp | number }} / {{ skillData.xpToNext | number }} XP</span>
+      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
     </div>
     <div class="xp-bar__track">
       <div class="xp-bar__fill"
-        [style.width.%]="skillData.xpToNext > 0 ? (skillData.xp / (skillData.xp + skillData.xpToNext)) * 100 : 100">
+        [style.width.%]="skillData.xpForLevel > 0 ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100 : 100">
       </div>
     </div>
   </div>
@@ -37,8 +37,8 @@
       <span class="skill-info__value">{{ skillData.level }}/99</span>
     </div>
     <div class="skill-info__item">
-      <span class="skill-info__label">Skill XP</span>
-      <span class="skill-info__value">{{ skillData.xp | number }} / {{ skillData.xpToNext | number }}</span>
+      <span class="skill-info__label">Total Skill XP</span>
+      <span class="skill-info__value">{{ skillData.xp | number }}</span>
     </div>
     <div class="skill-info__item">
       <span class="skill-info__label">Current Axe</span>
@@ -54,12 +54,10 @@
         [xp]="tree.xp"
         [duration]="tree.time"
         [image]="tree.src"
-        [skillId]="'woodcutting'"
-        [active]="playerService.mainActivity() === tree.name"
+        [active]="activityService.current()?.name === tree.name"
         [requirements]="tree.level > 1 ? [{ icon: 'assets/icons/woodcutting.png', level: tree.level, skill: 'Woodcutting' }] : []"
-        [disabled]="tree.disabled"
-        [critChance]="tree.critChance"
-        (selected)="selectTree(tree.name)"
+        [disabled]="skillData.level < tree.level"
+(selected)="selectTree(tree)"
       />
     }
   </div>

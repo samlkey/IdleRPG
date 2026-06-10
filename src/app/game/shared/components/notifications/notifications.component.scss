@@ -1,0 +1,117 @@
+$bg:      #111118;
+$border:  rgba(255, 255, 255, 0.08);
+$shadow:  0 4px 24px rgba(0, 0, 0, 0.5);
+
+.notif-stack {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notif {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid $border;
+  background: $bg;
+  box-shadow: $shadow;
+  min-width: 180px;
+  max-width: 280px;
+  cursor: pointer;
+  pointer-events: all;
+  animation: notif-in 0.2s ease;
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+
+    &--emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      image-rendering: auto;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__message {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  &__detail {
+    font-size: 0.72rem;
+    color: rgba(203, 193, 228, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  // ── Type variants ────────────────────────────────────────
+  &--xp {
+    border-color: rgba(#22c55e, 0.3);
+    background: color-mix(in srgb, #111118 85%, #22c55e);
+
+    .notif__message { color: #86efac; }
+  }
+
+  &--success {
+    border-color: rgba(#22c55e, 0.3);
+    background: color-mix(in srgb, #111118 85%, #22c55e);
+    .notif__message { color: #86efac; }
+  }
+
+  &--warning {
+    border-color: rgba(#ef4444, 0.35);
+    background: color-mix(in srgb, #111118 85%, #ef4444);
+    .notif__message { color: #fca5a5; }
+  }
+
+  &--info {
+    border-color: rgba(#7c3aed, 0.3);
+    background: color-mix(in srgb, #111118 85%, #7c3aed);
+    .notif__message { color: #c4b5fd; }
+  }
+
+  &--gold {
+    border-color: rgba(#eab308, 0.4);
+    background: color-mix(in srgb, #111118 82%, #78350f);
+
+    .notif__message { color: #fde047; font-weight: 700; }
+    .notif__detail  { color: rgba(#fde047, 0.55); }
+  }
+
+  &--levelup {
+    border-color: rgba(#f59e0b, 0.5);
+    background: color-mix(in srgb, #111118 80%, #92400e);
+    box-shadow: 0 0 16px rgba(#f59e0b, 0.25), $shadow;
+
+    .notif__message {
+      color: #fcd34d;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .notif__detail { color: rgba(#fcd34d, 0.6); }
+  }
+}
+
+@keyframes notif-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { NotificationService } from './notification.service';
 
 // ── Skill IDs ────────────────────────────────────────────────────────────────
 
@@ -49,6 +50,10 @@ export interface SkillData {
   xp: number;
   /** XP remaining to reach the next level (0 at level 99). */
   xpToNext: number;
+  /** XP earned within the current level. */
+  xpIntoLevel: number;
+  /** Total XP span of the current level (xpIntoLevel + xpToNext). */
+  xpForLevel: number;
 }
 
 export interface TrackedQuest {
@@ -82,8 +87,11 @@ export interface PlayerData {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeSkill(xp = 0): SkillData {
-  const level = levelFromXp(xp);
-  return { level, xp, xpToNext: xpToNextLevel(level) };
+  const level       = levelFromXp(xp);
+  const xpAtLevel   = XP_TABLE[level - 1];
+  const xpForLevel  = level < 99 ? XP_TABLE[level] - xpAtLevel : 1;
+  const xpIntoLevel = xp - xpAtLevel;
+  return { level, xp, xpToNext: xpToNextLevel(level), xpIntoLevel, xpForLevel };
 }
 
 const INITIAL_PLAYER: PlayerData = {
@@ -96,7 +104,7 @@ const INITIAL_PLAYER: PlayerData = {
   // Refactor this into its own service if we add more bank-related features (e.g. deposits/withdrawals, organizing, etc.)
   bankSpace: 0,
   gold: 100,
-  critChance: 0.4,
+  critChance: 0.1,
   equipment: {
     axe: 'Iron',
     pickaxe: 'Iron',
@@ -133,6 +141,7 @@ const INITIAL_PLAYER: PlayerData = {
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
 
+  private readonly notificationService = inject(NotificationService);
   private readonly _player = signal<PlayerData>(INITIAL_PLAYER);
 
   /** Full reactive player snapshot (read-only). */
@@ -165,18 +174,28 @@ export class PlayerService {
   /** Add XP to a skill and recalculate level + xpToNext. */
   addXp(id: SkillId, amount: number): void {
     this._player.update(p => {
-      const current = p.skills[id];
+      const current  = p.skills[id];
       const newXp    = current.xp + amount;
       const newLevel = Math.min(levelFromXp(newXp), 99);
+      if (newLevel > current.level) {
+        const skillName = id.charAt(0).toUpperCase() + id.slice(1);
+        this.notificationService.show({
+          type: 'levelup',
+          message: `Level ${newLevel}!`,
+          detail: skillName,
+          icon: `assets/icons/${id}.png`,
+        }, 5000);
+        this.notificationService.levelUpEvent.set({ skill: skillName, level: newLevel });
+      }
       return {
         ...p,
         skills: {
           ...p.skills,
-          [id]: {
-            level:   newLevel,
-            xp:      newXp,
-            xpToNext: xpToNextLevel(newLevel),
-          },
+          [id]: (() => {
+            const xpAtLevel  = XP_TABLE[newLevel - 1];
+            const xpForLevel = newLevel < 99 ? XP_TABLE[newLevel] - xpAtLevel : 1;
+            return { level: newLevel, xp: newXp, xpToNext: xpToNextLevel(newLevel), xpIntoLevel: newXp - xpAtLevel, xpForLevel };
+          })(),
         },
       };
     });
@@ -200,6 +219,15 @@ export class PlayerService {
     this._player.update(p => ({ ...p, ...patch }));
   }
 
+  /** Reduce HP by amount, clamped to 0. */
+  takeDamage(amount: number): void {
+    this._player.update(p => ({ ...p, hp: Math.max(0, p.hp - amount) }));
+  }
+
+  addGold(amount: number): void {
+    this._player.update(p => ({ ...p, gold: p.gold + amount }));
+  }
+
   /** Update a single equipment slot. */
   updateEquipment(patch: Partial<Equipment>): void {
     this._player.update(p => ({ ...p, equipment: { ...p.equipment, ...patch } }));
@@ -209,9 +237,12 @@ export class PlayerService {
 
   /** Name of the currently running activity, or null if idle. */
   readonly mainActivity = signal<string | null>(null);
+  /** Skill panel that owns the current activity, or null if idle. */
+  readonly mainActivitySkill = signal<SkillId | null>(null);
 
-  setMainActivity(name: string | null): void {
+  setMainActivity(name: string | null, skillId?: SkillId | null): void {
     this.mainActivity.set(name);
+    this.mainActivitySkill.set(name ? (skillId ?? null) : null);
   }
 
   // ── Quest tracking ─────────────────────────────────────────────────────────

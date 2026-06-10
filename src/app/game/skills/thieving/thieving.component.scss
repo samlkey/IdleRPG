@@ -46,3 +46,53 @@ $content-pad: 2rem;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   }
 }
+
+.skill-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+
+    & + & {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: rgba(203, 193, 228, 0.45);
+    letter-spacing: 0.04em;
+  }
+
+  &__value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(203, 193, 228, 0.85);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  &--single {
+    grid-template-columns: 1fr;
+  }
+}

@@ -53,15 +53,9 @@
           </div>
         }
 
-        <!-- Fish image + throbber ring -->
+        <!-- Fish image -->
         <div class="fishing-location__img-wrap">
           <img class="fishing-location__fish-img" [src]="fish.src" [alt]="fish.name" />
-          @if (activeFish() === fish.name && !isCrit()) {
-            <svg class="fishing-location__throbber" viewBox="0 0 52 52" aria-hidden="true">
-              <circle cx="26" cy="26" r="22" fill="none" stroke-width="3" stroke-linecap="round"
-                stroke-dasharray="40 98" />
-            </svg>
-          }
         </div>
 
         <!-- Name + meta -->
@@ -74,9 +68,12 @@
           </div>
         </div>
 
-        <!-- Caught flash -->
-        @if (caughtFish() === fish.name) {
-          <div class="fishing-location__caught-badge">+{{ fish.xp }} XP</div>
+        <!-- Throbber (right side, replaces XP badge) -->
+        @if (activeFish() === fish.name && !isCrit()) {
+          <svg class="fishing-location__throbber" viewBox="0 0 52 52" aria-hidden="true">
+            <circle cx="26" cy="26" r="22" fill="none" stroke-width="3" stroke-linecap="round"
+              stroke-dasharray="40 98" />
+          </svg>
         }
 
         <!-- Level req badge -->

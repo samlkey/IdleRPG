@@ -1,5 +1,7 @@
 import { Component, inject, signal, Type } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
+import { NotificationsComponent } from './shared/components/notifications/notifications.component';
+import { LevelUpComponent } from './shared/components/level-up/level-up.component';
 // General
 import { QuestsComponent } from './general/quests/quests.component';
 import { BankComponent } from './general/bank/bank.component';
@@ -51,7 +53,7 @@ interface NavSection {
 
 @Component({
   selector: 'app-game',
-  imports: [NgComponentOutlet],
+  imports: [NgComponentOutlet, NotificationsComponent, LevelUpComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
 })

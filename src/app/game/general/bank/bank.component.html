@@ -1,4 +1,5 @@
 <div class="skill-panel">
+
   <div class="skill-panel__header">
     <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
     <div>
@@ -13,7 +14,93 @@
       </svg>
     </button>
   </div>
-  <p class="placeholder">Bank content will appear here.</p>
+
+  <div class="bank-toolbar">
+    <div class="bank-toolbar__search">
+      <svg class="bank-toolbar__search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="6.5" cy="6.5" r="5"/>
+        <path d="M10.5 10.5l3.5 3.5" stroke-linecap="round"/>
+      </svg>
+      <input
+        class="bank-toolbar__input"
+        type="search"
+        placeholder="Search items..."
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+        aria-label="Search bank items"
+      />
+      @if (search()) {
+        <button class="bank-toolbar__clear" (click)="search.set('')" aria-label="Clear search">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      }
+    </div>
+    <div class="bank-toolbar__space">
+      <span class="bank-toolbar__space-label">Bank space</span>
+      <span class="bank-toolbar__space-value">{{ bankSpace }} / {{ MAX_BANK_SLOTS }}</span>
+    </div>
+  </div>
+
+  <nav class="bank-tabs" role="tablist">
+    @for (tab of tabs(); track tab.id) {
+      <button
+        class="bank-tabs__tab"
+        [class.bank-tabs__tab--active]="activeTab() === tab.id"
+        role="tab"
+        [attr.aria-selected]="activeTab() === tab.id"
+        (click)="activeTab.set(tab.id)"
+        (dblclick)="startRename(tab, $event)"
+      >
+        @if (editingTabId() === tab.id) {
+          <input
+            class="bank-tabs__rename"
+            [ngModel]="editingLabel()"
+            (ngModelChange)="editingLabel.set($event)"
+            (blur)="commitRename()"
+            (keydown.enter)="commitRename()"
+            (keydown.escape)="cancelRename()"
+            (click)="$event.stopPropagation()"
+            autoFocus
+          />
+        } @else {
+          {{ tab.label }}
+          @if (tab.deletable) {
+            <span
+              class="bank-tabs__delete"
+              role="button"
+              aria-label="Delete tab"
+              (click)="deleteTab(tab.id, $event)"
+            >
+              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round"/>
+              </svg>
+            </span>
+          }
+        }
+      </button>
+    }
+
+    <button class="bank-tabs__add" (click)="addTab()" aria-label="Add tab">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M8 3v10M3 8h10" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </nav>
+
+  <div class="bank-grid" role="tabpanel">
+    <div class="bank-grid__empty">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <rect x="8" y="14" width="32" height="24" rx="3"/>
+        <path d="M8 20h32"/>
+        <path d="M16 8l-4 6M32 8l4 6"/>
+        <circle cx="24" cy="31" r="3"/>
+      </svg>
+      <p>Your bank is empty</p>
+      <span>Items you collect will appear here</span>
+    </div>
+  </div>
 
 </div>
 

@@ -1,0 +1,19 @@
+<div class="notif-stack">
+  @for (n of notificationService.notifications(); track n.id) {
+    <div class="notif" [class]="'notif--' + n.type" (click)="notificationService.dismiss(n.id)">
+      @if (n.icon) {
+        @if (n.icon.startsWith('assets/')) {
+          <img class="notif__icon" [src]="n.icon" alt="" aria-hidden="true" />
+        } @else {
+          <span class="notif__icon notif__icon--emoji" aria-hidden="true">{{ n.icon }}</span>
+        }
+      }
+      <div class="notif__body">
+        <span class="notif__message">{{ n.message }}</span>
+        @if (n.detail) {
+          <span class="notif__detail">{{ n.detail }}</span>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -2,8 +2,9 @@
   class="activity-card"
   [class.activity-card--disabled]="disabled()"
   [class.activity-card--depleted]="isDepleted"
-  [class.activity-card--active]="active() && !isCrit()"
+  [class.activity-card--active]="active() && !isCrit() && !isCaught()"
   [class.activity-card--crit]="isCrit()"
+  [class.activity-card--caught]="isCaught()"
   [disabled]="disabled()"
   (click)="onClick()"
   type="button"
@@ -85,16 +86,16 @@
         @for (seg of chargeSegments(); track seg) {
           <div
             class="activity-card__charge"
-            [class.activity-card__charge--filled]="seg < charges()"
-            [class.activity-card__charge--replenishing]="seg === charges() && charges() < maxCharges()"
+            [class.activity-card__charge--filled]="seg < displayCharges()"
+            [class.activity-card__charge--replenishing]="seg === displayCharges() && displayCharges() < maxCharges()"
           >
-            @if (seg === charges() && charges() < maxCharges()) {
-              <div class="activity-card__charge-fill" [style.width.%]="replenishPct()"></div>
+            @if (seg === displayCharges() && displayCharges() < maxCharges()) {
+              <div class="activity-card__charge-fill" [style.width.%]="displayReplenishPct()"></div>
             }
           </div>
         }
       </div>
-      <span class="activity-card__charge-label">{{ charges() }}/{{ maxCharges() }}</span>
+      <span class="activity-card__charge-label">{{ displayCharges() }}/{{ maxCharges() }}</span>
     </div>
   }
 
