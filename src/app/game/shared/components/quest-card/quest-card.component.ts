@@ -60,7 +60,17 @@ export interface CoinReward {
   amount: number;
 }
 
-export type QuestReward = SkillXpReward | CoinReward;
+export interface UnlockReward {
+  type: 'unlock';
+  /** The nav panel id that gets unlocked */
+  tab: string;
+  /** Human-readable label e.g. "House" */
+  label: string;
+  /** Optional icon path */
+  icon?: string;
+}
+
+export type QuestReward = SkillXpReward | CoinReward | UnlockReward;
 
 // ── Quest data ────────────────────────────────────────────────────────────────
 

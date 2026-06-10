@@ -1,3 +1,16 @@
 TODO:
 
 Make CRIT_CHANCE an Unlock + Upgrade tree (House Passive? Potion?)
+
+
+HOUSE:
+
+Have a House floor plan, with furniture places, you can drag furniture from your bank to provide passives. i.e +10% CRIT CHANCE
+
+Construction:
+
+Build furniture
+
+Slayer:
+
+bonuses from slayer masters to certain types of monsters 
