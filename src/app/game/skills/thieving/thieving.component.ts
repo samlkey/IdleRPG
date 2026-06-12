@@ -1,8 +1,9 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
+import { LocationService } from '../../services/location.service';
 import { ThievingLocationComponent, ThievingLocation } from './thieving-location/thieving-location.component';
 
 @Component({
@@ -17,12 +18,22 @@ export class ThievingComponent {
 
   readonly playerService   = inject(PlayerService);
   readonly activityService = inject(ActivityService);
+  readonly locationService = inject(LocationService);
 
   get skillData() { return this.playerService.skill('thieving'); }
 
-  readonly locations: ThievingLocation[] = [
+  private readonly allLocations: ThievingLocation[] = [
     {
-      name: 'Aurel Village',
+      name: 'Tutorial Market',
+      background: 'assets/backgrounds/thieving_town_1.png',
+      levelReq: 1,
+      targets: [
+        { name: 'Man',    src: 'assets/objects/man.png',    level: 1,  xp: 8,   duration: 4,  successChance: 0.10, goldReward: 3, caughtDamage: 10   },
+        { name: 'Woman',  src: 'assets/objects/woman.png',  level: 1,  xp: 8,   duration: 4,  successChance: 0.80, goldReward: 3   },
+      ],
+    },
+    {
+      name: 'Mainland Square',
       background: 'assets/backgrounds/thieving_town_1.png',
       levelReq: 1,
       targets: [
@@ -33,7 +44,7 @@ export class ThievingComponent {
       ],
     },
     {
-      name: 'Varrock Market',
+      name: 'Mainland Market',
       background: 'assets/backgrounds/thieving.png',
       levelReq: 5,
       targets: [
@@ -55,4 +66,9 @@ export class ThievingComponent {
       ],
     },
   ];
+
+  readonly activeLocations = computed(() => {
+    const area = this.locationService.current().activities.thievingArea;
+    return this.allLocations.filter(loc => area?.includes(loc.name));
+  });
 }

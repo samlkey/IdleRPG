@@ -1,38 +1,50 @@
 <div class="skill-panel">
+
   <div class="skill-panel__hero">
     <img class="skill-panel__hero-bg" src="assets/backgrounds/farming.png" alt="" aria-hidden="true" />
     <div class="skill-panel__hero-gradient"></div>
     <div class="skill-panel__header">
-    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
-    <div>
-      <h1 class="skill-panel__title">Farming</h1>
-      <p class="skill-panel__subtitle">Spark up some fires!</p>
+      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+      <div>
+        <h1 class="skill-panel__title">Farming</h1>
+        <p class="skill-panel__subtitle">It ain't much, but it's honest work</p>
+      </div>
+      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Woodcutting">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
-    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Farming">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
-      </svg>
-    </button>
   </div>
 
   <div class="xp-bar">
     <div class="xp-bar__label">
-      <span>Level 1</span>
-      <span>0 / 83 XP</span>
+      <span>Level {{ skillData.level }}</span>
+      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
     </div>
     <div class="xp-bar__track">
-      <div class="xp-bar__fill" style="width: 0%"></div>
+      <div class="xp-bar__fill"
+        [style.width.%]="skillData.xpForLevel > 0 ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100 : 100">
+      </div>
     </div>
   </div>
 
-  <p class="placeholder">Fishing actions will appear here.</p>
-
+  <div class="skill-info">
+    <div class="skill-info__item">
+      <span class="skill-info__label">Skill Level</span>
+      <span class="skill-info__value">{{ skillData.level }}/99</span>
+    </div>
+    <div class="skill-info__item">
+      <span class="skill-info__label">Total Skill XP</span>
+      <span class="skill-info__value">{{ skillData.xp | number }}</span>
+    </div>
+  </div>
 </div>
 
 @if (helpOpen()) {
   <app-modal title="Farming" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
-    <p>Farming lets you grow crops, herbs, and trees in patches around the world. Harvested herbs are used in Herblore to create potions.</p>
+    <p>Grow Croppage</p>
   </app-modal>
 }

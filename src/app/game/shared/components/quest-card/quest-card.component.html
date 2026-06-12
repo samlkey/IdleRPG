@@ -107,6 +107,17 @@
                 }
                 <span class="quest-card__req-level">Unlock: {{ reward.label }}</span>
               </div>
+            } @else if (reward.type === 'location') {
+              <div class="quest-card__req-chip quest-card__req-chip--location" [title]="'Unlocks ' + reward.label">
+                @if (reward.icon) {
+                  <img class="quest-card__req-icon" [src]="reward.icon" [alt]="reward.label" aria-hidden="true" />
+                } @else {
+                  <svg class="quest-card__location-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M8 1a4.5 4.5 0 0 0-4.5 4.5C3.5 9 8 15 8 15s4.5-6 4.5-9.5A4.5 4.5 0 0 0 8 1zm0 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                  </svg>
+                }
+                <span class="quest-card__req-level">Travel: {{ reward.label }}</span>
+              </div>
             }
           }
         </div>

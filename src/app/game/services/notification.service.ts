@@ -36,6 +36,10 @@ export class NotificationService {
     this.show({ type: 'gold', message: `+${amount} GP`, detail: 'Gold', icon: '🪙' });
   }
 
+  item(itemName: string, icon?: string, qty = 1): void {
+    this.show({ type: 'success', message: `${qty}x ${itemName}`, detail: 'Item obtained', icon });
+  }
+
   dismiss(id: number): void {
     this.notifications.update(n => n.filter(x => x.id !== id));
   }

@@ -46,10 +46,11 @@
   </div>
 
   <div class="activity-grid">
-    @for (rock of rocks; track rock.name) {
+    @for (rock of rocks(); track rock.name) {
       <app-activity
         [action]="'Mine'"
         [target]="rock.name"
+        [dropTable]="rock.dropTable"
         [xp]="rock.xp"
         [duration]="rock.time"
         [image]="rock.src"

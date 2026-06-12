@@ -46,8 +46,8 @@
   </div>
 
   <div class="location-grid">
-    @for (loc of locations; track loc.name) {
-      <app-fishing-location [location]="loc" />
+    @for (location of activeLocations(); track location.name) {
+      <app-fishing-location [location]="location" />
     }
   </div>
 

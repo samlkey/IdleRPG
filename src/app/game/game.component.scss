@@ -317,6 +317,62 @@ $text-base: rgba(203, 193, 228, 0.85);
   }
 }
 
+// ── Current location strip ────────────────────────────────
+.current-location {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 1rem 0.65rem;
+  border-top: 1px solid $border;
+  background: rgba(52, 211, 153, 0.04);
+  border-left: 2px solid rgba(52, 211, 153, 0.5);
+  // button reset
+  width: 100%;
+  text-align: left;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+  transition: background 150ms ease, border-left-color 150ms ease;
+
+  &:hover {
+    background: rgba(52, 211, 153, 0.09);
+    border-left-color: rgba(52, 211, 153, 0.85);
+  }
+
+  &__label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(52, 211, 153, 0.7);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+    mix-blend-mode: screen;
+    filter: brightness(1.2);
+  }
+
+  &__name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(203, 193, 228, 0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 // ── Tracked quest strip ───────────────────────────────────
 .tracked-quest {
   display: flex;

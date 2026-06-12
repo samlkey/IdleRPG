@@ -1,6 +1,7 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { QuestCardComponent, Quest } from '../../shared/components/quest-card/quest-card.component';
+import { LocationService } from '../../services/location.service';
 
 @Component({
   selector: 'app-quests',
@@ -12,21 +13,37 @@ export class QuestsComponent {
   pixelIcon = input<string>('');
   helpOpen  = signal(false);
 
+  readonly locationService = inject(LocationService);
+
   get inProgressQuests() { return this.quests.filter(q => q.status === 'in-progress'); }
-  get availableQuests()  { return this.quests.filter(q => q.status === 'not-started'); }
   get completedQuests()  { return this.quests.filter(q => q.status === 'completed'); }
+
+  get availableQuests() {
+    const locationQuestIds = this.locationService.current().activities.quests ?? [];
+    return this.quests.filter(q =>
+      q.status === 'not-started' && locationQuestIds.includes(q.id)
+    );
+  }
+
+  get unavailableQuests() {
+    const locationQuestIds = this.locationService.current().activities.quests ?? [];
+    return this.quests.filter(q =>
+      q.status === 'not-started' && !locationQuestIds.includes(q.id)
+    );
+  }
 
   readonly quests: Quest[] = [
     {
       id: 'tutorial-island',
       name: 'Tutorial Island',
       description: "You find yourself on a mysterious island with no memory of how you got there. Complete a series of tasks to learn the basics and earn your freedom.",
-      icon: 'assets/quests/tutorial_island.png',
+      icon: 'assets/objects/map.png',
       questPoints: 1,
       status: 'in-progress',
       requirements: [],
       rewards: [
         { type: 'coins', amount: 500 },
+        { type: 'location', locationId: 'mainland', label: 'Mainland', icon: 'assets/objects/map.png' },
       ],
       steps: [
         {
@@ -66,6 +83,52 @@ export class QuestsComponent {
         { type: 'skill', skill: 'construction', icon: 'assets/icons/construction.png', xp: 1000 },
         { type: 'coins', amount: 500 },
       ],
+    },
+    {
+      id: 'a-bounty-in-blood',
+      name: 'A Bounty in Blood',
+      description: "A local monster has been terrorizing the nearby village. A mysterious figure is offering a reward to anyone brave enough to take on the challenge and eliminate the threat.",
+      icon: 'assets/icons/slayer.png',
+      questPoints: 2,
+      status: 'not-started',
+      requirements: [
+        { type: 'skill', skill: 'hitpoints', level: 40, icon: 'assets/icons/hitpoints.png' },
+        { type: 'skill', skill: 'attack', level: 40, icon: 'assets/icons/attack.png' },
+        { type: 'skill', skill: 'strength', level: 40, icon: 'assets/icons/strength.png' },
+        { type: 'skill', skill: 'defence', level: 40, icon: 'assets/icons/defence.png' },
+      ],
+      rewards: [
+        { type: 'unlock', tab: 'slayer', label: 'Slayer', icon: 'assets/icons/slayer.png' },
+        { type: 'skill', skill: 'slayer', icon: 'assets/icons/construction.png', xp: 500 },
+        { type: 'coins', amount: 1500 },
+      ],
+    },
+    {
+      id: 'dwarfs-dilemma',
+      name: 'Dwarf\'s Dilemma',
+      description: "A local dwarf is in need of assistance. He's found a rich vein of ore but can't mine it himself. Help him out and he'll reward you handsomely.",
+      icon: 'assets/icons/mining.png',
+      questPoints: 1,
+      status: 'not-started',
+      requirements: [
+        { type: 'skill', skill: 'mining', level: 5, icon: 'assets/icons/mining.png' },
+      ],
+      rewards: [
+        { type: 'skill', skill: 'mining', icon: 'assets/icons/mining.png', xp: 200 },
+        { type: 'coins', amount: 500 },
+      ],
+      steps: [
+        {
+          action: 'Travel to the Barbarian Outpost',
+          icon: 'assets/objects/map.png',
+          description: 'Use the map to travel to the Barbarian Outpost',
+          completed: false,
+          dialog: [
+            { speaker: 'Tuznock', text: "Hey there! Perhaps you could assist me with a problem I've been facing." },
+            { speaker: 'Tuznock', text: "" },
+          ],
+        },
+      ]
     },
     {
       id: 'a-bounty-in-blood',

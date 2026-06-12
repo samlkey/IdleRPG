@@ -1,0 +1,73 @@
+<div class="skill-panel">
+  <div class="skill-panel__hero">
+    <img class="skill-panel__hero-bg" [src]="locationService.current().background" alt="" aria-hidden="true" />
+    <div class="skill-panel__hero-gradient"></div>
+    <div class="skill-panel__header">
+      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+      <div>
+        <h1 class="skill-panel__title">World Map</h1>
+        <p class="skill-panel__subtitle">Currently in: {{ locationService.current().name }}</p>
+      </div>
+      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="location-list">
+    @for (loc of locations; track loc.id) {
+      <div class="location-card"
+        [class.location-card--current]="isCurrent(loc)"
+        [class.location-card--locked]="!canTravel(loc)">
+
+        <div class="location-card__hero">
+          <img class="location-card__bg" [src]="loc.background" alt="" aria-hidden="true" />
+          <div class="location-card__overlay"></div>
+          <div class="location-card__hero-content">
+            <div class="location-card__title-row">
+              <h3 class="location-card__name">{{ loc.name }}</h3>
+              @if (isCurrent(loc)) {
+                <span class="location-card__here-badge">You are here</span>
+              } @else if (!canTravel(loc)) {
+                <span class="location-card__lock-badge">
+                  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="10" height="10">
+                    <path d="M11 6V5a3 3 0 0 0-6 0v1H3v9h10V6h-2zm-4-1a2 2 0 0 1 4 0v1H7V5z"/>
+                  </svg>
+                  Level {{ loc.travelReq }}
+                </span>
+              }
+            </div>
+            <p class="location-card__desc">{{ loc.description }}</p>
+          </div>
+        </div>
+
+        <div class="location-card__activities">
+          @for (line of activitySummary(loc); track line) {
+            <div class="location-card__activity-line">{{ line }}</div>
+          }
+        </div>
+
+        <div class="location-card__footer">
+          @if (isCurrent(loc)) {
+            <button class="location-card__btn location-card__btn--current" disabled>Current Location</button>
+          } @else if (canTravel(loc)) {
+            <button class="location-card__btn location-card__btn--travel" (click)="travel(loc)">Travel Here</button>
+          } @else {
+            <button class="location-card__btn location-card__btn--locked" disabled>Locked</button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (helpOpen()) {
+  <app-modal title="World Map" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>Travel to different locations around the world to access different resources and activities.</p>
+    <p>Each location offers a unique set of activities for each skill. Higher-level areas are locked until you reach the required skill level.</p>
+  </app-modal>
+}

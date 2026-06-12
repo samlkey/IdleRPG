@@ -1,7 +1,8 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { PlayerService } from '../../services/player.service';
+import { LocationService } from '../../services/location.service';
 import { FishingLocationComponent, FishingLocation } from './fishing-location/fishing-location.component';
 
 @Component({
@@ -14,13 +15,23 @@ export class FishingComponent {
   pixelIcon = input<string>('');
   helpOpen  = signal(false);
 
-  readonly playerService = inject(PlayerService);
+  readonly playerService   = inject(PlayerService);
+  readonly locationService = inject(LocationService);
 
   get skillData() { return this.playerService.skill('fishing'); }
 
-  readonly locations: FishingLocation[] = [
+  private readonly allLocations: FishingLocation[] = [
     {
-      name: 'Aurel Shores',
+      name: 'Tutorial Pond',
+      background: 'assets/backgrounds/fishing_spot_1.png',
+      levelReq: 1,
+      fish: [
+        { name: 'Shrimp',   src: 'assets/objects/shrimp.png',   level: 1,  xp: 10,  duration: 5,  catchChance: 0.85 },
+        { name: 'Sardine',  src: 'assets/objects/sardine.png',  level: 1,  xp: 20,  duration: 10,  catchChance: 0.85 }
+      ],
+    },
+    {
+      name: 'Mainland Shores',
       background: 'assets/backgrounds/fishing_spot_1.png',
       levelReq: 1,
       fish: [
@@ -60,4 +71,9 @@ export class FishingComponent {
       ],
     },
   ];
+
+  readonly activeLocations = computed(() => {
+    const spotName = this.locationService.current().activities.fishingSpot;
+    return this.allLocations.filter(loc => spotName?.includes(loc.name));
+  });
 }

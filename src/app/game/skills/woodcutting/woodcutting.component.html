@@ -47,17 +47,18 @@
   </div>
 
   <div class="activity-grid">
-    @for (tree of trees; track tree.name) {
+    @for (tree of trees(); track tree.name) {
       <app-activity
         [action]="'Cut'"
         [target]="tree.name"
+        [dropTable]="tree.dropTable ?? null"
         [xp]="tree.xp"
         [duration]="tree.time"
         [image]="tree.src"
         [active]="activityService.current()?.name === tree.name"
         [requirements]="tree.level > 1 ? [{ icon: 'assets/icons/woodcutting.png', level: tree.level, skill: 'Woodcutting' }] : []"
         [disabled]="skillData.level < tree.level"
-(selected)="selectTree(tree)"
+        (selected)="selectTree(tree)"
       />
     }
   </div>

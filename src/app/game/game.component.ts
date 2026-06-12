@@ -7,6 +7,7 @@ import { QuestsComponent } from './general/quests/quests.component';
 import { BankComponent } from './general/bank/bank.component';
 import { HouseComponent } from './general/house/house.component';
 import { ShopComponent } from './general/shop/shop.component';
+import { MapComponent } from './general/map/map.component';
 // Combat
 import { AttackComponent } from './combat/attack/attack.component';
 import { StrengthComponent } from './combat/strength/strength.component';
@@ -33,16 +34,18 @@ import { HunterComponent } from './skills/hunter/hunter.component';
 import { ConstructionComponent } from './skills/construction/construction.component';
 // Service
 import { PlayerService, SkillId } from './services/player.service';
+import { LocationService } from './services/location.service';
+import { ItemService } from './services/item.service';
 
 export type { SkillId };
-export type PanelId = SkillId | 'shop' | 'quests' | 'bank' | 'house' | 'settings';
+export type PanelId = SkillId | 'shop' | 'quests' | 'bank' | 'house' | 'map' | 'settings';
 
 interface NavItem {
   id: PanelId;
   label: string;
   pixelIcon: string;
   /** 'skill' → reads level from PlayerService; 'qp' → quest points; 'none' → no badge */
-  badgeType?: 'skill' | 'qp' | 'house-level' | 'bank-space' | 'gold' | 'none';
+  badgeType?: 'skill' | 'qp' | 'house-level' | 'bank-space' | 'gold' | 'location' | 'none';
   component?: Type<unknown>;
 }
 
@@ -58,7 +61,9 @@ interface NavSection {
   styleUrl: './game.component.scss',
 })
 export class GameComponent {
-  readonly playerService = inject(PlayerService);
+  readonly playerService    = inject(PlayerService);
+  readonly locationService  = inject(LocationService);
+  readonly itemService      = inject(ItemService);
 
   activePanel = signal<PanelId>('quests');
 
@@ -70,6 +75,7 @@ export class GameComponent {
         { id: 'bank',   label: 'Bank',   pixelIcon: 'assets/icons/bank.png',   badgeType: 'bank-space', component: BankComponent },
         { id: 'house',  label: 'House',  pixelIcon: 'assets/icons/house.png',  badgeType: 'house-level', component: HouseComponent },
         { id: 'shop',  label: 'General Store',  pixelIcon: 'assets/icons/shop.png',  badgeType: 'gold', component: ShopComponent },
+        { id: 'map', label: 'Map', pixelIcon: 'assets/objects/map.png', badgeType: 'location', component: MapComponent },
       ],
     },
     {
@@ -127,8 +133,9 @@ export class GameComponent {
       case 'skill': return `${p.skills[item.id as SkillId].level}/99`;
       case 'qp':    return `QP: ${p.questPoints}`;
       case 'house-level': return `Level - ${p.houseLevel}`;
-      case 'bank-space': return `${p.bankSpace}/500`;
+      case 'bank-space': return (p.bankCapacity - this.itemService.bankCount()).toString();
       case 'gold': return `${p.gold}G`;
+      case 'location': return this.locationService.current().name;
       default:      return null;
     }
   }

@@ -4,7 +4,7 @@
     {
       "name": "IdleRPG",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
+      "runtimeArgs": ["run", "start", "--", "--port", "4201"],
       "port": 4201
     }
   ]

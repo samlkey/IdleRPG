@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { NotificationService } from './notification.service';
+import { ItemService } from './item.service';
 
 // ── Skill IDs ────────────────────────────────────────────────────────────────
 
@@ -76,7 +77,8 @@ export interface PlayerData {
   maxHp: number;
   questPoints: number;
   houseLevel: number;
-  bankSpace: number;
+  /** Maximum number of distinct item stacks the bank can hold. */
+  bankCapacity: number;
   gold: number;
   /** 0–1 probability of a crit window opening per activity cycle */
   critChance: number;
@@ -101,8 +103,7 @@ const INITIAL_PLAYER: PlayerData = {
   maxHp: 100,
   questPoints: 0,
   houseLevel: 1,
-  // Refactor this into its own service if we add more bank-related features (e.g. deposits/withdrawals, organizing, etc.)
-  bankSpace: 0,
+  bankCapacity: 500,
   gold: 100,
   critChance: 0.1,
   equipment: {
@@ -142,6 +143,7 @@ const INITIAL_PLAYER: PlayerData = {
 export class PlayerService {
 
   private readonly notificationService = inject(NotificationService);
+  readonly itemService = inject(ItemService);
   private readonly _player = signal<PlayerData>(INITIAL_PLAYER);
 
   /** Full reactive player snapshot (read-only). */
@@ -155,6 +157,11 @@ export class PlayerService {
   /** Total level (sum of all skill levels). */
   readonly totalLevel = computed(() =>
     Object.values(this._player().skills).reduce((sum, s) => sum + s.level, 0)
+  );
+
+  /** Bank usage as "used/capacity" — consumed by the sidebar badge. */
+  readonly bankSpace = computed(() =>
+    `${this.itemService.bankCount()}/${this._player().bankCapacity}`
   );
 
   // ── Skill accessors ────────────────────────────────────────────────────────

@@ -202,10 +202,56 @@ $text-muted: rgba(203, 193, 228, 0.45);
   min-height: 420px;
   padding: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
   gap: 4px;
   align-content: start;
 
+  &__slot { display: contents; }
+}
+
+// ── Bank slot ──────────────────────────────────────────────
+
+.bank-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba($accent-lt, 0.35);
+  }
+
+  &__icon {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  &__qty {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fbbf24;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+}
+
+.bank-grid {
   &__empty {
     grid-column: 1 / -1;
     display: flex;

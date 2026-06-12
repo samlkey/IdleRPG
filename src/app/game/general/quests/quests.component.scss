@@ -1,8 +1,9 @@
-$accent-lt:        #a78bfa;
-$text-muted:       rgba(203, 193, 228, 0.45);
-$status-progress:  #f59e0b;
-$status-available: rgba(167, 139, 250, 0.6);
-$status-completed: #22c55e;
+$accent-lt:          #a78bfa;
+$text-muted:         rgba(203, 193, 228, 0.45);
+$status-progress:    #f59e0b;
+$status-available:   rgba(167, 139, 250, 0.6);
+$status-completed:   #22c55e;
+$status-elsewhere:   rgba(255, 255, 255, 0.2);
 
 .quest-section {
   display: flex;
@@ -17,6 +18,23 @@ $status-completed: #22c55e;
       opacity: 1;
       transition: opacity 200ms ease;
     }
+  }
+
+  // Quests not available at current location
+  &--elsewhere {
+    opacity: 0.45;
+
+    &:hover {
+      opacity: 0.75;
+      transition: opacity 200ms ease;
+    }
+  }
+
+  &__note {
+    margin: -0.25rem 0 0;
+    font-size: 0.72rem;
+    color: $text-muted;
+    font-style: italic;
   }
 
   &__heading {
@@ -34,6 +52,7 @@ $status-completed: #22c55e;
     &--in-progress { background: $status-progress;  box-shadow: 0 0 6px rgba($status-progress,  0.5); }
     &--available   { background: $status-available; }
     &--completed   { background: $status-completed; box-shadow: 0 0 6px rgba($status-completed, 0.4); }
+    &--elsewhere   { background: $status-elsewhere; }
   }
 
   &__title {
@@ -65,4 +84,8 @@ $status-completed: #22c55e;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
+  &--muted {
+    pointer-events: none;
+  }
 }

@@ -31,6 +31,15 @@
     }
     </div><!-- /.sidebar__scroll -->
 
+    <!-- Current location strip -->
+    <button class="current-location" (click)="activePanel.set('map')" type="button" title="Open Map">
+      <span class="current-location__label">Location</span>
+      <div class="current-location__row">
+        <img class="current-location__icon" src="assets/objects/map.png" alt="" aria-hidden="true" />
+        <span class="current-location__name">{{ locationService.current().name }}</span>
+      </div>
+    </button>
+
     <!-- Tracked quest strip -->
     @if (playerService.trackedQuest(); as tq) {
       <button class="tracked-quest" (click)="navigateToTrackedQuest()" type="button"

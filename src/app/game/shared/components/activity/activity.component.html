@@ -82,20 +82,49 @@
   <!-- Depletion bar -->
   @if (type() === 'depletion') {
     <div class="activity-card__depletion">
-      <div class="activity-card__charges">
-        @for (seg of chargeSegments(); track seg) {
-          <div
-            class="activity-card__charge"
-            [class.activity-card__charge--filled]="seg < displayCharges()"
-            [class.activity-card__charge--replenishing]="seg === displayCharges() && displayCharges() < maxCharges()"
-          >
-            @if (seg === displayCharges() && displayCharges() < maxCharges()) {
-              <div class="activity-card__charge-fill" [style.width.%]="displayReplenishPct()"></div>
-            }
+      @if (isFullReplenishing()) {
+        <div class="activity-card__charges activity-card__charges--replenishing">
+          <div class="activity-card__replenish-track">
+            <div class="activity-card__replenish-fill" [style.width.%]="displayReplenishPct()"></div>
           </div>
+        </div>
+        <span class="activity-card__charge-label activity-card__charge-label--replenishing">Replenishing…</span>
+      } @else {
+        <div class="activity-card__charges">
+          @for (seg of chargeSegments(); track seg) {
+            <div
+              class="activity-card__charge"
+              [class.activity-card__charge--filled]="seg < displayCharges()"
+            ></div>
+          }
+        </div>
+        <span class="activity-card__charge-label">{{ displayCharges() }}/{{ maxCharges() }}</span>
+      }
+    </div>
+  }
+
+  <!-- Bonus bar -->
+  @if (type() === 'bonus') {
+    <div class="activity-card__bonus">
+      <div class="activity-card__charges">
+        @for (seg of bonusSegments(); track seg) {
+          <div
+            class="activity-card__charge activity-card__charge--bonus"
+            [class.activity-card__charge--bonus-filled]="seg < displayBonusStep()"
+          ></div>
         }
       </div>
-      <span class="activity-card__charge-label">{{ displayCharges() }}/{{ maxCharges() }}</span>
+      <span class="activity-card__charge-label activity-card__charge-label--bonus">+{{ bonusXp() }} XP</span>
+    </div>
+  }
+
+  <!-- Consumption counter -->
+  @if (type() === 'consumption' && inputItemCount() !== null) {
+    <div class="activity-card__consumption">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M8 2C8 2 4 6 4 9.5a4 4 0 0 0 8 0C12 6 8 2 8 2z" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>{{ inputItemCount() }} remaining</span>
     </div>
   }
 
@@ -103,10 +132,12 @@
   <div class="activity-card__footer">
     <div class="activity-card__requirements">
       @for (req of requirements(); track req.skill) {
-        <div class="activity-card__req" [title]="req.skill ? req.skill + ' ' + req.level : ''">
-          <img class="activity-card__req-icon" [src]="req.icon" [alt]="req.skill ?? ''" aria-hidden="true" />
-          <span class="activity-card__req-level">{{ req.level }}</span>
-        </div>
+        @if (req.level > 1) {
+          <div class="activity-card__req" [title]="req.skill ? req.skill + ' ' + req.level : ''">
+            <img class="activity-card__req-icon" [src]="req.icon" [alt]="req.skill ?? ''" aria-hidden="true" />
+            <span class="activity-card__req-level">{{ req.level }}</span>
+          </div>
+        }
       }
     </div>
     <div class="activity-card__progress-label">

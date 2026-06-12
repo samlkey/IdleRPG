@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { PlayerService, SkillId } from './player.service';
 import { NotificationService } from './notification.service';
+import { GameItem, DropTable, ItemService } from './item.service';
 
 export interface ActivityConfig {
   name: string;
@@ -11,17 +12,29 @@ export interface ActivityConfig {
   skillPanel: SkillId;
   /** 0–1 success probability per cycle. Omit for guaranteed XP. */
   catchChance?: number;
-  type?: 'normal' | 'depletion' | 'delay';
+  type?: 'normal' | 'depletion' | 'delay' | 'consumption' | 'bonus';
   /** (delay) Seconds the caught animation lasts. Defaults to duration. */
   delayDuration?: number;
   /** (delay) HP lost when caught. Defaults to 2. */
   caughtDamage?: number;
   /** Gold awarded on each successful cycle */
   goldReward?: number;
+  /** Item granted on each successful cycle */
+  dropTable?: DropTable;
+  /** (consumption) Item consumed on each successful cycle */
+  inputItem?: GameItem;
   /** (depletion) Total charges */
   maxCharges?: number;
   /** (depletion) Seconds per charge to replenish */
   replenishTime?: number;
+  /** (bonus) Number of steps needed to earn bonus XP */
+  bonusSteps?: number;
+  /** (bonus) Extra XP awarded when all steps are reached */
+  bonusXp?: number;
+  /** (bonus) 0–1 probability of advancing a step each cycle */
+  bonusChance?: number;
+  /** (bonus) HP lost when a step fails */
+  bonusDamage?: number;
 }
 
 const TICK_MS = 100;
@@ -30,17 +43,23 @@ const TICK_MS = 100;
 export class ActivityService {
   private readonly playerService       = inject(PlayerService);
   private readonly notificationService = inject(NotificationService);
+  private readonly itemService         = inject(ItemService);
 
-  readonly current         = signal<ActivityConfig | null>(null);
-  readonly cycleStartedAt  = signal<number | null>(null);
+  readonly current              = signal<ActivityConfig | null>(null);
+  readonly cycleStartedAt       = signal<number | null>(null);
   /** True while the player is in the caught/delay penalty phase */
-  readonly isDelayed       = signal(false);
-  readonly charges         = signal<number>(0);
-  readonly replenishPct    = signal<number>(0);
-  readonly lastCycleResult = signal<{ timestamp: number; caught: boolean } | null>(null);
+  readonly isDelayed            = signal(false);
+  readonly charges              = signal<number>(0);
+  readonly replenishPct         = signal<number>(0);
+  /** True while all charges are depleted and recovering */
+  readonly isFullReplenishing   = signal(false);
+  readonly lastCycleResult      = signal<{ timestamp: number; caught: boolean } | null>(null);
+  /** (bonus) Current step progress toward bonus XP */
+  readonly bonusStep            = signal<number>(0);
 
   private cycleTimer:     ReturnType<typeof setInterval> | null = null;
   private replenishTimer: ReturnType<typeof setInterval> | null = null;
+  readonly savedCharges:  Map<string, number> = new Map();
 
   // ── Public API ───────────────────────────────────────────────────────────────
 
@@ -49,20 +68,38 @@ export class ActivityService {
     this.current.set(config);
     this.cycleStartedAt.set(Date.now());
     this.isDelayed.set(false);
+    this.isFullReplenishing.set(false);
     if (config.type === 'depletion') {
-      this.charges.set(config.maxCharges ?? 6);
+      const saved = this.savedCharges.get(config.name);
+      this.charges.set(saved ?? config.maxCharges ?? 6);
       this.replenishPct.set(0);
     }
+    if (config.type === 'bonus') {
+      this.bonusStep.set(0);
+    }
+    if (config.type === 'consumption' && config.inputItem) {
+      if (this.itemService.count(config.inputItem.id) === 0) {
+        this.notificationService.show({ type: 'warning', message: `No ${config.inputItem.name}s`, detail: 'Nothing to burn' });
+        return;
+      }
+    }
+    this.lastCycleResult.set(null);
     this.playerService.setMainActivity(config.name, config.skillPanel);
     this.runCycleTimer();
   }
 
   stop(): void {
     this.stopTimers();
-    const had = this.current() !== null;
+    const cfg = this.current();
+    if (cfg?.type === 'depletion') {
+      this.savedCharges.set(cfg.name, this.charges());
+    }
+    const had = cfg !== null;
     this.current.set(null);
     this.cycleStartedAt.set(null);
     this.isDelayed.set(false);
+    this.isFullReplenishing.set(false);
+    this.bonusStep.set(0);
     if (had) this.playerService.setMainActivity(null);
   }
 
@@ -71,6 +108,28 @@ export class ActivityService {
     if (!cfg) return;
     this.playerService.addXp(cfg.skillId, cfg.xp);
     this.notificationService.xp(cfg.xp, cfg.skillPanel, `assets/icons/${cfg.skillPanel}.png`);
+    if (cfg.goldReward) {
+      this.playerService.addGold(cfg.goldReward);
+      this.notificationService.gold(cfg.goldReward);
+    }
+    this.rollDropTable(cfg);
+    if (cfg.type === 'bonus') {
+      const steps = cfg.bonusSteps ?? 5;
+      const next = this.bonusStep() + 1;
+      if (next >= steps) {
+        const bxp = cfg.bonusXp ?? cfg.xp;
+        this.playerService.addXp(cfg.skillId, bxp);
+        this.notificationService.show({
+          type: 'success',
+          message: `+${bxp} Bonus XP`,
+          detail: 'Lap complete!',
+          icon: `assets/icons/${cfg.skillPanel}.png`,
+        });
+        this.bonusStep.set(0);
+      } else {
+        this.bonusStep.set(next);
+      }
+    }
     this.cycleStartedAt.set(Date.now());
     this.isDelayed.set(false);
     this.lastCycleResult.set({ timestamp: Date.now(), caught: true });
@@ -83,6 +142,9 @@ export class ActivityService {
       const cfg   = this.current();
       const start = this.cycleStartedAt();
       if (!cfg || start === null) return;
+
+      // ── Full replenish phase ───────────────────────────────────────────────
+      if (this.isFullReplenishing()) return;
 
       const elapsed = Date.now() - start;
 
@@ -102,7 +164,6 @@ export class ActivityService {
       const success = cfg.catchChance == null || Math.random() < cfg.catchChance;
 
       if (!success && cfg.type === 'delay') {
-        // Player caught — deal damage and enter delay phase
         const dmg = cfg.caughtDamage ?? 2;
         this.playerService.takeDamage(dmg);
         this.notificationService.show({
@@ -117,12 +178,26 @@ export class ActivityService {
         return;
       }
 
-      if (success) {
+      if (success && cfg.type !== 'bonus') {
+        if (cfg.type === 'consumption' && cfg.inputItem) {
+          if (this.itemService.count(cfg.inputItem.id) === 0) {
+            this.stop();
+            this.notificationService.show({ type: 'warning', message: `Out of ${cfg.inputItem.name}s`, detail: 'Activity stopped' });
+            return;
+          }
+          this.itemService.remove(cfg.inputItem.id, 1);
+        }
         this.playerService.addXp(cfg.skillId, cfg.xp);
         this.notificationService.xp(cfg.xp, cfg.skillPanel, `assets/icons/${cfg.skillPanel}.png`);
         if (cfg.goldReward) {
           this.playerService.addGold(cfg.goldReward);
           this.notificationService.gold(cfg.goldReward);
+        }
+        this.rollDropTable(cfg);
+        if (cfg.type === 'consumption' && cfg.inputItem && this.itemService.count(cfg.inputItem.id) === 0) {
+          this.stop();
+          this.notificationService.show({ type: 'warning', message: `Out of ${cfg.inputItem.name}s`, detail: 'Activity stopped' });
+          return;
         }
       }
       this.lastCycleResult.set({ timestamp: Date.now(), caught: success });
@@ -130,31 +205,77 @@ export class ActivityService {
       if (cfg.type === 'depletion') {
         const next = this.charges() - 1;
         this.charges.set(next);
-        this.startReplenishTimer(cfg);
-        if (next <= 0) { this.stop(); return; }
+        if (next <= 0) {
+          this.startFullReplenish(cfg);
+          return;
+        }
+      }
+
+      if (cfg.type === 'bonus' && success) {
+        const steps = cfg.bonusSteps ?? 5;
+        const passed = Math.random() < (cfg.bonusChance ?? 0.5);
+        if (passed) {
+          this.playerService.addXp(cfg.skillId, cfg.xp);
+          this.notificationService.xp(cfg.xp, cfg.skillPanel, `assets/icons/${cfg.skillPanel}.png`);
+          const next = this.bonusStep() + 1;
+          if (next >= steps) {
+            const bxp = cfg.bonusXp ?? cfg.xp;
+            this.playerService.addXp(cfg.skillId, bxp);
+            this.notificationService.show({
+              type: 'success',
+              message: `+${bxp} Bonus XP`,
+              detail: 'Lap complete!',
+              icon: `assets/icons/${cfg.skillPanel}.png`,
+            });
+            this.bonusStep.set(0);
+          } else {
+            this.bonusStep.set(next);
+          }
+        } else {
+          const dmg = cfg.bonusDamage ?? 2;
+          this.playerService.takeDamage(dmg);
+          this.notificationService.show({
+            type: 'warning',
+            message: `Fell  -${dmg} HP`,
+            detail: 'Obstacle failed',
+            icon: `assets/icons/${cfg.skillPanel}.png`,
+          });
+          this.bonusStep.set(0);
+        }
       }
 
       this.cycleStartedAt.set(Date.now());
     }, TICK_MS);
   }
 
-  private startReplenishTimer(cfg: ActivityConfig): void {
-    if (this.replenishTimer) return;
+  private startFullReplenish(cfg: ActivityConfig): void {
+    this.isFullReplenishing.set(true);
+    this.replenishPct.set(0);
     const totalMs = (cfg.replenishTime ?? 60) * 1000;
     this.replenishTimer = setInterval(() => {
       const pct = this.replenishPct() + (TICK_MS / totalMs) * 100;
       if (pct >= 100) {
-        const next = Math.min(this.charges() + 1, cfg.maxCharges ?? 6);
-        this.charges.set(next);
+        clearInterval(this.replenishTimer!);
+        this.replenishTimer = null;
+        this.charges.set(cfg.maxCharges ?? 6);
         this.replenishPct.set(0);
-        if (next >= (cfg.maxCharges ?? 6)) {
-          clearInterval(this.replenishTimer!);
-          this.replenishTimer = null;
-        }
+        this.isFullReplenishing.set(false);
+        this.cycleStartedAt.set(Date.now());
       } else {
         this.replenishPct.set(pct);
       }
     }, TICK_MS);
+  }
+
+  private rollDropTable(cfg: ActivityConfig): void {
+    if (!cfg.dropTable) return;
+    for (const drop of cfg.dropTable.drops) {
+      if (Math.random() < drop.chance) {
+        const qty = drop.qty ?? 1;
+        this.itemService.add(drop.item, qty);
+        this.notificationService.item(drop.item.name, drop.item.icon, qty);
+      }
+    }
   }
 
   private stopTimers(): void {

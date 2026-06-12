@@ -20,3 +20,12 @@ BUFF IDEAS:
 
 CRIT_CHANCE
 DEPLITION RATE / REGEN RATE
+CHANCE TO PRESERVE 
+
+
+QUEST SCRIPT
+
+
+REFACTORING:
+
+MOVE .skill-info scss into a shared style file

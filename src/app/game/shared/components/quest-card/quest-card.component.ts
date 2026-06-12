@@ -70,7 +70,14 @@ export interface UnlockReward {
   icon?: string;
 }
 
-export type QuestReward = SkillXpReward | CoinReward | UnlockReward;
+export interface LocationReward {
+  type: 'location';
+  locationId: string;
+  label: string;
+  icon?: string;
+}
+
+export type QuestReward = SkillXpReward | CoinReward | UnlockReward | LocationReward;
 
 // ── Quest data ────────────────────────────────────────────────────────────────
 

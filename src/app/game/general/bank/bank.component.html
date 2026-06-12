@@ -90,16 +90,31 @@
   </nav>
 
   <div class="bank-grid" role="tabpanel">
-    <div class="bank-grid__empty">
-      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <rect x="8" y="14" width="32" height="24" rx="3"/>
-        <path d="M8 20h32"/>
-        <path d="M16 8l-4 6M32 8l4 6"/>
-        <circle cx="24" cy="31" r="3"/>
-      </svg>
-      <p>Your bank is empty</p>
-      <span>Items you collect will appear here</span>
-    </div>
+    @if (filteredItems().length === 0) {
+      <div class="bank-grid__empty">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="8" y="14" width="32" height="24" rx="3"/>
+          <path d="M8 20h32"/>
+          <path d="M16 8l-4 6M32 8l4 6"/>
+          <circle cx="24" cy="31" r="3"/>
+        </svg>
+        @if (search()) {
+          <p>No items match "{{ search() }}"</p>
+        } @else {
+          <p>Your bank is empty</p>
+          <span>Items you collect will appear here</span>
+        }
+      </div>
+    } @else {
+      @for (entry of filteredItems(); track entry.item.id) {
+        <div class="bank-slot" [title]="entry.item.name + ' × ' + entry.qty">
+          <img class="bank-slot__icon" [src]="entry.item.icon" [alt]="entry.item.name" />
+          @if (entry.qty > 1) {
+            <span class="bank-slot__qty">{{ entry.qty >= 1000 ? (entry.qty / 1000 | number:'1.0-1') + 'k' : entry.qty }}</span>
+          }
+        </div>
+      }
+    }
   </div>
 
 </div>

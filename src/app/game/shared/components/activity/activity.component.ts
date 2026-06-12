@@ -2,6 +2,8 @@ import { Component, computed, effect, inject, input, output, signal, OnDestroy }
 import { DecimalPipe } from '@angular/common';
 import { PlayerService } from '../../../services/player.service';
 import { ActivityService } from '../../../services/activity.service';
+import { DropTable, GameItem, ItemService } from '../../../services/item.service';
+import { NotificationService } from '../../../services/notification.service';
 
 export interface SkillRequirement {
   icon: string;
@@ -26,10 +28,16 @@ export class ActivityComponent implements OnDestroy {
   active        = input<boolean>(false);
   requirements  = input<SkillRequirement[]>([]);
   disabled      = input<boolean>(false);
-  type          = input<'normal' | 'depletion'>('normal');
+  type          = input<'normal' | 'depletion' | 'consumption' | 'bonus'>('normal');
   maxCharges    = input<number>(6);
   replenishTime = input<number>(60);
   caughtDamage  = input<number>(2);
+  bonusSteps    = input<number>(5);
+  bonusXp       = input<number>(0);
+  bonusChance   = input<number>(0.5);
+  bonusDamage   = input<number>(2);
+  dropTable     = input<DropTable | null>(null);
+  inputItem     = input<GameItem | null>(null);
   selected      = output<void>();
 
   readonly progressPct   = signal(0);
@@ -41,16 +49,35 @@ export class ActivityComponent implements OnDestroy {
     Array.from({ length: this.maxCharges() }, (_, i) => i)
   );
 
-  // When active read live values from service; otherwise show configured defaults
-  readonly displayCharges     = computed(() =>
-    this.active() ? this.activityService.charges() : this.maxCharges()
+  readonly bonusSegments = computed(() =>
+    Array.from({ length: this.bonusSteps() }, (_, i) => i)
   );
+
+  readonly displayBonusStep = computed(() =>
+    this.active() ? this.activityService.bonusStep() : 0
+  );
+
+  // When active read live values from service; otherwise show persisted or max charges
+  readonly displayCharges = computed(() => {
+    if (this.active()) return this.activityService.charges();
+    return this.activityService.savedCharges.get(this.target()) ?? this.maxCharges();
+  });
   readonly displayReplenishPct = computed(() =>
     this.active() ? this.activityService.replenishPct() : 0
   );
+  readonly isFullReplenishing = computed(() =>
+    this.active() && this.activityService.isFullReplenishing()
+  );
+  readonly inputItemCount = computed(() => {
+    const it = this.inputItem();
+    if (!it || this.type() !== 'consumption') return null;
+    return this.itemService.count(it.id);
+  });
 
-  private readonly playerService  = inject(PlayerService);
-  private readonly activityService = inject(ActivityService);
+  private readonly playerService       = inject(PlayerService);
+  private readonly activityService     = inject(ActivityService);
+  private readonly itemService         = inject(ItemService);
+  private readonly notificationService = inject(NotificationService);
 
   private displayTimer:   ReturnType<typeof setInterval> | null = null;
   private critOpenTimer:  ReturnType<typeof setTimeout>  | null = null;
@@ -85,6 +112,8 @@ export class ActivityComponent implements OnDestroy {
         if (!this.activityService.isDelayed()) {
           this.scheduleCritWindow();
         }
+
+
       }
     }, { allowSignalWrites: true });
 
@@ -99,12 +128,17 @@ export class ActivityComponent implements OnDestroy {
   }
 
   get isDepleted(): boolean {
-    return this.active() && this.type() === 'depletion' && this.activityService.charges() <= 0;
+    return this.active() && this.type() === 'depletion' && this.activityService.isFullReplenishing();
   }
 
   onClick(): void {
     if (this.isDepleted) return;
     if (this.activityService.isDelayed()) return;
+    if (!this.active() && this.type() === 'consumption' && (this.inputItemCount() ?? 0) === 0) {
+      const it = this.inputItem();
+      if (it) this.notificationService.show({ type: 'warning', message: `No ${it.name}s`, detail: 'Nothing to burn' });
+      return;
+    }
     if (this.active() && this.isCrit()) {
       this.activityService.completeCycleNow();
       this.clearCrit();
@@ -130,7 +164,10 @@ export class ActivityComponent implements OnDestroy {
 
       const elapsed = Date.now() - cycleStart;
 
-      if (this.activityService.isDelayed()) {
+      if (this.activityService.isFullReplenishing()) {
+        this.isCaught.set(false);
+        this.progressPct.set(0);
+      } else if (this.activityService.isDelayed()) {
         const cfg = this.activityService.current();
         const delayMs = ((cfg?.delayDuration ?? cfg?.duration) ?? this.duration()) * 1000;
         this.isCaught.set(true);
