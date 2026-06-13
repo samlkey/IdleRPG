@@ -1,7 +1,8 @@
-import { Component, inject, signal, Type } from '@angular/core';
+import { Component, computed, inject, signal, Type } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
 import { NotificationsComponent } from './shared/components/notifications/notifications.component';
 import { LevelUpComponent } from './shared/components/level-up/level-up.component';
+import { QuestCompleteModalComponent } from './shared/components/quest-complete-modal/quest-complete-modal.component';
 // General
 import { QuestsComponent } from './general/quests/quests.component';
 import { BankComponent } from './general/bank/bank.component';
@@ -36,6 +37,7 @@ import { ConstructionComponent } from './skills/construction/construction.compon
 import { PlayerService, SkillId } from './services/player.service';
 import { LocationService } from './services/location.service';
 import { ItemService } from './services/item.service';
+import { QuestService } from './services/quest.service';
 
 export type { SkillId };
 export type PanelId = SkillId | 'shop' | 'quests' | 'bank' | 'house' | 'map' | 'settings';
@@ -56,7 +58,7 @@ interface NavSection {
 
 @Component({
   selector: 'app-game',
-  imports: [NgComponentOutlet, NotificationsComponent, LevelUpComponent],
+  imports: [NgComponentOutlet, NotificationsComponent, LevelUpComponent, QuestCompleteModalComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
 })
@@ -64,8 +66,27 @@ export class GameComponent {
   readonly playerService    = inject(PlayerService);
   readonly locationService  = inject(LocationService);
   readonly itemService      = inject(ItemService);
+  readonly questService     = inject(QuestService);
 
   activePanel = signal<PanelId>('quests');
+
+  /** Live current step for the tracked quest, read directly from QuestService. */
+  readonly trackedStep = computed(() => {
+    const tq = this.playerService.trackedQuest();
+    if (!tq) return null;
+    const quest = this.questService.quests().find(q => q.id === tq.questId);
+    return quest?.steps?.find(s => !s.completed) ?? null;
+  });
+
+  /** Progress counter for the tracked step, null if the step has no qty target. */
+  readonly trackedProgress = computed(() => {
+    const step = this.trackedStep();
+    const c = step?.condition;
+    if (c?.type === 'gather' || c?.type === 'skill-action') {
+      return { current: step!.progress ?? 0, total: c.qty };
+    }
+    return null;
+  });
 
   readonly sections: NavSection[] = [
     {

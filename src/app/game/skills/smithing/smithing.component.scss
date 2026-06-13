@@ -1,7 +1,12 @@
 $bg:          #09090f;
 $content-pad: 2rem;
+$border:      rgba(255, 255, 255, 0.07);
+$text-base:   rgba(203, 193, 228, 0.85);
+$text-muted:  rgba(203, 193, 228, 0.4);
+$accent:      #7c3aed;
+$accent-lt:   #a78bfa;
 
-// ── Hero banner ──────────────────────────────────────────
+// ── Hero banner ───────────────────────────────────────────────────────────────
 .skill-panel__hero {
   position: relative;
   margin: -$content-pad (-$content-pad) 0;
@@ -45,4 +50,84 @@ $content-pad: 2rem;
   .skill-panel__subtitle {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   }
+}
+
+// ── Category selector ─────────────────────────────────────────────────────────
+.smith-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.smith-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 120ms ease;
+  position: relative;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.09) !important;
+  }
+
+  &--locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $text-base;
+    letter-spacing: 0.01em;
+  }
+
+  &--active &__label {
+    color: #e2d9f3;
+    font-weight: 600;
+  }
+
+  &__lock {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: $text-muted;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    padding: 0 0.3rem;
+    line-height: 1.6;
+    margin-left: 0.1rem;
+  }
+}
+
+// ── Recipe grid ───────────────────────────────────────────────────────────────
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }

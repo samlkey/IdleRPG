@@ -1,0 +1,96 @@
+<div class="cooking-activity">
+
+  <!-- Ingredient picker -->
+  <div class="ingredient-picker">
+    <h3 class="ingredient-picker__heading">Select Ingredient</h3>
+
+    @if (cookableItems().length === 0) {
+      <div class="ingredient-picker__empty">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="24" cy="28" r="13"/>
+          <path d="M24 14v-4M17 16l-3-3M31 16l3-3" stroke-linecap="round"/>
+          <path d="M19 28h10M19 33h6" stroke-linecap="round"/>
+        </svg>
+        <p>No consumable items in your bank</p>
+        <span>Gather ingredients from other skills first</span>
+      </div>
+    } @else {
+      <div class="ingredient-picker__grid">
+        @for (entry of cookableItems(); track entry.item.id) {
+          <button
+            class="ingredient-slot"
+            [class.ingredient-slot--selected]="selectedId() === entry.item.id"
+            [class.ingredient-slot--no-recipe]="!hasRecipe(entry.item.id)"
+            (click)="selectIngredient(entry.item)"
+            type="button"
+            [title]="entry.item.name + (hasRecipe(entry.item.id) ? '' : ' — no recipe')"
+            [attr.aria-label]="entry.item.name"
+            [attr.aria-pressed]="selectedId() === entry.item.id"
+          >
+            <img class="ingredient-slot__icon" [src]="entry.item.icon" [alt]="entry.item.name" />
+            @if (entry.qty > 1) {
+              <span class="ingredient-slot__qty">{{ entry.qty >= 1000 ? (entry.qty / 1000 | number:'1.0-1') + 'k' : entry.qty }}</span>
+            }
+            @if (!hasRecipe(entry.item.id)) {
+              <div class="ingredient-slot__no-recipe" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M3 3l10 10M13 3L3 13"/>
+                </svg>
+              </div>
+            }
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Output preview + activity card -->
+  @if (selectedItem(); as item) {
+    @if (activeRecipe(); as recipe) {
+      <div class="cook-action">
+
+        <div class="cook-action__output">
+          <div class="cook-action__output-item">
+            <img class="cook-action__output-icon" [src]="recipe.output.icon" [alt]="recipe.output.name" />
+            <div class="cook-action__output-info">
+              <span class="cook-action__output-label">Success</span>
+              <span class="cook-action__output-name">{{ recipe.output.name }}</span>
+              @if (recipe.output.value) {
+                <span class="cook-action__output-value">{{ recipe.output.value }} gp</span>
+              }
+            </div>
+          </div>
+          <div class="cook-action__output-divider" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+            <span class="cook-action__burn-chance">{{ recipe.chanceToFail * 100 | number:'1.0-0' }}% burn</span>
+          </div>
+          <div class="cook-action__output-item cook-action__output-item--burned">
+            <img class="cook-action__output-icon" [src]="recipe.burnedOutput.icon" [alt]="recipe.burnedOutput.name" />
+            <div class="cook-action__output-info">
+              <span class="cook-action__output-label">Failure</span>
+              <span class="cook-action__output-name">{{ recipe.burnedOutput.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <app-activity
+          action="Cook"
+          [target]="item.name"
+          [xp]="recipe.xp"
+          [duration]="recipe.duration"
+          [image]="recipe.output.icon"
+          [active]="isActive()"
+          type="consumption"
+          [inputItem]="item"
+          [requirements]="cookingReq()"
+          [disabled]="cookingLevel() < recipe.level"
+          (selected)="startCooking()"
+        />
+
+      </div>
+    }
+  }
+
+</div>

@@ -3,7 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { PlayerService } from '../../services/player.service';
-import { ItemService } from '../../services/item.service';
+import { GameItem, ItemService } from '../../services/item.service';
 
 export interface BankTab {
   id: string;
@@ -21,6 +21,9 @@ export class BankComponent {
   pixelIcon = input<string>('');
   helpOpen  = signal(false);
   search    = signal('');
+
+  /** Currently inspected item — null when modal is closed. */
+  selectedEntry = signal<{ item: GameItem; qty: number } | null>(null);
   activeTab = signal<string>('all');
 
   /** null = not editing; string = id of tab being renamed */

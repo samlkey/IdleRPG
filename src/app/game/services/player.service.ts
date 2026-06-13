@@ -2,6 +2,8 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { ItemService } from './item.service';
 
+export type GameMode = 'classic' | 'hardcore';
+
 // ── Skill IDs ────────────────────────────────────────────────────────────────
 
 export type SkillId =
@@ -72,6 +74,7 @@ export interface Equipment {
 
 export interface PlayerData {
   name: string;
+  mode: GameMode;
   combatLevel: number;
   hp: number;
   maxHp: number;
@@ -97,7 +100,8 @@ function makeSkill(xp = 0): SkillData {
 }
 
 const INITIAL_PLAYER: PlayerData = {
-  name: 'Aldric',
+  name: 'Adventurer',
+  mode: 'classic',
   combatLevel: 32,
   hp: 100,
   maxHp: 100,
@@ -105,7 +109,7 @@ const INITIAL_PLAYER: PlayerData = {
   houseLevel: 1,
   bankCapacity: 500,
   gold: 100,
-  critChance: 0.1,
+  critChance: 0.9,
   equipment: {
     axe: 'Iron',
     pickaxe: 'Iron',
@@ -219,6 +223,11 @@ export class PlayerService {
         [id]: { level: clampedLevel, xp, xpToNext: xpToNextLevel(clampedLevel) },
       },
     }));
+  }
+
+  /** Reset the player to a fresh state with the given name and game mode. */
+  initPlayer(name: string, mode: GameMode): void {
+    this._player.set({ ...INITIAL_PLAYER, name: name.trim(), mode });
   }
 
   /** Update player character info (name, hp, combatLevel, etc.). */

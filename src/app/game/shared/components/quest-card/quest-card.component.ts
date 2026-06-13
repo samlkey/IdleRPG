@@ -2,6 +2,15 @@ import { Component, effect, inject, input, output, signal, OnDestroy } from '@an
 import { DecimalPipe } from '@angular/common';
 import { PlayerService, SkillId } from '../../../services/player.service';
 
+// ── Step condition ────────────────────────────────────────────────────────────
+
+export type StepCondition =
+  | { type: 'gather';       skillId: SkillId; itemId: string; qty: number }
+  | { type: 'skill-action'; skillId: SkillId; qty: number }
+  | { type: 'location';     locationId: string }
+  | { type: 'have';         itemId: string;   qty: number }
+  | { type: 'manual' };
+
 // ── Requirement types ─────────────────────────────────────────────────────────
 
 export interface SkillRequirement {
@@ -37,6 +46,10 @@ export interface QuestStep {
   description: string;
   /** Optional pixel icon path for the step — e.g. a skill icon */
   icon?: string;
+  /** Machine-readable condition that auto-completes this step */
+  condition?: StepCondition;
+  /** Current count toward a qty-based condition */
+  progress?: number;
   completed: boolean;
   /** Optional dialog sequence shown when the step becomes active */
   dialog?: DialogLine[];
@@ -85,6 +98,8 @@ export interface Quest {
   id: string;
   name: string;
   description: string;
+  /** Flavour text shown in the completion modal */
+  completionText?: string;
   icon?: string;
   questPoints: number;
   status: QuestStatus;
@@ -186,6 +201,14 @@ export class QuestCardComponent implements OnDestroy {
 
   get hasMoreDialogLines(): boolean {
     return this.dialogLineIndex() < (this.currentStep?.dialog?.length ?? 0) - 1;
+  }
+
+  /** Returns the target qty for progress-tracked steps, null otherwise. */
+  stepQty(step: QuestStep): number | null {
+    const c = step.condition;
+    if (c?.type === 'gather' || c?.type === 'skill-action') return c.qty;
+    if (c?.type === 'have') return c.qty;
+    return null;
   }
 
   stepState(i: number): 'completed' | 'current' | 'upcoming' {

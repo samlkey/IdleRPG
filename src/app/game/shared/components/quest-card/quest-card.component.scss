@@ -366,6 +366,18 @@ $status-completed:   #22c55e;
   transition: color 150ms ease, opacity 150ms ease;
 }
 
+.quest-card__step-progress {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $accent-lt;
+  font-variant-numeric: tabular-nums;
+  background: rgba($accent, 0.15);
+  border: 1px solid rgba($accent-lt, 0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
 .quest-card__step-icon {
   width: 16px;
   height: 16px;

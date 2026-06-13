@@ -11,13 +11,12 @@ interface CharacterSlot {
 
 @Component({
   selector: 'app-character-select',
-  imports: [],
   templateUrl: './character-select.component.html',
   styleUrl: './character-select.component.scss'
 })
 export class CharacterSelectComponent {
   slots: CharacterSlot[] = [
-    { id: 1, name: 'Aldric', level: 14, class: 'Warrior', occupied: true },
+    { id: 1, name: '', level: 0, class: '', occupied: false },
     { id: 2, name: '', level: 0, class: '', occupied: false },
     { id: 3, name: '', level: 0, class: '', occupied: false },
   ];
@@ -32,7 +31,8 @@ export class CharacterSelectComponent {
 
   enter() {
     if (this.selectedSlot == null) return;
-    this.gameState.navigate('game');
+    const slot = this.slots.find(s => s.id === this.selectedSlot);
+    this.gameState.navigate(slot?.occupied ? 'loading' : 'character-creation');
   }
 
   back() {

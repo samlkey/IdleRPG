@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { ActivityService } from './activity.service';
+import { QuestService } from './quest.service';
 
 export interface LocationActivities {
   woodcutting?: string[];
@@ -109,14 +110,16 @@ export const LOCATIONS: GameLocation[] = [
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
-  private readonly _current = signal<GameLocation>(LOCATIONS[0]);
+  private readonly _current        = signal<GameLocation>(LOCATIONS[0]);
   private readonly activityService = inject(ActivityService);
+  private readonly questService    = inject(QuestService);
 
   readonly current = this._current.asReadonly();
 
   travelTo(location: GameLocation): void {
     this.activityService.stop();
     this._current.set(location);
+    this.questService.onLocationChanged(location.id);
   }
 
   hasActivity(skill: keyof LocationActivities): boolean {

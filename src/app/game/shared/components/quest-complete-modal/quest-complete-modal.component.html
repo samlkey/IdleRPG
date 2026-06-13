@@ -1,0 +1,51 @@
+<canvas #confetti class="qc-confetti" aria-hidden="true"></canvas>
+
+<div class="qc-backdrop" (click)="onBackdropClick($event)">
+  <div class="qc-modal" role="dialog" aria-modal="true" [attr.aria-label]="quest().name + ' complete'">
+
+    <div class="qc-modal__header">
+      <span class="qc-modal__eyebrow">Quest Complete</span>
+      @if (quest().icon) {
+        <img class="qc-modal__icon" [src]="quest().icon" [alt]="" aria-hidden="true" />
+      }
+      <h2 class="qc-modal__title">{{ quest().name }}</h2>
+      <span class="qc-modal__qp">+{{ quest().questPoints }} Quest Point{{ quest().questPoints !== 1 ? 's' : '' }}</span>
+    </div>
+
+    @if (quest().completionText) {
+      <p class="qc-modal__flavor">{{ quest().completionText }}</p>
+    }
+
+    @if (quest().rewards?.length) {
+      <div class="qc-modal__rewards">
+        <p class="qc-modal__rewards-heading">Rewards received</p>
+        <ul class="qc-modal__reward-list">
+          @for (r of quest().rewards!; track $index) {
+            <li class="qc-modal__reward-item">
+              @if (r.type === 'skill') {
+                <img class="qc-modal__reward-icon" [src]="r.icon" alt="" aria-hidden="true" />
+                <span>{{ r.xp | number }} XP — {{ r.skill | titlecase }}</span>
+              } @else if (r.type === 'coins') {
+                <span class="qc-modal__coin-icon" aria-hidden="true">🪙</span>
+                <span>{{ r.amount | number }} Coins</span>
+              } @else if (r.type === 'unlock') {
+                @if (r.icon) {
+                  <img class="qc-modal__reward-icon" [src]="r.icon" alt="" aria-hidden="true" />
+                }
+                <span>{{ r.label }} unlocked</span>
+              } @else if (r.type === 'location') {
+                @if (r.icon) {
+                  <img class="qc-modal__reward-icon" [src]="r.icon" alt="" aria-hidden="true" />
+                }
+                <span>{{ r.label }} — new location</span>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+
+    <button class="qc-modal__btn" (click)="close.emit()">Continue</button>
+
+  </div>
+</div>

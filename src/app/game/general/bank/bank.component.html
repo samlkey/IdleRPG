@@ -107,12 +107,12 @@
       </div>
     } @else {
       @for (entry of filteredItems(); track entry.item.id) {
-        <div class="bank-slot" [title]="entry.item.name + ' × ' + entry.qty">
+        <button class="bank-slot" [title]="entry.item.name" (click)="selectedEntry.set(entry)" type="button" [attr.aria-label]="entry.item.name">
           <img class="bank-slot__icon" [src]="entry.item.icon" [alt]="entry.item.name" />
           @if (entry.qty > 1) {
             <span class="bank-slot__qty">{{ entry.qty >= 1000 ? (entry.qty / 1000 | number:'1.0-1') + 'k' : entry.qty }}</span>
           }
-        </div>
+        </button>
       }
     }
   </div>
@@ -123,4 +123,45 @@
   <app-modal title="Bank" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
     <p>The Bank lets you store all your items safely. You can access your bank from any bank chest or counter in the world.</p>
   </app-modal>
+}
+
+@if (selectedEntry(); as entry) {
+  <div class="item-modal-backdrop" (click)="$event.target === $event.currentTarget && selectedEntry.set(null)">
+    <div class="item-modal" role="dialog" [attr.aria-label]="entry.item.name">
+
+      <button class="item-modal__close" (click)="selectedEntry.set(null)" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div class="item-modal__image">
+        <img [src]="entry.item.icon" [alt]="entry.item.name" />
+      </div>
+
+      <div class="item-modal__info">
+        <span class="item-modal__type">{{ entry.item.subType ?? entry.item.type }}</span>
+        <h2 class="item-modal__name">{{ entry.item.name }}</h2>
+        <span class="item-modal__qty">× {{ entry.qty | number }}</span>
+        <p class="item-modal__desc">
+          Need to centrailise Items to prevent constantly writing out descriptions.
+        </p>
+        <dl class="item-modal__stats">
+          @if (entry.item.value) {
+            <div class="item-modal__stat">
+              <dt>Value</dt>
+              <dd>{{ entry.item.value | number }} gp</dd>
+            </div>
+          }
+          @if (entry.item.levelReq) {
+            <div class="item-modal__stat">
+              <dt>Level req.</dt>
+              <dd>{{ entry.item.levelReq }}</dd>
+            </div>
+          }
+        </dl>
+      </div>
+
+    </div>
+  </div>
 }

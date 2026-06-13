@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { PlayerService, SkillId } from './player.service';
 import { NotificationService } from './notification.service';
 import { GameItem, DropTable, ItemService } from './item.service';
+import { QuestService } from './quest.service';
 
 export interface ActivityConfig {
   name: string;
@@ -12,7 +13,7 @@ export interface ActivityConfig {
   skillPanel: SkillId;
   /** 0–1 success probability per cycle. Omit for guaranteed XP. */
   catchChance?: number;
-  type?: 'normal' | 'depletion' | 'delay' | 'consumption' | 'bonus';
+  type?: 'normal' | 'depletion' | 'delay' | 'consumption' | 'bonus' | 'smelting';
   /** (delay) Seconds the caught animation lasts. Defaults to duration. */
   delayDuration?: number;
   /** (delay) HP lost when caught. Defaults to 2. */
@@ -21,8 +22,12 @@ export interface ActivityConfig {
   goldReward?: number;
   /** Item granted on each successful cycle */
   dropTable?: DropTable;
+  /** (consumption) Item granted when a cycle fails (e.g. burned food). Input is still consumed. */
+  failDropTable?: DropTable;
   /** (consumption) Item consumed on each successful cycle */
   inputItem?: GameItem;
+  /** (smelting) Multiple items consumed per cycle to produce an output */
+  inputItems?: { item: GameItem; qty: number }[];
   /** (depletion) Total charges */
   maxCharges?: number;
   /** (depletion) Seconds per charge to replenish */
@@ -44,6 +49,7 @@ export class ActivityService {
   private readonly playerService       = inject(PlayerService);
   private readonly notificationService = inject(NotificationService);
   private readonly itemService         = inject(ItemService);
+  private readonly questService        = inject(QuestService);
 
   readonly current              = signal<ActivityConfig | null>(null);
   readonly cycleStartedAt       = signal<number | null>(null);
@@ -59,7 +65,9 @@ export class ActivityService {
 
   private cycleTimer:     ReturnType<typeof setInterval> | null = null;
   private replenishTimer: ReturnType<typeof setInterval> | null = null;
-  readonly savedCharges:  Map<string, number> = new Map();
+  readonly savedCharges:   Map<string, number> = new Map();
+  /** Persists per-skill ingredient/target selection across navigation. */
+  readonly savedSelections: Map<string, string> = new Map();
 
   // ── Public API ───────────────────────────────────────────────────────────────
 
@@ -80,6 +88,13 @@ export class ActivityService {
     if (config.type === 'consumption' && config.inputItem) {
       if (this.itemService.count(config.inputItem.id) === 0) {
         this.notificationService.show({ type: 'warning', message: `No ${config.inputItem.name}s`, detail: 'Nothing to burn' });
+        return;
+      }
+    }
+    if (config.type === 'smelting' && config.inputItems?.length) {
+      const missing = config.inputItems.find(r => this.itemService.count(r.item.id) < r.qty);
+      if (missing) {
+        this.notificationService.show({ type: 'warning', message: `Not enough ${missing.item.name}`, detail: 'Cannot smelt' });
         return;
       }
     }
@@ -106,13 +121,17 @@ export class ActivityService {
   completeCycleNow(): void {
     const cfg = this.current();
     if (!cfg) return;
+    if (cfg.type === 'smelting' && cfg.inputItems?.length) {
+      cfg.inputItems.forEach(r => this.itemService.remove(r.item.id, r.qty));
+    }
     this.playerService.addXp(cfg.skillId, cfg.xp);
     this.notificationService.xp(cfg.xp, cfg.skillPanel, `assets/icons/${cfg.skillPanel}.png`);
+    this.questService.onSkillAction(cfg.skillId);
     if (cfg.goldReward) {
       this.playerService.addGold(cfg.goldReward);
       this.notificationService.gold(cfg.goldReward);
     }
-    this.rollDropTable(cfg);
+    if (cfg.dropTable) this.rollDropTable(cfg.dropTable);
     if (cfg.type === 'bonus') {
       const steps = cfg.bonusSteps ?? 5;
       const next = this.bonusStep() + 1;
@@ -178,6 +197,54 @@ export class ActivityService {
         return;
       }
 
+      // ── Burn / fail branch ─────────────────────────────────────────────────
+      if (!success && cfg.type === 'consumption' && cfg.failDropTable && cfg.inputItem) {
+        if (this.itemService.count(cfg.inputItem.id) === 0) {
+          this.stop();
+          this.notificationService.show({ type: 'warning', message: `Out of ${cfg.inputItem.name}s`, detail: 'Activity stopped' });
+          return;
+        }
+        this.itemService.remove(cfg.inputItem.id, 1);
+        this.rollDropTable(cfg.failDropTable);
+        this.notificationService.show({
+          type: 'warning',
+          message: 'Burned!',
+          detail: cfg.failDropTable.drops[0]?.item.name ?? 'Food burned',
+          icon: cfg.failDropTable.drops[0]?.item.icon,
+        });
+        this.lastCycleResult.set({ timestamp: Date.now(), caught: false });
+        this.cycleStartedAt.set(Date.now());
+        if (this.itemService.count(cfg.inputItem.id) === 0) {
+          this.stop();
+          this.notificationService.show({ type: 'warning', message: `Out of ${cfg.inputItem.name}s`, detail: 'Activity stopped' });
+        }
+        return;
+      }
+
+      // ── Smelting branch ────────────────────────────────────────────────────
+      if (cfg.type === 'smelting' && cfg.inputItems?.length) {
+        const missing = cfg.inputItems.find(r => this.itemService.count(r.item.id) < r.qty);
+        if (missing) {
+          this.stop();
+          this.notificationService.show({ type: 'warning', message: `Out of ${missing.item.name}`, detail: 'Smelting stopped' });
+          return;
+        }
+        cfg.inputItems.forEach(r => this.itemService.remove(r.item.id, r.qty));
+        this.playerService.addXp(cfg.skillId, cfg.xp);
+        this.notificationService.xp(cfg.xp, cfg.skillPanel, `assets/icons/${cfg.skillPanel}.png`);
+        this.questService.onSkillAction(cfg.skillId);
+        if (cfg.dropTable) this.rollDropTable(cfg.dropTable);
+        const canContinue = cfg.inputItems.every(r => this.itemService.count(r.item.id) >= r.qty);
+        if (!canContinue) {
+          this.stop();
+          this.notificationService.show({ type: 'warning', message: 'Out of materials', detail: 'Smelting stopped' });
+          return;
+        }
+        this.lastCycleResult.set({ timestamp: Date.now(), caught: true });
+        this.cycleStartedAt.set(Date.now());
+        return;
+      }
+
       if (success && cfg.type !== 'bonus') {
         if (cfg.type === 'consumption' && cfg.inputItem) {
           if (this.itemService.count(cfg.inputItem.id) === 0) {
@@ -189,11 +256,12 @@ export class ActivityService {
         }
         this.playerService.addXp(cfg.skillId, cfg.xp);
         this.notificationService.xp(cfg.xp, cfg.skillPanel, `assets/icons/${cfg.skillPanel}.png`);
+        this.questService.onSkillAction(cfg.skillId);
         if (cfg.goldReward) {
           this.playerService.addGold(cfg.goldReward);
           this.notificationService.gold(cfg.goldReward);
         }
-        this.rollDropTable(cfg);
+        if (cfg.dropTable) this.rollDropTable(cfg.dropTable);
         if (cfg.type === 'consumption' && cfg.inputItem && this.itemService.count(cfg.inputItem.id) === 0) {
           this.stop();
           this.notificationService.show({ type: 'warning', message: `Out of ${cfg.inputItem.name}s`, detail: 'Activity stopped' });
@@ -267,13 +335,13 @@ export class ActivityService {
     }, TICK_MS);
   }
 
-  private rollDropTable(cfg: ActivityConfig): void {
-    if (!cfg.dropTable) return;
-    for (const drop of cfg.dropTable.drops) {
+  private rollDropTable(dropTable: DropTable): void {
+    for (const drop of dropTable.drops) {
       if (Math.random() < drop.chance) {
         const qty = drop.qty ?? 1;
         this.itemService.add(drop.item, qty);
         this.notificationService.item(drop.item.name, drop.item.icon, qty);
+        this.questService.onItemGained(drop.item.id, qty);
       }
     }
   }

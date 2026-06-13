@@ -365,6 +365,68 @@ $text-muted: rgba(203, 193, 228, 0.45);
     }
   }
 
+  // ── Smelting ingredients ────────────────────────────────
+  &__ingredients {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
+  }
+
+  &__ingredient {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 6px 10px;
+
+    &--short {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.3);
+
+      .activity-card__ingredient-count { color: #f87171; }
+      .activity-card__ingredient-icon  { filter: drop-shadow(0 0 4px rgba(239,68,68,0.5)); }
+    }
+  }
+
+  &__ingredient-icon {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  &__ingredient-count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $text-base;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  &__ingredient-req {
+    font-weight: 400;
+    color: $text-muted;
+  }
+
+  &__sets {
+    position: absolute;
+    right: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
   // ── Footer ──────────────────────────────────────────────
   &__footer {
     display: flex;

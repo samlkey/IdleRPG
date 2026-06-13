@@ -102,7 +102,7 @@ export class FishingLocationComponent implements OnDestroy {
     } else if (this.activeFish() === fish.name) {
       this.activityService.stop();
     } else {
-      const fishItem = { id: fish.name.toLowerCase().replace(/\s+/g, '-'), name: fish.name, description: '', icon: fish.src, type: 'resource' as const, subType: 'fish' };
+      const fishItem = { id: fish.name.toLowerCase().replace(/\s+/g, '-'), name: fish.name, description: '', icon: fish.src, type: 'consumable' as const, subType: 'fish' };
       this.activityService.start({
         name: fish.name, xp: fish.xp, duration: fish.duration,
         skillId: 'fishing', skillPanel: 'fishing',

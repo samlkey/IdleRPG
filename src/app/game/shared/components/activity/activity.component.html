@@ -71,6 +71,24 @@
     }
   </div>
 
+  <!-- Smelting ingredients (middle) -->
+  @if (type() === 'smelting' && inputItems().length) {
+    <div class="activity-card__ingredients">
+      @for (req of inputItems(); track req.item.id) {
+        <div class="activity-card__ingredient"
+             [class.activity-card__ingredient--short]="ingredientCount(req.item.id) < req.qty">
+          <img class="activity-card__ingredient-icon" [src]="req.item.icon" alt="" aria-hidden="true" />
+          <span class="activity-card__ingredient-count">
+            {{ ingredientCount(req.item.id) }}<span class="activity-card__ingredient-req">/{{ req.qty }}</span>
+          </span>
+        </div>
+      }
+      <span class="activity-card__sets">
+        {{ setsAvailable() ?? 0 }} set{{ (setsAvailable() ?? 0) !== 1 ? 's' : '' }}
+      </span>
+    </div>
+  }
+
   <!-- Progress bar -->
   <div class="activity-card__progress-track">
     <div

@@ -28,7 +28,8 @@ export class ActivityComponent implements OnDestroy {
   active        = input<boolean>(false);
   requirements  = input<SkillRequirement[]>([]);
   disabled      = input<boolean>(false);
-  type          = input<'normal' | 'depletion' | 'consumption' | 'bonus'>('normal');
+  type          = input<'normal' | 'depletion' | 'consumption' | 'bonus' | 'smelting'>('normal');
+  inputItems    = input<{ item: GameItem; qty: number }[]>([]);
   maxCharges    = input<number>(6);
   replenishTime = input<number>(60);
   caughtDamage  = input<number>(2);
@@ -73,6 +74,16 @@ export class ActivityComponent implements OnDestroy {
     if (!it || this.type() !== 'consumption') return null;
     return this.itemService.count(it.id);
   });
+
+  readonly setsAvailable = computed(() => {
+    const reqs = this.inputItems();
+    if (!reqs.length || this.type() !== 'smelting') return null;
+    return Math.min(...reqs.map(r => Math.floor(this.itemService.count(r.item.id) / r.qty)));
+  });
+
+  ingredientCount(itemId: string): number {
+    return this.itemService.count(itemId);
+  }
 
   private readonly playerService       = inject(PlayerService);
   private readonly activityService     = inject(ActivityService);
@@ -137,6 +148,10 @@ export class ActivityComponent implements OnDestroy {
     if (!this.active() && this.type() === 'consumption' && (this.inputItemCount() ?? 0) === 0) {
       const it = this.inputItem();
       if (it) this.notificationService.show({ type: 'warning', message: `No ${it.name}s`, detail: 'Nothing to burn' });
+      return;
+    }
+    if (!this.active() && this.type() === 'smelting' && (this.setsAvailable() ?? 0) === 0) {
+      this.notificationService.show({ type: 'warning', message: 'Not enough materials', detail: 'Cannot smelt' });
       return;
     }
     if (this.active() && this.isCrit()) {

@@ -215,6 +215,9 @@
                     <img class="quest-card__step-icon" [src]="step.icon" [alt]="" aria-hidden="true" />
                   }
                   <span>{{ step.action }}</span>
+                  @if (!step.completed && stepQty(step) !== null) {
+                    <span class="quest-card__step-progress">{{ step.progress ?? 0 }}/{{ stepQty(step) }}</span>
+                  }
                 </div>
                 <p class="quest-card__step-description">{{ step.description }}</p>
               </div>

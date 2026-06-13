@@ -251,6 +251,156 @@ $text-muted: rgba(203, 193, 228, 0.45);
   }
 }
 
+// ── Item detail modal ──────────────────────────────────────
+
+.item-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  animation: item-fade-in 150ms ease;
+}
+
+.item-modal {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: #16161f;
+  border: 1px solid $border;
+  border-radius: 14px;
+  max-width: 520px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  animation: item-slide-up 200ms ease;
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid $border;
+    border-radius: 6px;
+    color: $text-muted;
+    cursor: pointer;
+    transition: color 150ms ease, background 150ms ease;
+    z-index: 1;
+
+    svg { width: 14px; height: 14px; }
+    &:hover { color: $text-base; background: rgba(255, 255, 255, 0.08); }
+  }
+
+  &__image {
+    flex: 0 0 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    border-right: 1px solid $border;
+    padding: 2rem 1.5rem;
+
+    img {
+      width: 100%;
+      max-width: 100px;
+      height: auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    min-width: 0;
+  }
+
+  &__type {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $accent-lt;
+    font-weight: 600;
+  }
+
+  &__name {
+    margin: 0;
+    font-family: 'Georgia', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #e2d9f3;
+    line-height: 1.2;
+  }
+
+  &__qty {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fbbf24;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.82rem;
+    color: $text-muted;
+    line-height: 1.55;
+    flex: 1;
+  }
+
+  &__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0.25rem 0 0;
+    padding: 0.65rem 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid $border;
+    border-radius: 8px;
+  }
+
+  &__stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    dt {
+      font-size: 0.75rem;
+      color: $text-muted;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: $text-base;
+    }
+  }
+}
+
+@keyframes item-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes item-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .bank-grid {
   &__empty {
     grid-column: 1 / -1;

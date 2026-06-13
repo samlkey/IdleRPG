@@ -1,0 +1,15 @@
+<div class="loading">
+
+  <div class="loading__brand">
+    <h1 class="loading__title">IdleRPG</h1>
+    <p class="loading__tagline">Preparing your adventure...</p>
+  </div>
+
+  <div class="loading__progress">
+    <div class="loading__bar-track">
+      <div class="loading__bar-fill" [style.width.%]="preload.progress() * 100"></div>
+    </div>
+    <span class="loading__pct">{{ preload.progress() * 100 | number:'1.0-0' }}%</span>
+  </div>
+
+</div>

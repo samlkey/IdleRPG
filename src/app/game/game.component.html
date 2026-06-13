@@ -46,10 +46,13 @@
         title="Go to {{ tq.questName }}">
         <span class="tracked-quest__label">Tracking</span>
         <div class="tracked-quest__step">
-          @if (tq.stepIcon) {
-            <img class="tracked-quest__icon" [src]="tq.stepIcon" [alt]="" aria-hidden="true" />
+          @if (trackedStep()?.icon ?? tq.stepIcon; as icon) {
+            <img class="tracked-quest__icon" [src]="icon" [alt]="" aria-hidden="true" />
           }
-          <span class="tracked-quest__action">{{ tq.stepAction }}</span>
+          <span class="tracked-quest__action">{{ trackedStep()?.action ?? tq.stepAction }}</span>
+          @if (trackedProgress(); as prog) {
+            <span class="tracked-quest__progress">{{ prog.current }}/{{ prog.total }}</span>
+          }
         </div>
         <span class="tracked-quest__name">{{ tq.questName }}</span>
       </button>
@@ -108,4 +111,8 @@
 
 <app-notifications />
 <app-level-up />
+
+@if (questService.completionModalQuest(); as quest) {
+  <app-quest-complete-modal [quest]="quest" (close)="questService.dismissCompletionModal()" />
+}
 

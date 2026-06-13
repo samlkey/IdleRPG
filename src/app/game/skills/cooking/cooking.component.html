@@ -3,36 +3,50 @@
     <img class="skill-panel__hero-bg" src="assets/backgrounds/cooking.png" alt="" aria-hidden="true" />
     <div class="skill-panel__hero-gradient"></div>
     <div class="skill-panel__header">
-    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
-    <div>
-      <h1 class="skill-panel__title">Cooking</h1>
-      <p class="skill-panel__subtitle">Spark up some fires!</p>
+      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+      <div>
+        <h1 class="skill-panel__title">Cooking</h1>
+        <p class="skill-panel__subtitle">Whip up</p>
+      </div>
+      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Firemaking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
-    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Cooking">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
-      </svg>
-    </button>
   </div>
 
   <div class="xp-bar">
     <div class="xp-bar__label">
-      <span>Level 1</span>
-      <span>0 / 83 XP</span>
+      <span>Level {{ skillData.level }}</span>
+      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
     </div>
     <div class="xp-bar__track">
-      <div class="xp-bar__fill" style="width: 0%"></div>
+      <div class="xp-bar__fill"
+        [style.width.%]="skillData.xpForLevel > 0 ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100 : 100">
+      </div>
     </div>
   </div>
 
-  <p class="placeholder">Cooking actions will appear here.</p>
+  <div class="skill-info">
+    <div class="skill-info__item">
+      <span class="skill-info__label">Skill Level</span>
+      <span class="skill-info__value">{{ skillData.level }}/99</span>
+    </div>
+    <div class="skill-info__item">
+      <span class="skill-info__label">Total Skill XP</span>
+      <span class="skill-info__value">{{ skillData.xp | number }}</span>
+    </div>
+  </div>
 
+  <app-cooking-activity />
 </div>
 
 @if (helpOpen()) {
   <app-modal title="Cooking" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
-    <p>Cooking turns raw fish and other ingredients into food. Cooked food restores Hitpoints. Higher levels reduce the chance of burning food.</p>
+    <p>Firemaking allows you to burn logs for XP. Each cycle consumes one log from your inventory. The activity stops automatically when you run out of logs.</p>
+    <p>Chop logs with Woodcutting first, then come here to burn them.</p>
   </app-modal>
 }
