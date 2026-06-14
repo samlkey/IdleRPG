@@ -70,14 +70,15 @@ $accent-lt:   #a78bfa;
 .smith-tab {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.85rem;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
   border: none;
   background: none;
   cursor: pointer;
   white-space: nowrap;
-  flex-shrink: 0;
+  flex: 1;
   transition: background 120ms ease;
   position: relative;
 
@@ -95,14 +96,14 @@ $accent-lt:   #a78bfa;
   }
 
   &__icon {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     image-rendering: pixelated;
     flex-shrink: 0;
   }
 
   &__label {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: $text-base;
     letter-spacing: 0.01em;
@@ -122,6 +123,40 @@ $accent-lt:   #a78bfa;
     padding: 0 0.3rem;
     line-height: 1.6;
     margin-left: 0.1rem;
+  }
+}
+
+.skill-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+
+    & + & {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    color: rgba(203, 193, 228, 0.45);
+    letter-spacing: 0.04em;
+  }
+
+  &__value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(203, 193, 228, 0.85);
+    font-variant-numeric: tabular-nums;
   }
 }
 

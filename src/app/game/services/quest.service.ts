@@ -40,18 +40,19 @@ export class QuestService {
   );
 
   constructor() {
-    // Watch inventory for 'have' conditions
+    // Watch inventory for 'have' conditions on the current active step only
     effect(() => {
       const inv = this.itemService.inventory();
       this._quests().forEach((quest, qi) => {
         if (quest.status !== 'in-progress') return;
-        quest.steps?.forEach((step, si) => {
-          if (step.completed || step.condition?.type !== 'have') return;
-          const c = step.condition;
-          if (this.itemService.count(c.itemId) >= c.qty) {
-            this.completeStep(qi, si);
-          }
-        });
+        const si = quest.steps?.findIndex(s => !s.completed) ?? -1;
+        if (si < 0) return;
+        const step = quest.steps![si];
+        if (step.condition?.type !== 'have') return;
+        const c = step.condition;
+        if (this.itemService.count(c.itemId) >= c.qty) {
+          this.completeStep(qi, si);
+        }
       });
     });
   }
@@ -72,8 +73,12 @@ export class QuestService {
   onLocationChanged(locationId: string): void {
     this._quests().forEach((quest, qi) => {
       if (quest.status !== 'in-progress') return;
-      const si = quest.steps?.findIndex(s => !s.completed && s.condition?.type === 'location' && (s.condition as any).locationId === locationId) ?? -1;
-      if (si >= 0) this.completeStep(qi, si);
+      const si = quest.steps?.findIndex(s => !s.completed) ?? -1;
+      if (si < 0) return;
+      const step = quest.steps![si];
+      if (step.condition?.type === 'location' && (step.condition as any).locationId === locationId) {
+        this.completeStep(qi, si);
+      }
     });
   }
 
@@ -93,12 +98,12 @@ export class QuestService {
   ): void {
     this._quests().forEach((quest, qi) => {
       if (quest.status !== 'in-progress') return;
-      const si = quest.steps?.findIndex(s =>
-        !s.completed && s.condition?.type === type && matches(s.condition)
-      ) ?? -1;
+      const si = quest.steps?.findIndex(s => !s.completed) ?? -1;
       if (si < 0) return;
 
       const step = quest.steps![si];
+      if (step.condition?.type !== type || !matches(step.condition)) return;
+
       const c    = step.condition as { qty: number };
       const next = Math.min((step.progress ?? 0) + amount, c.qty);
 

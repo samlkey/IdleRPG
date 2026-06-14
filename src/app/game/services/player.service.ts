@@ -109,7 +109,7 @@ const INITIAL_PLAYER: PlayerData = {
   houseLevel: 1,
   bankCapacity: 500,
   gold: 100,
-  critChance: 0.9,
+  critChance: 0.1,
   equipment: {
     axe: 'Iron',
     pickaxe: 'Iron',

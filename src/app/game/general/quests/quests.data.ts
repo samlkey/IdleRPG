@@ -75,6 +75,29 @@ export const QUESTS: Quest[] = [
           { speaker: 'Manuel', text: "Navigate to the Mining section and swing that pickaxe!" },
         ],
       },
+      {
+        action: 'Mine 6 Tin Ore',
+        icon: 'assets/icons/mining.png',
+        description: 'Smithing usually requires a combination of ores to create bars, which can then be used to craft various items.',
+        condition: { type: 'gather', skillId: 'mining', itemId: 'tin-ore', qty: 6 },
+        progress: 0,
+        completed: false,
+        dialog: [
+          { speaker: 'Manuel', text: "Nice but you're not done yet, Smithing usually require two different ores. Mine 6 Tin Ore!" }
+        ],
+      },
+      {
+        action: 'Smith 6 Bronze Bars',
+        icon: 'assets/icons/smithing.png',
+        description: 'Smithing usually requires a combination of ores to create bars, which can then be used to craft various items.',
+        condition: { type: 'gather', skillId: 'smithing', itemId: 'bronze-bar', qty: 6 },
+        progress: 0,
+        completed: false,
+        dialog: [
+          { speaker: 'Manuel', text: "You now have all the requirements to create some Bronze Bars." },
+          { speaker: 'Manuel', text: "Navigate to the Smithing panel and create 6 Bronze Bars." }
+        ],
+      },
     ],
   },
   {

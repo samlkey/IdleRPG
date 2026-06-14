@@ -1,5 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
+// Refactor this to read item.data.ts for all the assets instead of hardcoding them here. This will ensure that any new items added to item.data.ts will automatically be preloaded without needing to update this list manually.
+
 const ASSETS: string[] = [
   // Backgrounds
   'assets/backgrounds/agility.png',
@@ -89,6 +91,7 @@ const ASSETS: string[] = [
   'assets/objects/woman.png',
   'assets/objects/yew_tree.png',
   'assets/objects/bronze_bar.png',
+  'assets/objects/tomato.png',
   // Quests
   'assets/quests/dragon_slayer.png',
 ];

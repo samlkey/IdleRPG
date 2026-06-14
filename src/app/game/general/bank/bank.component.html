@@ -143,9 +143,7 @@
         <span class="item-modal__type">{{ entry.item.subType ?? entry.item.type }}</span>
         <h2 class="item-modal__name">{{ entry.item.name }}</h2>
         <span class="item-modal__qty">× {{ entry.qty | number }}</span>
-        <p class="item-modal__desc">
-          Need to centrailise Items to prevent constantly writing out descriptions.
-        </p>
+        <p class="item-modal__desc">{{ entry.item.description }}</p>
         <dl class="item-modal__stats">
           @if (entry.item.value) {
             <div class="item-modal__stat">

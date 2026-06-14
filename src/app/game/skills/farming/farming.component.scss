@@ -1,5 +1,8 @@
 $bg:          #09090f;
 $content-pad: 2rem;
+$border:      rgba(255, 255, 255, 0.07);
+$text-base:   rgba(203, 193, 228, 0.85);
+$text-muted:  rgba(203, 193, 228, 0.4);
 
 // ── Hero banner ──────────────────────────────────────────
 .skill-panel__hero {
@@ -47,6 +50,81 @@ $content-pad: 2rem;
   }
 }
 
+// ── Category tabs ────────────────────────────────────────
+.farm-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.farm-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 1;
+  transition: background 120ms ease;
+  position: relative;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.09) !important;
+  }
+
+  &--locked {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $text-base;
+    letter-spacing: 0.01em;
+  }
+
+  &--active &__label {
+    color: #e2d9f3;
+    font-weight: 600;
+  }
+
+  &__lock {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: $text-muted;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    padding: 0 0.3rem;
+    line-height: 1.6;
+    margin-left: 0.1rem;
+  }
+}
+
+// ── Skill info ───────────────────────────────────────────
 .skill-info {
   display: flex;
   flex-direction: column;

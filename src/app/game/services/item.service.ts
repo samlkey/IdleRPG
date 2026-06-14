@@ -1,4 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
+import { ITEMS } from '../data/item.data';
 
 export interface GameItem {
   id: string;
@@ -52,5 +53,9 @@ export class ItemService {
 
   has(itemId: GameItem['id'], qty = 1): boolean {
     return this.count(itemId) >= qty;
+  }
+
+  searchItemById(itemId: GameItem['id']): GameItem | undefined {
+    return ITEMS.find(item => item.id === itemId);
   }
 }

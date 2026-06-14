@@ -16,7 +16,7 @@ $text-muted: rgba(203, 193, 228, 0.45);
   background: $surface;
   border: 1px solid $border;
   border-radius: 12px;
-  height: 320px;
+  height: 340px;
   overflow: hidden;
   cursor: pointer;
   text-align: left;
@@ -398,8 +398,8 @@ $text-muted: rgba(203, 193, 228, 0.45);
   }
 
   &__ingredient-icon {
-    width: 24px;
-    height: 24px;
+    width: 36px;
+    height: 36px;
     image-rendering: pixelated;
     flex-shrink: 0;
   }

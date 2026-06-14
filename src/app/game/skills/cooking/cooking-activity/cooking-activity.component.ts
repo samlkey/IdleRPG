@@ -1,11 +1,11 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivityComponent, SkillRequirement } from '../../../shared/components/activity/activity.component';
 import { ActivityService } from '../../../services/activity.service';
 import { GameItem, ItemService } from '../../../services/item.service';
 import { PlayerService } from '../../../services/player.service';
 
-interface CookingRecipe {
+export interface CookingRecipe {
   output: GameItem;
   burnedOutput: GameItem;
   /** 0–1 base probability of burning per cycle */
@@ -15,49 +15,6 @@ interface CookingRecipe {
   duration: number;
 }
 
-const RECIPES: Record<string, CookingRecipe> = {
-  'raw-shrimp': {
-    output:       { id: 'cooked-shrimp',    name: 'Cooked Shrimp',    description: 'A freshly cooked shrimp.',    icon: 'assets/objects/cooked_shrimp.png',    type: 'consumable', value: 10 },
-    burnedOutput: { id: 'burnt-shrimp',    name: 'Burnt Shrimp',    description: 'Completely charred. Utterly inedible.',  icon: 'assets/objects/burnt_shrimp.png',    type: 'misc', value: 1 },
-    chanceToFail: 0.40, level: 1,  xp: 30,  duration: 3,
-  },
-  'raw-anchovies': {
-    output:       { id: 'cooked-anchovies', name: 'Cooked Anchovies', description: 'A handful of cooked anchovies.', icon: 'assets/items/cooked-anchovies.png', type: 'consumable', value: 15 },
-    burnedOutput: { id: 'burned-anchovies', name: 'Burned Anchovies', description: 'A crispy, inedible handful.',   icon: 'assets/items/burned-anchovies.png', type: 'misc', value: 1 },
-    chanceToFail: 0.40, level: 1,  xp: 30,  duration: 3,
-  },
-  'raw-trout': {
-    output:       { id: 'cooked-trout',     name: 'Cooked Trout',     description: 'A freshly cooked trout.',    icon: 'assets/items/cooked-trout.png',     type: 'consumable', value: 70 },
-    burnedOutput: { id: 'burned-trout',     name: 'Burned Trout',     description: 'Charred beyond recognition.',  icon: 'assets/items/burned-trout.png',     type: 'misc', value: 1 },
-    chanceToFail: 0.30, level: 15, xp: 70,  duration: 4,
-  },
-  'raw-salmon': {
-    output:       { id: 'cooked-salmon',    name: 'Cooked Salmon',    description: 'A freshly cooked salmon.',   icon: 'assets/items/cooked-salmon.png',    type: 'consumable', value: 90 },
-    burnedOutput: { id: 'burned-salmon',    name: 'Burned Salmon',    description: 'Charred beyond recognition.', icon: 'assets/items/burned-salmon.png',    type: 'misc', value: 1 },
-    chanceToFail: 0.30, level: 25, xp: 90,  duration: 4,
-  },
-  'raw-tuna': {
-    output:       { id: 'cooked-tuna',      name: 'Cooked Tuna',      description: 'A freshly cooked tuna.',     icon: 'assets/items/cooked-tuna.png',      type: 'consumable', value: 130 },
-    burnedOutput: { id: 'burned-tuna',      name: 'Burned Tuna',      description: 'Charred beyond recognition.', icon: 'assets/items/burned-tuna.png',      type: 'misc', value: 1 },
-    chanceToFail: 0.25, level: 30, xp: 100, duration: 5,
-  },
-  'raw-lobster': {
-    output:       { id: 'cooked-lobster',   name: 'Cooked Lobster',   description: 'A freshly cooked lobster.',  icon: 'assets/items/cooked-lobster.png',   type: 'consumable', value: 160 },
-    burnedOutput: { id: 'burned-lobster',   name: 'Burned Lobster',   description: 'Charred beyond recognition.', icon: 'assets/items/burned-lobster.png',   type: 'misc', value: 1 },
-    chanceToFail: 0.25, level: 40, xp: 120, duration: 5,
-  },
-  'raw-swordfish': {
-    output:       { id: 'cooked-swordfish', name: 'Cooked Swordfish', description: 'A freshly cooked swordfish.', icon: 'assets/items/cooked-swordfish.png', type: 'consumable', value: 200 },
-    burnedOutput: { id: 'burned-swordfish', name: 'Burned Swordfish', description: 'Charred beyond recognition.',  icon: 'assets/items/burned-swordfish.png', type: 'misc', value: 1 },
-    chanceToFail: 0.20, level: 45, xp: 140, duration: 6,
-  },
-  'raw-shark': {
-    output:       { id: 'cooked-shark',     name: 'Cooked Shark',     description: 'A freshly cooked shark.',    icon: 'assets/items/cooked-shark.png',     type: 'consumable', value: 400 },
-    burnedOutput: { id: 'burned-shark',     name: 'Burned Shark',     description: 'Charred beyond recognition.', icon: 'assets/items/burned-shark.png',     type: 'misc', value: 1 },
-    chanceToFail: 0.15, level: 80, xp: 210, duration: 7,
-  },
-};
-
 @Component({
   selector: 'app-cooking-activity',
   imports: [ActivityComponent, DecimalPipe],
@@ -65,6 +22,8 @@ const RECIPES: Record<string, CookingRecipe> = {
   styleUrl: './cooking-activity.component.scss',
 })
 export class CookingActivityComponent {
+  readonly recipes = input.required<Record<string, CookingRecipe>>();
+
   private readonly itemService     = inject(ItemService);
   private readonly activityService = inject(ActivityService);
   private readonly playerService   = inject(PlayerService);
@@ -84,7 +43,7 @@ export class CookingActivityComponent {
 
   readonly activeRecipe = computed((): CookingRecipe | null => {
     const id = this.selectedId();
-    return id ? (RECIPES[id] ?? null) : null;
+    return id ? (this.recipes()[id] ?? null) : null;
   });
 
   readonly isActive = computed(() => {
@@ -112,7 +71,7 @@ export class CookingActivityComponent {
   }
 
   hasRecipe(itemId: string): boolean {
-    return itemId in RECIPES;
+    return itemId in this.recipes();
   }
 
   selectIngredient(item: GameItem): void {

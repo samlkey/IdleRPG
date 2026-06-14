@@ -41,6 +41,33 @@
       <span class="skill-info__value">{{ skillData.xp | number }}</span>
     </div>
   </div>
+
+  <!-- Category tabs -->
+  <div class="farm-tabs" role="tablist" aria-label="Farming categories">
+    @for (tab of TABS; track tab.id) {
+      <button
+        class="farm-tab"
+        role="tab"
+        [class.farm-tab--active]="selectedTabId() === tab.id"
+        [class.farm-tab--locked]="skillData.level < tab.levelReq"
+        [attr.aria-selected]="selectedTabId() === tab.id"
+        (click)="selectTab(tab.id)"
+        [title]="skillData.level < tab.levelReq ? 'Requires level ' + tab.levelReq : tab.name"
+      >
+        <img
+          class="farm-tab__icon"
+          [src]="tab.icon"
+          alt=""
+          aria-hidden="true"
+        />
+        <span class="farm-tab__label">{{ tab.name }}</span>
+        @if (skillData.level < tab.levelReq) {
+          <span class="farm-tab__lock">{{ tab.levelReq }}</span>
+        }
+      </button>
+    }
+  </div>
+
 </div>
 
 @if (helpOpen()) {
