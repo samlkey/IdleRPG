@@ -82,6 +82,20 @@ export class QuestService {
     });
   }
 
+  /** Call when the player navigates to a tab. Advances 'navigation' steps */
+  onNavigation(tabId: string): void {
+    console.log('onNavigation', tabId);
+    this._quests().forEach((quest, qi) => {
+      if (quest.status !== 'in-progress') return;
+      const si = quest.steps?.findIndex(s => !s.completed) ?? -1;
+      if (si < 0) return;
+      const step = quest.steps![si];
+      if (step.condition?.type === 'navigation' && (step.condition as any).tab === tabId) {
+        this.completeStep(qi, si);
+      }
+    });
+  }
+
   /** Start a not-started quest. */
   startQuest(questId: string): void {
     const qi = this._quests().findIndex(q => q.id === questId);

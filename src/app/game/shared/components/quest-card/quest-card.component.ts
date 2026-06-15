@@ -7,6 +7,7 @@ import { QuestService } from '../../../services/quest.service';
 
 export type StepCondition =
   | { type: 'gather';       skillId: SkillId; itemId: string; qty: number }
+  | { type: 'navigation';   tab: string }
   | { type: 'skill-action'; skillId: SkillId; qty: number }
   | { type: 'location';     locationId: string }
   | { type: 'have';         itemId: string;   qty: number }

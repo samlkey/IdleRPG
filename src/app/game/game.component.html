@@ -41,6 +41,7 @@
                     <button
                       class="nav-item nav-item--child"
                       [class.nav-item--running]="playerService.mainActivitySkill() === child.id"
+                      [class.nav-item--locked]="isItemLocked(child)"
                       [disabled]="isItemDisabled(child)"
                       (click)="select(child)"
                     >

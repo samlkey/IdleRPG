@@ -109,9 +109,9 @@ export class GameComponent {
       label: 'General',
       items: [
         { id: 'quests', label: 'Quests', pixelIcon: 'assets/icons/quests.png', badgeType: 'qp',   component: QuestsComponent },
-        { id: 'bank',   label: 'Bank',   pixelIcon: 'assets/icons/bank.png',   badgeType: 'bank-space', component: BankComponent },
-        { id: 'shop',  label: 'General Store',  pixelIcon: 'assets/icons/shop.png',  badgeType: 'gold', component: ShopComponent },
-        { id: 'map', label: 'Map', pixelIcon: 'assets/objects/map.png', badgeType: 'location', component: MapComponent },
+        { id: 'bank',   label: 'Bank',   pixelIcon: 'assets/icons/bank.png',   badgeType: 'bank-space', component: BankComponent, unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 0 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 } },
+        { id: 'shop',  label: 'General Store',  pixelIcon: 'assets/icons/shop.png',  badgeType: 'gold', component: ShopComponent, locked: true },
+        { id: 'map', label: 'Map', pixelIcon: 'assets/objects/map.png', badgeType: 'location', component: MapComponent, locked: true },
         { id: 'house',  label: 'House',  pixelIcon: 'assets/icons/house.png',  badgeType: 'house-level', component: HouseComponent, locked: true },
       ],
     },
@@ -128,28 +128,29 @@ export class GameComponent {
             { id: 'ranged',    label: 'Ranged',    pixelIcon: 'assets/icons/ranged.png',    badgeType: 'skill', navigateTo: 'combat-level' },
             { id: 'hitpoints', label: 'Hitpoints', pixelIcon: 'assets/icons/hitpoints.png', badgeType: 'skill', navigateTo: 'combat-level' },
           ],
+          locked: true
         },
       ],
     },
     {
       label: 'Hybrid Skills',
       items: [
-        { id: 'magic',     label: 'Magic',     pixelIcon: 'assets/icons/magic.png',     badgeType: 'skill', component: MagicComponent },
-        { id: 'prayer',    label: 'Prayer',    pixelIcon: 'assets/icons/prayer.png',    badgeType: 'skill', component: PrayerComponent },
-        { id: 'slayer',    label: 'Slayer',    pixelIcon: 'assets/icons/slayer.png',    badgeType: 'skill', component: SlayerComponent, locked: true },
+        { id: 'magic',     label: 'Magic',     pixelIcon: 'assets/icons/magic.png',   badgeType: 'skill', component: MagicComponent,  locked: true },
+        { id: 'prayer',    label: 'Prayer',    pixelIcon: 'assets/icons/prayer.png',  badgeType: 'skill', component: PrayerComponent, locked: true },
+        { id: 'slayer',    label: 'Slayer',    pixelIcon: 'assets/icons/slayer.png',  badgeType: 'skill', component: SlayerComponent, locked: true },
       ]
     },
     {
       label: 'Non-Combat Skills',
       items: [
         { id: 'woodcutting',  label: 'Woodcutting',  pixelIcon: 'assets/icons/woodcutting.png',  badgeType: 'skill', component: WoodcuttingComponent, unlockedByQuestStart: { questId: 'tutorial-island' }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 0 } },
-        { id: 'firemaking',   label: 'Firemaking',   pixelIcon: 'assets/icons/firemaking.png',   badgeType: 'skill', component: FiremakingComponent,  unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 0 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 } },
-        { id: 'fishing',      label: 'Fishing',      pixelIcon: 'assets/icons/fishing.png',      badgeType: 'skill', component: FishingComponent,     unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 2 } },
-        { id: 'cooking',      label: 'Cooking',      pixelIcon: 'assets/icons/cooking.png',      badgeType: 'skill', component: CookingComponent,     unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 2 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 3 } },
-        { id: 'mining',       label: 'Mining',       pixelIcon: 'assets/icons/mining.png',       badgeType: 'skill', component: MiningComponent,      unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 3 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 4 } },
-        { id: 'smithing',     label: 'Smithing',     pixelIcon: 'assets/icons/smithing.png',     badgeType: 'skill', component: SmithingComponent,    unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 5 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 6 } },
-        { id: 'crafting',     label: 'Crafting',     pixelIcon: 'assets/icons/crafting.png',     badgeType: 'skill', component: CraftingComponent,    unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 6 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 7 } },
-        { id: 'fletching',    label: 'Fletching',    pixelIcon: 'assets/icons/fletching.png',    badgeType: 'skill', component: FletchingComponent,   unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 7 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 8 } },
+        { id: 'firemaking',   label: 'Firemaking',   pixelIcon: 'assets/icons/firemaking.png',   badgeType: 'skill', component: FiremakingComponent,  unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 2 } },
+        { id: 'fishing',      label: 'Fishing',      pixelIcon: 'assets/icons/fishing.png',      badgeType: 'skill', component: FishingComponent,     unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 2 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 3 } },
+        { id: 'cooking',      label: 'Cooking',      pixelIcon: 'assets/icons/cooking.png',      badgeType: 'skill', component: CookingComponent,     unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 3 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 4 } },
+        { id: 'mining',       label: 'Mining',       pixelIcon: 'assets/icons/mining.png',       badgeType: 'skill', component: MiningComponent,      unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 4 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 5 } },
+        { id: 'smithing',     label: 'Smithing',     pixelIcon: 'assets/icons/smithing.png',     badgeType: 'skill', component: SmithingComponent,    unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 6 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 7 } },
+        { id: 'crafting',     label: 'Crafting',     pixelIcon: 'assets/icons/crafting.png',     badgeType: 'skill', component: CraftingComponent,    unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 7 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 8 } },
+        { id: 'fletching',    label: 'Fletching',    pixelIcon: 'assets/icons/fletching.png',    badgeType: 'skill', component: FletchingComponent,   unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 8 }, highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 9 } },
         { id: 'farming',      label: 'Farming',      pixelIcon: 'assets/icons/farming.png',      badgeType: 'skill', component: FarmingComponent, locked: true },
         { id: 'agility',      label: 'Agility',      pixelIcon: 'assets/icons/agility.png',      badgeType: 'skill', component: AgilityComponent, locked: true },
         { id: 'herblore',     label: 'Herblore',     pixelIcon: 'assets/icons/herblore.png',     badgeType: 'skill', component: HerbloreComponent, locked: true },
@@ -200,6 +201,10 @@ export class GameComponent {
 
   isItemLocked(item: NavItem): boolean {
     if (item.locked) return true;
+    if (item.navigateTo) {
+      const parent = this.sections.flatMap(s => s.items).find(i => i.id === item.navigateTo);
+      if (parent && this.isItemLocked(parent)) return true;
+    }
     if (item.unlockedByQuestStart) {
       const quest = this.questService.quests().find(q => q.id === item.unlockedByQuestStart!.questId);
       if (!quest || quest.status === 'not-started') return true;
@@ -219,6 +224,7 @@ export class GameComponent {
   select(item: NavItem): void {
     if (this.isItemDisabled(item)) return;
     this.activePanel.set(item.navigateTo ?? item.id);
+    this.questService.onNavigation(item.id);
   }
 
   navigateToTrackedQuest(): void {

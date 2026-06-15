@@ -28,6 +28,18 @@ export const QUESTS: Quest[] = [
         ],
       },
       {
+        action: 'Navigate to Bank',
+        icon: 'assets/icons/bank.png',
+        description: 'The bank is a safe place to store your items and manage your inventory.',
+        condition: { type: 'navigation', tab: 'bank' },
+        progress: 0,
+        completed: false,
+        dialog: [
+          { speaker: 'Manuel', text: "You may have noticed you've collected some items from your Woodcutting" },
+          { speaker: 'Manuel', text: "Let's take a look into your bank " },
+        ],
+      },
+      {
         action: 'Burn 5 Normal Logs',
         icon: 'assets/icons/firemaking.png',
         description: 'Firemaking provides buffs and bonuses to other parts of the game.',
