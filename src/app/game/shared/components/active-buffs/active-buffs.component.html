@@ -1,0 +1,16 @@
+@if (buffs().length) {
+  <div class="active-buffs">
+    @for (buff of buffs(); track buff.spellId) {
+      <div class="active-buffs__buff">
+        <div class="active-buffs__row">
+          <img class="active-buffs__icon" [src]="buff.icon" [alt]="buff.spellName" aria-hidden="true" />
+          <span class="active-buffs__name">{{ buff.spellName }}</span>
+          <span class="active-buffs__timer">{{ remainingS(buff) }}s</span>
+        </div>
+        <div class="active-buffs__track">
+          <div class="active-buffs__fill" [style.width.%]="remainingPct(buff)"></div>
+        </div>
+      </div>
+    }
+  </div>
+}

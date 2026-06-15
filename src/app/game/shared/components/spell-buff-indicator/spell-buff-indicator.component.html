@@ -1,0 +1,12 @@
+@if (activeBuff(); as buff) {
+  <div class="buff-indicator">
+    <div class="buff-indicator__row">
+      <img class="buff-indicator__icon" [src]="buff.icon" [alt]="buff.spellName" aria-hidden="true" />
+      <span class="buff-indicator__name">{{ buff.spellName }}</span>
+      <span class="buff-indicator__timer">{{ remainingS() }}s</span>
+    </div>
+    <div class="buff-indicator__track">
+      <div class="buff-indicator__fill" [style.width.%]="remainingPct()"></div>
+    </div>
+  </div>
+}

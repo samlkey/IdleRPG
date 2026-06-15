@@ -47,7 +47,7 @@ export const LOCATIONS: GameLocation[] = [
       mining: ['Copper Ore', 'Tin Ore', 'Iron Ore'],
       fishingSpot: ['Mainland Shores'],
       thievingArea: ['Mainland Square', 'Mainland Market'],
-      quests: ['no-place-like-home', 'dwarfs-dilemma'],
+      quests: ['honest-work', 'running-man', 'druids-circle', 'what-you-can-how-you-can', 'no-place-like-home', 'dwarfs-dilemma'],
     },
   },
   {

@@ -15,15 +15,44 @@
                 class="nav-item"
                 [class.nav-item--active]="activePanel() === item.id"
                 [class.nav-item--running]="playerService.mainActivitySkill() === item.id"
+                [class.nav-item--locked]="isItemLocked(item)"
+                [class.nav-item--no-component]="!item.component && !isItemLocked(item) && !item.navigateTo"
+                [class.nav-item--highlighted]="isItemHighlighted(item)"
+                [disabled]="isItemDisabled(item)"
                 (click)="select(item)"
                 [attr.aria-current]="activePanel() === item.id ? 'page' : null"
               >
                 <img class="nav-item__pixel-icon" [src]="item.pixelIcon" [alt]="item.label" aria-hidden="true" />
                 <span class="nav-item__label">{{ item.label }}</span>
-                @if (badgeFor(item); as badge) {
-                  <span class="nav-item__level">{{ badge }}</span>
+                @if (isItemLocked(item)) {
+                  <svg class="nav-item__lock" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                  </svg>
+                } @else {
+                  @if (badgeFor(item)) {
+                    <span class="nav-item__level">{{ badgeFor(item) }}</span>
+                  }
                 }
               </button>
+
+              @if (item.children?.length) {
+                <div class="nav-children">
+                  @for (child of item.children!; track child.id) {
+                    <button
+                      class="nav-item nav-item--child"
+                      [class.nav-item--running]="playerService.mainActivitySkill() === child.id"
+                      [disabled]="isItemDisabled(child)"
+                      (click)="select(child)"
+                    >
+                      <img class="nav-item__pixel-icon" [src]="child.pixelIcon" [alt]="child.label" aria-hidden="true" />
+                      <span class="nav-item__label">{{ child.label }}</span>
+                      @if (badgeFor(child)) {
+                        <span class="nav-item__level">{{ badgeFor(child) }}</span>
+                      }
+                    </button>
+                  }
+                </div>
+              }
             </li>
           }
         </ul>
@@ -86,6 +115,7 @@
           <div class="char-card__hp-fill" [style.width.%]="playerService.hpPercent()"></div>
         </div>
       </div>
+      <app-active-buffs />
     </div>
 
   </nav>
@@ -94,18 +124,7 @@
   <main class="content" role="main">
     @if (activeItem?.component) {
       <ng-container *ngComponentOutlet="activeItem!.component!; inputs: { pixelIcon: activeItem!.pixelIcon }" />
-    } @else {
-      <div class="skill-panel">
-        <div class="skill-panel__header">
-          <img class="skill-panel__pixel-icon" [src]="activeItem?.pixelIcon" [alt]="activeItem?.label" aria-hidden="true" />
-          <div>
-            <h1 class="skill-panel__title">{{ activeItem?.label }}</h1>
-            <p class="skill-panel__subtitle">Coming soon</p>
-          </div>
-        </div>
-        <p class="placeholder">{{ activeItem?.label }} content will appear here.</p>
-      </div>
-    }
+    } 
   </main>
 </div>
 

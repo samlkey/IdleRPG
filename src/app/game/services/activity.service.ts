@@ -3,6 +3,7 @@ import { PlayerService, SkillId } from './player.service';
 import { NotificationService } from './notification.service';
 import { GameItem, DropTable, ItemService } from './item.service';
 import { QuestService } from './quest.service';
+import { SpellService } from './spell.service';
 
 export interface ActivityConfig {
   name: string;
@@ -50,6 +51,7 @@ export class ActivityService {
   private readonly notificationService = inject(NotificationService);
   private readonly itemService         = inject(ItemService);
   private readonly questService        = inject(QuestService);
+  private readonly spellService        = inject(SpellService);
 
   readonly current              = signal<ActivityConfig | null>(null);
   readonly cycleStartedAt       = signal<number | null>(null);
@@ -72,6 +74,10 @@ export class ActivityService {
   // ── Public API ───────────────────────────────────────────────────────────────
 
   start(config: ActivityConfig): void {
+    const prev = this.current();
+    if (prev?.type === 'depletion') {
+      this.savedCharges.set(prev.name, this.charges());
+    }
     this.stopTimers();
     this.current.set(config);
     this.cycleStartedAt.set(Date.now());
@@ -79,8 +85,12 @@ export class ActivityService {
     this.isFullReplenishing.set(false);
     if (config.type === 'depletion') {
       const saved = this.savedCharges.get(config.name);
-      this.charges.set(saved ?? config.maxCharges ?? 6);
+      const charges = saved ?? config.maxCharges ?? 6;
+      this.charges.set(charges);
       this.replenishPct.set(0);
+      if (charges <= 0) {
+        this.startFullReplenish(config);
+      }
     }
     if (config.type === 'bonus') {
       this.bonusStep.set(0);
@@ -180,7 +190,9 @@ export class ActivityService {
       // ── Normal cycle ───────────────────────────────────────────────────────
       if (elapsed < cfg.duration * 1000) return;
 
-      const success = cfg.catchChance == null || Math.random() < cfg.catchChance;
+      const catchBuff = cfg.catchChance != null ? this.spellService.activeBuff(cfg.skillId) : null;
+      const catchBoost = catchBuff?.effect.type === 'catch-boost' ? catchBuff.effect.amount : 0;
+      const success = cfg.catchChance == null || Math.random() < cfg.catchChance + catchBoost;
 
       if (!success && cfg.type === 'delay') {
         const dmg = cfg.caughtDamage ?? 2;

@@ -1,6 +1,7 @@
 import { Component, effect, inject, input, output, signal, OnDestroy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { PlayerService, SkillId } from '../../../services/player.service';
+import { QuestService } from '../../../services/quest.service';
 
 // ── Step condition ────────────────────────────────────────────────────────────
 
@@ -121,6 +122,7 @@ export class QuestCardComponent implements OnDestroy {
   selected = output<Quest>();
 
   readonly playerService = inject(PlayerService);
+  readonly questService  = inject(QuestService);
 
   get isTracked(): boolean {
     return this.playerService.trackedQuest()?.questId === this.quest().id;
@@ -220,20 +222,31 @@ export class QuestCardComponent implements OnDestroy {
 
   // ── Toggle ────────────────────────────────────────────────────────────────
 
+  get canStart(): boolean {
+    const p = this.playerService.player();
+    return this.quest().requirements.every(r => {
+      if (r.type === 'skill') return p.skills[r.skill].level >= r.level;
+      if (r.type === 'quest') return this.questService.quests().find(q => q.id === r.questId)?.status === 'completed';
+      return true;
+    });
+  }
+
+  onStart(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selected.emit(this.quest());
+  }
+
   toggle(): void {
-    if (this.quest().status === 'in-progress' && this.quest().steps?.length) {
-      const opening = !this.expanded();
-      this.expanded.set(opening);
-      if (opening) {
-        this.openSteps();
-      } else {
-        this.stopTyping();
-        this.displayedText.set('');
-        this.dialogLineIndex.set(0);
-        this.dialogComplete.set(false);
-      }
+    if (this.quest().status !== 'in-progress' || !this.quest().steps?.length) return;
+    const opening = !this.expanded();
+    this.expanded.set(opening);
+    if (opening) {
+      this.openSteps();
     } else {
-      this.selected.emit(this.quest());
+      this.stopTyping();
+      this.displayedText.set('');
+      this.dialogLineIndex.set(0);
+      this.dialogComplete.set(false);
     }
   }
 

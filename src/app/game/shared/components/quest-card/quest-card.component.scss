@@ -264,6 +264,44 @@ $status-completed:   #22c55e;
   opacity: 0.7;
 }
 
+// ── Start footer ─────────────────────────────────────────
+.quest-card__footer {
+  padding: 0 1.25rem 1rem;
+  border-top: 1px solid $border;
+  padding-top: 0.85rem;
+}
+
+.quest-card__start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem 0.45rem 1.1rem;
+  border-radius: 99px;
+  border: 1px solid rgba($accent-lt, 0.35);
+  background: rgba($accent, 0.12);
+  color: $accent-lt;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  &:hover:not(:disabled) {
+    background: rgba($accent, 0.28);
+    border-color: rgba($accent-lt, 0.65);
+    color: #fff;
+  }
+
+  &:disabled {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: $text-muted;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
 // ── Steps panel ──────────────────────────────────────────
 .quest-card__steps {
   display: flex;

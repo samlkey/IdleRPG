@@ -1,0 +1,68 @@
+$magic:    #818cf8;
+$magic-lt: #c7d2fe;
+$border:   rgba(255, 255, 255, 0.07);
+$text-muted: rgba(203, 193, 228, 0.45);
+
+.active-buffs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid $border;
+}
+
+.active-buffs__buff {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  animation: buff-in 200ms ease;
+}
+
+@keyframes buff-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.active-buffs__row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.active-buffs__icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+
+.active-buffs__name {
+  flex: 1;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $magic-lt;
+  letter-spacing: 0.01em;
+}
+
+.active-buffs__timer {
+  font-size: 0.64rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $magic;
+}
+
+.active-buffs__track {
+  height: 2px;
+  background: rgba($magic, 0.12);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.active-buffs__fill {
+  height: 100%;
+  background: linear-gradient(90deg, $magic, $magic-lt);
+  border-radius: 99px;
+  transition: width 500ms linear;
+}

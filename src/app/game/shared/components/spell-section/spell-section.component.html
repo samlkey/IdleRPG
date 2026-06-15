@@ -1,0 +1,56 @@
+<div class="spellbook">
+  <div class="spellbook__header">
+    <svg class="spellbook__header-gem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2 L22 9 L18 22 H6 L2 9 Z"/>
+    </svg>
+    <span class="spellbook__header-title">Spellbook</span>
+    <svg class="spellbook__header-gem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2 L22 9 L18 22 H6 L2 9 Z"/>
+    </svg>
+  </div>
+
+  <div class="spellbook__grid">
+    @for (spell of allSpells(); track spell.id) {
+      @let locked   = magicLevel() < spell.levelRequired;
+      @let active   = isActive(spell);
+      @let castable = !locked && canCast(spell);
+
+      <button
+        class="spell-tile"
+        [class.spell-tile--active]="active"
+        [class.spell-tile--locked]="locked"
+        [class.spell-tile--unavailable]="!locked && !castable"
+        [disabled]="locked || !castable"
+        (click)="cast(spell)"
+        type="button"
+      >
+        <img class="spell-tile__icon" [src]="spell.icon" [alt]="spell.name" aria-hidden="true" />
+
+        @if (active) {
+          <span class="spell-tile__active-ring" aria-hidden="true"></span>
+          <span class="spell-tile__timer">{{ buffRemainingS(spell.appliesTo) }}s</span>
+        }
+        @if (locked) {
+          <span class="spell-tile__req">{{ spell.levelRequired }}</span>
+        }
+
+        <div class="spell-tile__overlay" aria-hidden="true">
+          <span class="spell-tile__overlay-name">{{ spell.name }}</span>
+          <span class="spell-tile__overlay-effect">{{ effectLabel(spell) }}</span>
+          @if (spell.runeCost.length) {
+            <div class="spell-tile__overlay-runes">
+              @for (cost of spell.runeCost; track cost.itemId) {
+                <span
+                  class="spell-tile__rune"
+                  [class.spell-tile__rune--missing]="runeCount(cost.itemId) < cost.qty"
+                >{{ cost.qty }}×{{ cost.name.split(' ')[0] }}</span>
+              }
+            </div>
+          } @else {
+            <span class="spell-tile__overlay-no-cost">No rune cost</span>
+          }
+        </div>
+      </button>
+    }
+  </div>
+</div>

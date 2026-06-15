@@ -1,0 +1,240 @@
+$magic:      #818cf8;
+$magic-lt:   #c7d2fe;
+$accent:     #7c3aed;
+$border:     rgba(255, 255, 255, 0.07);
+$text-muted: rgba(203, 193, 228, 0.45);
+$text-base:  rgba(203, 193, 228, 0.9);
+$surface:    #111118;
+
+// ── Spellbook wrapper ─────────────────────────────────────────────────────────
+.spellbook {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── Decorative header ─────────────────────────────────────────────────────────
+.spellbook__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba($magic, 0.2);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba($magic, 0.25));
+  }
+  &::after {
+    background: linear-gradient(270deg, transparent, rgba($magic, 0.25));
+  }
+}
+
+.spellbook__header-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $magic-lt;
+  white-space: nowrap;
+}
+
+.spellbook__header-gem {
+  width: 10px;
+  height: 10px;
+  color: rgba($magic, 0.5);
+  flex-shrink: 0;
+}
+
+// ── Grid ──────────────────────────────────────────────────────────────────────
+.spellbook__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+// ── Spell tile ────────────────────────────────────────────────────────────────
+.spell-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid $border;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-color: rgba($magic, 0.22);
+    border-style: solid;
+    transition: border-color 140ms ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+  &::before { top: 4px; left: 4px;  border-width: 1px 0 0 1px; border-radius: 1px 0 0 0; }
+  &::after  { bottom: 4px; right: 4px; border-width: 0 1px 1px 0; border-radius: 0 0 1px 0; }
+
+  &:hover:not(:disabled) {
+    border-color: rgba($magic, 0.35);
+    box-shadow: 0 0 12px rgba($magic, 0.1);
+
+    &::before, &::after { border-color: rgba($magic, 0.55); }
+
+    .spell-tile__overlay { opacity: 1; }
+    .spell-tile__icon    { opacity: 0.25; filter: brightness(1.15) hue-rotate(200deg) blur(1px); }
+  }
+
+  &--active {
+    border-color: rgba($magic, 0.45);
+    box-shadow: 0 0 16px rgba($magic, 0.18), inset 0 0 10px rgba($magic, 0.06);
+    &::before, &::after { border-color: rgba($magic, 0.6); }
+  }
+
+  &--locked {
+    opacity: 0.38;
+    cursor: not-allowed;
+    filter: grayscale(60%);
+  }
+
+  &--unavailable {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  // ── Icon ───────────────────────────────────────────────────────────────────
+  &__icon {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+    mix-blend-mode: screen;
+    filter: brightness(1.15) hue-rotate(200deg);
+    transition: opacity 140ms ease, filter 140ms ease;
+    flex-shrink: 0;
+  }
+
+  // ── Active ring ────────────────────────────────────────────────────────────
+  &__active-ring {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px solid rgba($magic, 0.65);
+    animation: ring-pulse 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  // ── Active timer badge ─────────────────────────────────────────────────────
+  &__timer {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: $magic-lt;
+    background: rgba($surface, 0.88);
+    border: 1px solid rgba($magic, 0.4);
+    border-radius: 99px;
+    padding: 1px 5px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  // ── Level-req badge ────────────────────────────────────────────────────────
+  &__req {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: rgba(239, 68, 68, 0.9);
+    background: rgba($surface, 0.88);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 99px;
+    padding: 1px 5px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  // ── Hover overlay ──────────────────────────────────────────────────────────
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.6rem;
+    background: rgba($surface, 0.82);
+    opacity: 0;
+    transition: opacity 140ms ease;
+    pointer-events: none;
+    z-index: 1;
+    text-align: center;
+  }
+
+  &__overlay-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $magic-lt;
+    line-height: 1.2;
+  }
+
+  &__overlay-effect {
+    font-size: 0.67rem;
+    color: $text-muted;
+  }
+
+  &__overlay-runes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+    margin-top: 0.15rem;
+  }
+
+  &__overlay-no-cost {
+    font-size: 0.62rem;
+    color: rgba($magic, 0.5);
+    font-style: italic;
+  }
+
+  // ── Rune chips ─────────────────────────────────────────────────────────────
+  &__rune {
+    font-size: 0.62rem;
+    color: rgba($magic-lt, 0.6);
+    background: rgba($magic, 0.08);
+    border: 1px solid rgba($magic, 0.15);
+    border-radius: 3px;
+    padding: 1px 4px;
+    white-space: nowrap;
+
+    &--missing {
+      color: rgba(239, 68, 68, 0.75);
+      background: rgba(239, 68, 68, 0.07);
+      border-color: rgba(239, 68, 68, 0.22);
+    }
+  }
+}
+
+// ── Animations ─────────────────────────────────────────────────────────────
+@keyframes ring-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spell-tile__active-ring { animation: none; }
+}

@@ -16,20 +16,21 @@
 
   <div class="xp-bar">
     <div class="xp-bar__label">
-      <span>Level 1</span>
-      <span>0 / 83 XP</span>
+      <span>Level {{ skillData.level }}</span>
+      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
     </div>
     <div class="xp-bar__track">
-      <div class="xp-bar__fill" style="width: 0%"></div>
+      <div class="xp-bar__fill" [style.width.%]="(skillData.xpIntoLevel / skillData.xpForLevel) * 100"></div>
     </div>
   </div>
 
-  <p class="placeholder">Magic actions will appear here.</p>
+  <app-spell-section />
 
 </div>
 
 @if (helpOpen()) {
   <app-modal title="Magic" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
     <p>Magic enables you to cast spells using runes. Higher Magic levels unlock more powerful spells, including combat spells, utility spells, and teleports.</p>
+    <p>Utility spells appear directly inside the skill they affect — look for the Magic section in Thieving, Farming, and other panels.</p>
   </app-modal>
 }

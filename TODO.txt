@@ -34,3 +34,16 @@ REFACTORING:
 MOVE .skill-info scss into a shared style file
 
 NEED AN ITEM DATABASE INSTEAD OF REPEATING ITEM DEFINITIONS
+
+
+-=============================
+
+Magic solve: 
+
+Have all spells in magic tab, then in combat tab if selecting magic style, navigate to the magic tab under certain conditions to only use combat spells
+
+If going from magic, click on the combat spell and have it automatically set in the combat tab. 
+
+improvements on ^^ :
+Modal/overlay instead of full navigation.
+Auto-return after selection.

@@ -1,0 +1,155 @@
+$bg:         #09090f;
+$surface:    #111118;
+$surface-lt: #1a1a26;
+$border:     rgba(255, 255, 255, 0.07);
+$accent:     #7c3aed;
+$text-base:  rgba(203, 193, 228, 0.85);
+$text-muted: rgba(203, 193, 228, 0.45);
+
+.clp {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
+.clp__hero {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 1rem;
+}
+
+.clp__hero-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.75rem 3rem;
+  background: radial-gradient(ellipse at top, rgba($accent, 0.15), transparent 70%);
+  border: 1px solid rgba($accent, 0.25);
+  border-radius: 12px;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: rgba($accent, 0.4);
+    border-style: solid;
+  }
+  &::before { top: 6px; left: 6px;  border-width: 1px 0 0 1px; border-radius: 2px 0 0 0; }
+  &::after  { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; border-radius: 0 0 2px 0; }
+}
+
+.clp__hero-swords {
+  width: 22px;
+  height: 22px;
+  color: rgba(239, 68, 68, 0.65);
+  margin-bottom: 0.25rem;
+}
+
+.clp__hero-num {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #e2d9f3;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.clp__hero-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+// ── Stats list ────────────────────────────────────────────────────────────────
+.clp__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.clp-stat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+  transition: border-color 150ms ease, background 150ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+    mix-blend-mode: screen;
+    opacity: 0.9;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  &__name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-base;
+  }
+
+  &__level {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $text-base;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__max {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: $text-muted;
+  }
+
+  &__track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 400ms ease;
+    opacity: 0.8;
+  }
+
+  &__xp {
+    font-size: 0.68rem;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+  }
+}

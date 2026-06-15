@@ -126,6 +126,29 @@
 
   </button>
 
+  <!-- ── Start button (not-started only) ──────────────── -->
+  @if (quest().status === 'not-started') {
+    <div class="quest-card__footer">
+      <button class="quest-card__start-btn" type="button"
+        [disabled]="!canStart"
+        [title]="canStart ? 'Begin this quest' : 'Requirements not met'"
+        (click)="onStart($event)">
+        @if (canStart) {
+          Begin Quest
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M11 7V5a3 3 0 0 0-6 0v2H4v7h8V7h-1zm-4-2a1 1 0 0 1 2 0v2H7V5zm1 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+          </svg>
+          Requirements not met
+        }
+      </button>
+    </div>
+  }
+
   <!-- ── Steps panel (in-progress only) ────────────────── -->
   @if (quest().status === 'in-progress' && expanded() && quest().steps?.length) {
     <div class="quest-card__steps">

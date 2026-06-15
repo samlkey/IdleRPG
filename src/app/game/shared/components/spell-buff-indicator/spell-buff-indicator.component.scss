@@ -1,0 +1,60 @@
+$magic:    #818cf8;
+$magic-lt: #c7d2fe;
+
+.buff-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba($magic, 0.07);
+  border: 1px solid rgba($magic, 0.22);
+  border-radius: 8px;
+  animation: buff-in 200ms ease;
+}
+
+@keyframes buff-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.buff-indicator__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buff-indicator__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+}
+
+.buff-indicator__name {
+  flex: 1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $magic-lt;
+}
+
+.buff-indicator__timer {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $magic;
+}
+
+.buff-indicator__track {
+  height: 2px;
+  background: rgba($magic, 0.15);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.buff-indicator__fill {
+  height: 100%;
+  background: linear-gradient(90deg, $magic, $magic-lt);
+  border-radius: 99px;
+  transition: width 500ms linear;
+}

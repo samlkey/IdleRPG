@@ -1,0 +1,33 @@
+<div class="clp">
+  <div class="clp__hero">
+    <div class="clp__hero-badge">
+      <svg class="clp__hero-swords" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"/>
+      </svg>
+      <span class="clp__hero-num">{{ playerService.player().combatLevel }}</span>
+      <span class="clp__hero-label">Combat Level</span>
+    </div>
+  </div>
+
+  <div class="clp__stats">
+    @for (stat of combatStats; track stat.id) {
+      <div class="clp-stat">
+        <img class="clp-stat__icon" [src]="stat.icon" [alt]="stat.label" aria-hidden="true" />
+        <div class="clp-stat__body">
+          <div class="clp-stat__header">
+            <span class="clp-stat__name">{{ stat.label }}</span>
+            <span class="clp-stat__level">
+              {{ skill(stat.id).level }}<span class="clp-stat__max">/99</span>
+            </span>
+          </div>
+          <div class="clp-stat__track">
+            <div class="clp-stat__fill" [style.width.%]="xpPct(stat.id)" [style.background]="stat.color"></div>
+          </div>
+          <span class="clp-stat__xp">
+            {{ skill(stat.id).xpIntoLevel | number }} / {{ skill(stat.id).xpForLevel | number }} XP
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

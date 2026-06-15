@@ -283,10 +283,67 @@ $text-base: rgba(203, 193, 228, 0.85);
     &:hover { background: rgba(#22c55e, 0.18); }
   }
 
+  &__lock {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    color: rgba(203, 193, 228, 0.25);
+    margin-left: auto;
+  }
+
+  &--highlighted {
+    color: #fcd34d;
+    border-color: rgba(#fbbf24, 0.45);
+    background: rgba(#fbbf24, 0.08);
+    animation: nav-highlight-pulse 2s ease-in-out infinite;
+
+    .nav-item__pixel-icon {
+      opacity: 1;
+      filter: brightness(1.25) drop-shadow(0 0 5px rgba(251, 191, 36, 0.55));
+    }
+
+    &:hover { background: rgba(#fbbf24, 0.14); }
+  }
+
+  &--no-component {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &--locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+
+    .nav-item__pixel-icon {
+      filter: grayscale(1);
+      opacity: 0.4;
+    }
+  }
+
   &:focus-visible {
     outline: 2px solid rgba(167, 139, 250, 0.7);
     outline-offset: 2px;
   }
+
+  &--child {
+    padding-left: 0.85rem;
+    border-radius: 4px;
+  }
+}
+
+// ── Child group wrapper ───────────────────────────────────
+.nav-children {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 1px;
+  padding: 3px 3px 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 0 0 6px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: none;
 }
 
 // ── Content panel ─────────────────────────────────────────
@@ -456,6 +513,11 @@ $text-base: rgba(203, 193, 228, 0.85);
   }
 }
 
+@keyframes nav-highlight-pulse {
+  0%, 100% { border-color: rgba(#fbbf24, 0.45); background: rgba(#fbbf24, 0.08); }
+  50%       { border-color: rgba(#fbbf24, 0.75); background: rgba(#fbbf24, 0.16); }
+}
+
 @keyframes tracked-in {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -463,4 +525,5 @@ $text-base: rgba(203, 193, 228, 0.85);
 
 @media (prefers-reduced-motion: reduce) {
   .nav-item, .char-card__hp-fill { transition: none; }
+  .nav-item--highlighted { animation: none; }
 }
