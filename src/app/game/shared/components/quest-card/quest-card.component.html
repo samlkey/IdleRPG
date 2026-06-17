@@ -154,12 +154,12 @@
     <div class="quest-card__steps">
       @for (step of quest().steps!; track $index; let i = $index, last = $last) {
         @if (stepState(i) !== 'upcoming') {
-        <div class="quest-card__step quest-card__step--{{ stepState(i) }}">
+        <div class="quest-card__step quest-card__step--{{ stepState(i) }}" [class.quest-card__step--ready]="step.readyToAdvance">
 
           <!-- Timeline node + connector -->
           <div class="quest-card__step-track">
             <div class="quest-card__step-node">
-              @if (step.completed) {
+              @if (step.completed || step.readyToAdvance) {
                 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 6l3 3 5-5"/>
@@ -229,21 +229,38 @@
               </div>
             }
 
-            <!-- Action + description — revealed only after dialog completes (or no dialog) -->
+            <!-- Tasks — revealed only after dialog completes (or no dialog) -->
             @if (stepState(i) !== 'current' || !step.dialog?.length || dialogComplete()) {
               <div class="quest-card__step-action-wrap"
                 [class.quest-card__step-action-wrap--reveal]="stepState(i) === 'current' && dialogComplete() && step.dialog?.length">
-                <div class="quest-card__step-action">
-                  @if (step.icon) {
-                    <img class="quest-card__step-icon" [src]="step.icon" [alt]="" aria-hidden="true" />
-                  }
-                  <span>{{ step.action }}</span>
-                  @if (!step.completed && stepQty(step) !== null) {
-                    <span class="quest-card__step-progress">{{ step.progress ?? 0 }}/{{ stepQty(step) }}</span>
-                  }
-                </div>
-                <p class="quest-card__step-description">{{ step.description }}</p>
+                @for (task of step.tasks; track $index) {
+                  <div class="quest-card__step-action" [class.quest-card__task--done]="task.completed">
+                    @if (task.completed) {
+                      <svg class="quest-card__task-check" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M2 6l3 3 5-5"/>
+                      </svg>
+                    } @else if (taskQty(task) !== null) {
+                      <span class="quest-card__task-progress">{{ task.progress ?? 0 }}/{{ taskQty(task) }}</span>
+                    }
+                    <span class="quest-card__task-verb">{{ task.action }}</span>
+                    @if (task.icon) {
+                      <img class="quest-card__step-icon" [src]="task.icon" [alt]="" aria-hidden="true" />
+                    }
+                    <span class="quest-card__task-label">{{ task.description }}</span>
+                  </div>
+                }
               </div>
+
+              @if (step.readyToAdvance) {
+                <button class="quest-card__advance-btn" type="button" (click)="onAdvanceStep($event, i)">
+                  Continue
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                  </svg>
+                </button>
+              }
             }
 
           </div>

@@ -1,19 +1,40 @@
 <div class="skill-panel">
-
   <div class="skill-panel__hero">
-    <img class="skill-panel__hero-bg" src="assets/backgrounds/woodcutting.png" alt="" aria-hidden="true" />
+    <img
+      class="skill-panel__hero-bg"
+      src="assets/backgrounds/woodcutting.png"
+      alt=""
+      aria-hidden="true"
+    />
     <div class="skill-panel__hero-gradient"></div>
     <div class="skill-panel__header">
-      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+      <img
+        class="skill-panel__pixel-icon"
+        [src]="pixelIcon()"
+        [alt]="pixelIcon()"
+        aria-hidden="true"
+      />
       <div>
         <h1 class="skill-panel__title">Woodcutting</h1>
         <p class="skill-panel__subtitle">Chop trees and harvest timber</p>
       </div>
-      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Woodcutting">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+      <button
+        class="skill-panel__help"
+        (click)="helpOpen.set(true)"
+        aria-label="About Woodcutting"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <circle cx="12" cy="17" r=".5" fill="currentColor" />
         </svg>
       </button>
     </div>
@@ -22,12 +43,20 @@
   <div class="xp-bar">
     <div class="xp-bar__label">
       <span>Level {{ skillData.level }}</span>
-      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
+      <span
+        >{{ skillData.xpIntoLevel | number }} /
+        {{ skillData.xpForLevel | number }} XP</span
+      >
     </div>
     <div class="xp-bar__track">
-      <div class="xp-bar__fill"
-        [style.width.%]="skillData.xpForLevel > 0 ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100 : 100">
-      </div>
+      <div
+        class="xp-bar__fill"
+        [style.width.%]="
+          skillData.xpForLevel > 0
+            ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100
+            : 100
+        "
+      ></div>
     </div>
   </div>
 
@@ -39,10 +68,6 @@
     <div class="skill-info__item">
       <span class="skill-info__label">Total Skill XP</span>
       <span class="skill-info__value">{{ skillData.xp | number }}</span>
-    </div>
-    <div class="skill-info__item">
-      <span class="skill-info__label">Current Axe</span>
-      <span class="skill-info__value">{{ currentAxe }}</span>
     </div>
   </div>
 
@@ -56,7 +81,17 @@
         [duration]="tree.time"
         [image]="tree.src"
         [active]="activityService.current()?.name === tree.name"
-        [requirements]="tree.level > 1 ? [{ icon: 'assets/icons/woodcutting.png', level: tree.level, skill: 'Woodcutting' }] : []"
+        [requirements]="
+          tree.level > 1
+            ? [
+                {
+                  icon: 'assets/icons/woodcutting.png',
+                  level: tree.level,
+                  skill: 'Woodcutting',
+                },
+              ]
+            : []
+        "
         [disabled]="skillData.level < tree.level"
         (selected)="selectTree(tree)"
       />
@@ -65,9 +100,22 @@
 </div>
 
 @if (helpOpen()) {
-  <app-modal title="Woodcutting" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
-    <p>Woodcutting is a non-combat skill that allows you to chop down trees and gather logs.</p>
-    <p>Logs can be used for Firemaking and Fletching. Higher Woodcutting levels unlock access to better trees, granting more XP and rarer logs.</p>
-    <p>Equip a better axe to cut trees faster. The axe tier determines your cutting speed.</p>
+  <app-modal
+    title="Woodcutting"
+    [icon]="pixelIcon()"
+    (close)="helpOpen.set(false)"
+  >
+    <p>
+      Woodcutting is a non-combat skill that allows you to chop down trees and
+      gather logs.
+    </p>
+    <p>
+      Logs can be used for Firemaking and Fletching. Higher Woodcutting levels
+      unlock access to better trees, granting more XP and rarer logs.
+    </p>
+    <p>
+      Equip a better axe to cut trees faster. The axe tier determines your
+      cutting speed.
+    </p>
   </app-modal>
 }

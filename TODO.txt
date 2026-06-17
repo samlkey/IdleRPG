@@ -47,3 +47,14 @@ If going from magic, click on the combat spell and have it automatically set in 
 improvements on ^^ :
 Modal/overlay instead of full navigation.
 Auto-return after selection.
+
+
+-===================
+
+Crystallisation: 
+
+Get crystal cores from mining, combat, . Specific cores for different types i.e fire crystal core, water crystal core, earth. This cores depend on location like altars
+
+Attune crystals in the crystallisation tab, takes time but is passive. Result in Fire Crystal, etc. No location specific like Farming is 
+
+To get quick shops offer crystals, but at a huge cost. 

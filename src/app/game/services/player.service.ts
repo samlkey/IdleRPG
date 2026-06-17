@@ -7,25 +7,68 @@ export type GameMode = 'classic' | 'hardcore';
 // ── Skill IDs ────────────────────────────────────────────────────────────────
 
 export type SkillId =
-  | 'attack' | 'strength' | 'defence' | 'ranged' | 'magic'
-  | 'prayer' | 'hitpoints' | 'slayer'
-  | 'mining' | 'woodcutting' | 'fishing' | 'firemaking' | 'farming'
-  | 'cooking' | 'smithing' | 'agility' | 'herblore' | 'thieving'
-  | 'crafting' | 'fletching' | 'hunter' | 'construction';
+  | 'attack'
+  | 'strength'
+  | 'defence'
+  | 'ranged'
+  | 'magic'
+  | 'prayer'
+  | 'hitpoints'
+  | 'slayer'
+  | 'mining'
+  | 'woodcutting'
+  | 'fishing'
+  | 'firemaking'
+  | 'farming'
+  | 'cooking'
+  | 'smithing'
+  | 'agility'
+  | 'herblore'
+  | 'thieving'
+  | 'crafting'
+  | 'fletching'
+  | 'hunter'
+  | 'construction'
+  | 'crystallisation';
+
+export const SKILL_IDS: SkillId[] = [
+  'attack',
+  'strength',
+  'defence',
+  'ranged',
+  'magic',
+  'prayer',
+  'hitpoints',
+  'slayer',
+  'mining',
+  'woodcutting',
+  'fishing',
+  'firemaking',
+  'farming',
+  'cooking',
+  'smithing',
+  'agility',
+  'herblore',
+  'thieving',
+  'crafting',
+  'fletching',
+  'hunter',
+  'construction',
+];
 
 // ── XP table (OSRS — total XP required to reach each level) ─────────────────
 
 export const XP_TABLE: readonly number[] = [
-  0, 83, 174, 276, 388, 512, 650, 801, 969, 1154,
-  1358, 1584, 1833, 2107, 2411, 2746, 3115, 3523, 3973, 4470,
-  5018, 5624, 6291, 7028, 7842, 8740, 9730, 10824, 12031, 13363,
-  14833, 16456, 18247, 20224, 22406, 24815, 27473, 30408, 33648, 37224,
-  41171, 45529, 50339, 55649, 61512, 67983, 75127, 83014, 91721, 101333,
-  111945, 123660, 136594, 150872, 166636, 184040, 203254, 224466, 247886, 273742,
-  302288, 333804, 368599, 407015, 449428, 496254, 547953, 605032, 668051, 737627,
-  814445, 899257, 992895, 1096278, 1210421, 1336443, 1475581, 1629200, 1798808, 1986068,
-  2192818, 2421087, 2673114, 2951373, 3258594, 3597792, 3972294, 4385776, 4842295, 5346332,
-  5902831, 6517253, 7195629, 7944614, 8771558, 9684577, 10692629, 11805606, 13034431,
+  0, 83, 174, 276, 388, 512, 650, 801, 969, 1154, 1358, 1584, 1833, 2107, 2411,
+  2746, 3115, 3523, 3973, 4470, 5018, 5624, 6291, 7028, 7842, 8740, 9730, 10824,
+  12031, 13363, 14833, 16456, 18247, 20224, 22406, 24815, 27473, 30408, 33648,
+  37224, 41171, 45529, 50339, 55649, 61512, 67983, 75127, 83014, 91721, 101333,
+  111945, 123660, 136594, 150872, 166636, 184040, 203254, 224466, 247886,
+  273742, 302288, 333804, 368599, 407015, 449428, 496254, 547953, 605032,
+  668051, 737627, 814445, 899257, 992895, 1096278, 1210421, 1336443, 1475581,
+  1629200, 1798808, 1986068, 2192818, 2421087, 2673114, 2951373, 3258594,
+  3597792, 3972294, 4385776, 4842295, 5346332, 5902831, 6517253, 7195629,
+  7944614, 8771558, 9684577, 10692629, 11805606, 13034431,
 ];
 
 /** XP needed to go from `level` to `level + 1` (1-indexed, max 98). */
@@ -92,9 +135,9 @@ export interface PlayerData {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeSkill(xp = 0): SkillData {
-  const level       = levelFromXp(xp);
-  const xpAtLevel   = XP_TABLE[level - 1];
-  const xpForLevel  = level < 99 ? XP_TABLE[level] - xpAtLevel : 1;
+  const level = levelFromXp(xp);
+  const xpAtLevel = XP_TABLE[level - 1];
+  const xpForLevel = level < 99 ? XP_TABLE[level] - xpAtLevel : 1;
   const xpIntoLevel = xp - xpAtLevel;
   return { level, xp, xpToNext: xpToNextLevel(level), xpIntoLevel, xpForLevel };
 }
@@ -116,28 +159,29 @@ const INITIAL_PLAYER: PlayerData = {
     rod: 'Fly Fishing Rod',
   },
   skills: {
-    attack:       makeSkill(),
-    strength:     makeSkill(),
-    defence:      makeSkill(),
-    ranged:       makeSkill(),
-    magic:        makeSkill(),
-    prayer:       makeSkill(),
-    hitpoints:    makeSkill(1154), // starts at level 10
-    slayer:       makeSkill(),
-    mining:       makeSkill(),
-    woodcutting:  makeSkill(),
-    fishing:      makeSkill(),
-    firemaking:   makeSkill(),
-    farming:      makeSkill(),
-    cooking:      makeSkill(),
-    smithing:     makeSkill(),
-    agility:      makeSkill(),
-    herblore:     makeSkill(),
-    thieving:     makeSkill(),
-    crafting:     makeSkill(),
-    fletching:    makeSkill(),
-    hunter:       makeSkill(),
+    attack: makeSkill(),
+    strength: makeSkill(),
+    defence: makeSkill(),
+    ranged: makeSkill(),
+    magic: makeSkill(),
+    prayer: makeSkill(),
+    hitpoints: makeSkill(1154), // starts at level 10
+    slayer: makeSkill(),
+    mining: makeSkill(),
+    woodcutting: makeSkill(),
+    fishing: makeSkill(),
+    firemaking: makeSkill(),
+    farming: makeSkill(),
+    cooking: makeSkill(),
+    smithing: makeSkill(),
+    agility: makeSkill(),
+    herblore: makeSkill(),
+    thieving: makeSkill(),
+    crafting: makeSkill(),
+    fletching: makeSkill(),
+    hunter: makeSkill(),
     construction: makeSkill(),
+    crystallisation: makeSkill(),
   },
 };
 
@@ -145,7 +189,6 @@ const INITIAL_PLAYER: PlayerData = {
 
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
-
   private readonly notificationService = inject(NotificationService);
   readonly itemService = inject(ItemService);
   private readonly _player = signal<PlayerData>(INITIAL_PLAYER);
@@ -155,17 +198,17 @@ export class PlayerService {
 
   /** HP as a 0–100 percentage. */
   readonly hpPercent = computed(() =>
-    Math.round((this._player().hp / this._player().maxHp) * 100)
+    Math.round((this._player().hp / this._player().maxHp) * 100),
   );
 
   /** Total level (sum of all skill levels). */
   readonly totalLevel = computed(() =>
-    Object.values(this._player().skills).reduce((sum, s) => sum + s.level, 0)
+    Object.values(this._player().skills).reduce((sum, s) => sum + s.level, 0),
   );
 
   /** Bank usage as "used/capacity" — consumed by the sidebar badge. */
-  readonly bankSpace = computed(() =>
-    `${this.itemService.bankCount()}/${this._player().bankCapacity}`
+  readonly bankSpace = computed(
+    () => `${this.itemService.bankCount()}/${this._player().bankCapacity}`,
   );
 
   // ── Skill accessors ────────────────────────────────────────────────────────
@@ -184,28 +227,41 @@ export class PlayerService {
 
   /** Add XP to a skill and recalculate level + xpToNext. */
   addXp(id: SkillId, amount: number): void {
-    this._player.update(p => {
-      const current  = p.skills[id];
-      const newXp    = current.xp + amount;
+    this._player.update((p) => {
+      const current = p.skills[id];
+      const newXp = current.xp + amount;
       const newLevel = Math.min(levelFromXp(newXp), 99);
       if (newLevel > current.level) {
         const skillName = id.charAt(0).toUpperCase() + id.slice(1);
-        this.notificationService.show({
-          type: 'levelup',
-          message: `Level ${newLevel}!`,
-          detail: skillName,
-          icon: `assets/icons/${id}.png`,
-        }, 5000);
-        this.notificationService.levelUpEvent.set({ skill: skillName, level: newLevel });
+        this.notificationService.show(
+          {
+            type: 'levelup',
+            message: `Level ${newLevel}!`,
+            detail: skillName,
+            icon: `assets/icons/${id}.png`,
+          },
+          5000,
+        );
+        this.notificationService.levelUpEvent.set({
+          skill: skillName,
+          level: newLevel,
+        });
       }
       return {
         ...p,
         skills: {
           ...p.skills,
           [id]: (() => {
-            const xpAtLevel  = XP_TABLE[newLevel - 1];
-            const xpForLevel = newLevel < 99 ? XP_TABLE[newLevel] - xpAtLevel : 1;
-            return { level: newLevel, xp: newXp, xpToNext: xpToNextLevel(newLevel), xpIntoLevel: newXp - xpAtLevel, xpForLevel };
+            const xpAtLevel = XP_TABLE[newLevel - 1];
+            const xpForLevel =
+              newLevel < 99 ? XP_TABLE[newLevel] - xpAtLevel : 1;
+            return {
+              level: newLevel,
+              xp: newXp,
+              xpToNext: xpToNextLevel(newLevel),
+              xpIntoLevel: newXp - xpAtLevel,
+              xpForLevel,
+            };
           })(),
         },
       };
@@ -216,11 +272,15 @@ export class PlayerService {
   setLevel(id: SkillId, level: number): void {
     const clampedLevel = Math.max(1, Math.min(99, level));
     const xp = XP_TABLE[clampedLevel - 1];
-    this._player.update(p => ({
+    this._player.update((p) => ({
       ...p,
       skills: {
         ...p.skills,
-        [id]: { level: clampedLevel, xp, xpToNext: xpToNextLevel(clampedLevel) },
+        [id]: {
+          level: clampedLevel,
+          xp,
+          xpToNext: xpToNextLevel(clampedLevel),
+        },
       },
     }));
   }
@@ -231,22 +291,27 @@ export class PlayerService {
   }
 
   /** Update player character info (name, hp, combatLevel, etc.). */
-  updateCharacter(patch: Partial<Omit<PlayerData, 'skills' | 'equipment'>>): void {
-    this._player.update(p => ({ ...p, ...patch }));
+  updateCharacter(
+    patch: Partial<Omit<PlayerData, 'skills' | 'equipment'>>,
+  ): void {
+    this._player.update((p) => ({ ...p, ...patch }));
   }
 
   /** Reduce HP by amount, clamped to 0. */
   takeDamage(amount: number): void {
-    this._player.update(p => ({ ...p, hp: Math.max(0, p.hp - amount) }));
+    this._player.update((p) => ({ ...p, hp: Math.max(0, p.hp - amount) }));
   }
 
   addGold(amount: number): void {
-    this._player.update(p => ({ ...p, gold: p.gold + amount }));
+    this._player.update((p) => ({ ...p, gold: p.gold + amount }));
   }
 
   /** Update a single equipment slot. */
   updateEquipment(patch: Partial<Equipment>): void {
-    this._player.update(p => ({ ...p, equipment: { ...p.equipment, ...patch } }));
+    this._player.update((p) => ({
+      ...p,
+      equipment: { ...p.equipment, ...patch },
+    }));
   }
 
   // ── Active activity ────────────────────────────────────────────────────────
@@ -281,11 +346,15 @@ export class PlayerService {
   }
 
   markDialogSeen(questId: string, stepIndex: number): void {
-    this._seenDialogs.update(s => new Set(s).add(`${questId}:${stepIndex}`));
+    this._seenDialogs.update((s) => new Set(s).add(`${questId}:${stepIndex}`));
   }
 
   clearDialogSeen(questId: string, stepIndex: number): void {
-    this._seenDialogs.update(s => { const n = new Set(s); n.delete(`${questId}:${stepIndex}`); return n; });
+    this._seenDialogs.update((s) => {
+      const n = new Set(s);
+      n.delete(`${questId}:${stepIndex}`);
+      return n;
+    });
   }
 
   /** Set to a quest ID to request that quest be expanded in the UI. Consumers should clear it after acting. */

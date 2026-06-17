@@ -1,4 +1,12 @@
-import { Component, effect, inject, input, output, signal, OnDestroy } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  OnDestroy,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { PlayerService, SkillId } from '../../../services/player.service';
 import { QuestService } from '../../../services/quest.service';
@@ -6,11 +14,11 @@ import { QuestService } from '../../../services/quest.service';
 // ── Step condition ────────────────────────────────────────────────────────────
 
 export type StepCondition =
-  | { type: 'gather';       skillId: SkillId; itemId: string; qty: number }
-  | { type: 'navigation';   tab: string }
+  | { type: 'gather'; skillId: SkillId; itemId: string; qty: number }
+  | { type: 'navigation'; tab: string }
   | { type: 'skill-action'; skillId: SkillId; qty: number }
-  | { type: 'location';     locationId: string }
-  | { type: 'have';         itemId: string;   qty: number }
+  | { type: 'location'; locationId: string }
+  | { type: 'have'; itemId: string; qty: number }
   | { type: 'manual' };
 
 // ── Requirement types ─────────────────────────────────────────────────────────
@@ -42,19 +50,26 @@ export interface DialogLine {
 // ── Step ──────────────────────────────────────────────────────────────────────
 
 export interface QuestStep {
-  /** Short imperative task — e.g. "Cut 3 Logs" */
-  action: string;
-  /** Flavour/context text explaining why or what it involves */
-  description: string;
-  /** Optional pixel icon path for the step — e.g. a skill icon */
-  icon?: string;
-  /** Machine-readable condition that auto-completes this step */
-  condition?: StepCondition;
-  /** Current count toward a qty-based condition */
-  progress?: number;
+  stepIndex: number;
   completed: boolean;
+  readyToAdvance?: boolean;
   /** Optional dialog sequence shown when the step becomes active */
   dialog?: DialogLine[];
+  tasks: QuestTask[];
+}
+
+export interface QuestTask {
+  /** Verb + qty prefix, e.g. "Cut 5" or "Navigate to" */
+  action: string;
+  /** Item / target name shown after the icon, e.g. "Normal Logs" or "Bank" */
+  description: string;
+  /** Icon representing the target item or skill */
+  icon?: string;
+  /** Condition that marks this task complete */
+  condition?: StepCondition;
+  /** Current progress toward a qty-based condition */
+  progress?: number;
+  completed: boolean;
 }
 
 // ── Quest status ──────────────────────────────────────────────────────────────
@@ -92,7 +107,11 @@ export interface LocationReward {
   icon?: string;
 }
 
-export type QuestReward = SkillXpReward | CoinReward | UnlockReward | LocationReward;
+export type QuestReward =
+  | SkillXpReward
+  | CoinReward
+  | UnlockReward
+  | LocationReward;
 
 // ── Quest data ────────────────────────────────────────────────────────────────
 
@@ -119,11 +138,11 @@ const TYPING_SPEED_MS = 22;
   styleUrl: './quest-card.component.scss',
 })
 export class QuestCardComponent implements OnDestroy {
-  quest    = input.required<Quest>();
+  quest = input.required<Quest>();
   selected = output<Quest>();
 
   readonly playerService = inject(PlayerService);
-  readonly questService  = inject(QuestService);
+  readonly questService = inject(QuestService);
 
   get isTracked(): boolean {
     return this.playerService.trackedQuest()?.questId === this.quest().id;
@@ -134,12 +153,12 @@ export class QuestCardComponent implements OnDestroy {
     if (this.isTracked) {
       this.playerService.trackQuest(null);
     } else {
-      const step = this.currentStep;
+      const firstTask = this.currentStep?.tasks?.[0];
       this.playerService.trackQuest({
-        questId:    this.quest().id,
-        questName:  this.quest().name,
-        stepAction: step?.action ?? '',
-        stepIcon:   step?.icon,
+        questId: this.quest().id,
+        questName: this.quest().name,
+        stepAction: firstTask ? `${firstTask.action} ${firstTask.description}`.trim() : '',
+        stepIcon: firstTask?.icon,
       });
     }
   }
@@ -157,40 +176,50 @@ export class QuestCardComponent implements OnDestroy {
         this.openSteps();
         // Scroll the card into view
         setTimeout(() => {
-          document.querySelector(`[data-quest-id="${this.quest().id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          document
+            .querySelector(`[data-quest-id="${this.quest().id}"]`)
+            ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 50);
       }
     });
   }
 
   // ── Dialog state ──────────────────────────────────────────────────────────
-  dialogLineIndex  = signal(0);
-  displayedText    = signal('');
-  isTyping         = signal(false);
-  dialogComplete   = signal(false);
+  dialogLineIndex = signal(0);
+  displayedText = signal('');
+  isTyping = signal(false);
+  dialogComplete = signal(false);
 
   private typingTimer: ReturnType<typeof setInterval> | null = null;
+  private activeTypingLine: DialogLine | null = null;
 
   // ── Derived helpers ───────────────────────────────────────────────────────
 
   get skillReqs(): SkillRequirement[] {
-    return this.quest().requirements.filter((r): r is SkillRequirement => r.type === 'skill');
+    return this.quest().requirements.filter(
+      (r): r is SkillRequirement => r.type === 'skill',
+    );
   }
 
   get questReqs(): QuestRequirement[] {
-    return this.quest().requirements.filter((r): r is QuestRequirement => r.type === 'quest');
+    return this.quest().requirements.filter(
+      (r): r is QuestRequirement => r.type === 'quest',
+    );
   }
 
   get statusLabel(): string {
     switch (this.quest().status) {
-      case 'completed':   return 'Completed';
-      case 'in-progress': return 'In Progress';
-      default:            return 'Not Started';
+      case 'completed':
+        return 'Completed';
+      case 'in-progress':
+        return 'In Progress';
+      default:
+        return 'Not Started';
     }
   }
 
   get currentStepIndex(): number {
-    return this.quest().steps?.findIndex(s => !s.completed) ?? -1;
+    return this.quest().steps?.findIndex((s) => !s.completed) ?? -1;
   }
 
   get currentStep(): QuestStep | undefined {
@@ -206,11 +235,10 @@ export class QuestCardComponent implements OnDestroy {
     return this.dialogLineIndex() < (this.currentStep?.dialog?.length ?? 0) - 1;
   }
 
-  /** Returns the target qty for progress-tracked steps, null otherwise. */
-  stepQty(step: QuestStep): number | null {
-    const c = step.condition;
-    if (c?.type === 'gather' || c?.type === 'skill-action') return c.qty;
-    if (c?.type === 'have') return c.qty;
+  /** Returns the target qty for a qty-based task condition, or null. */
+  taskQty(task: QuestTask): number | null {
+    const c = task.condition;
+    if (c?.type === 'gather' || c?.type === 'skill-action' || c?.type === 'have') return c.qty;
     return null;
   }
 
@@ -225,9 +253,13 @@ export class QuestCardComponent implements OnDestroy {
 
   get canStart(): boolean {
     const p = this.playerService.player();
-    return this.quest().requirements.every(r => {
+    return this.quest().requirements.every((r) => {
       if (r.type === 'skill') return p.skills[r.skill].level >= r.level;
-      if (r.type === 'quest') return this.questService.quests().find(q => q.id === r.questId)?.status === 'completed';
+      if (r.type === 'quest')
+        return (
+          this.questService.quests().find((q) => q.id === r.questId)?.status ===
+          'completed'
+        );
       return true;
     });
   }
@@ -237,8 +269,19 @@ export class QuestCardComponent implements OnDestroy {
     this.selected.emit(this.quest());
   }
 
+  onAdvanceStep(event: MouseEvent, stepIndex: number): void {
+    event.stopPropagation();
+    const questId = this.quest().id;
+    this.questService.advanceStep(questId, stepIndex);
+    // questService.quests() is updated synchronously — use it to bypass stale quest() input
+    const freshQuest = this.questService.quests().find((q) => q.id === questId);
+    const nextIdx = freshQuest?.steps?.findIndex((s) => !s.completed) ?? -1;
+    setTimeout(() => this.openSteps(nextIdx >= 0 ? nextIdx : undefined));
+  }
+
   toggle(): void {
-    if (this.quest().status !== 'in-progress' || !this.quest().steps?.length) return;
+    if (this.quest().status !== 'in-progress' || !this.quest().steps?.length)
+      return;
     const opening = !this.expanded();
     this.expanded.set(opening);
     if (opening) {
@@ -251,15 +294,19 @@ export class QuestCardComponent implements OnDestroy {
     }
   }
 
-  /** Shared open logic used by toggle() and the auto-expand effect. */
-  private openSteps(): void {
+  /** Shared open logic used by toggle() and the auto-expand effect.
+   *  Pass `overrideIdx` when quest() input may still be stale (e.g. after advancing a step). */
+  private openSteps(overrideIdx?: number): void {
     this.resetDialog();
-    const step = this.currentStep;
-    const alreadySeen = this.playerService.isDialogSeen(this.quest().id, this.currentStepIndex);
+    const questId = this.quest().id;
+    // When overrideIdx is provided we trust it; otherwise derive from quest() input as normal
+    const si = overrideIdx ?? this.currentStepIndex;
+    // Step content is stable across updates — safe to read from quest() even if stale
+    const step = this.quest().steps?.[si];
+    const alreadySeen = this.playerService.isDialogSeen(questId, si);
     if (step?.dialog?.length && !alreadySeen) {
-      this.startTyping();
+      this.startTyping(step.dialog[0]);
     } else if (step?.dialog?.length && alreadySeen) {
-      // Show the last dialog line fully — no typewriter, no footer controls
       const lastIndex = step.dialog.length - 1;
       this.dialogLineIndex.set(lastIndex);
       this.displayedText.set(step.dialog[lastIndex].text);
@@ -295,7 +342,7 @@ export class QuestCardComponent implements OnDestroy {
       return;
     }
     if (this.hasMoreDialogLines) {
-      this.dialogLineIndex.update(i => i + 1);
+      this.dialogLineIndex.update((i) => i + 1);
       this.startTyping();
     } else {
       // All lines read — mark seen and reveal the action
@@ -310,11 +357,13 @@ export class QuestCardComponent implements OnDestroy {
     this.dialogLineIndex.set(0);
     this.displayedText.set('');
     this.dialogComplete.set(false);
+    this.activeTypingLine = null;
   }
 
-  startTyping(): void {
-    const line = this.currentDialogLine;
+  startTyping(explicitLine?: DialogLine): void {
+    const line = explicitLine ?? this.currentDialogLine;
     if (!line) return;
+    this.activeTypingLine = line;
     this.stopTyping();
     this.displayedText.set('');
     this.isTyping.set(true);
@@ -330,7 +379,7 @@ export class QuestCardComponent implements OnDestroy {
   }
 
   private finishTypingInstantly(): void {
-    const line = this.currentDialogLine;
+    const line = this.activeTypingLine ?? this.currentDialogLine;
     if (!line) return;
     this.stopTyping();
     this.displayedText.set(line.text);

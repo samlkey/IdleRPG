@@ -1,25 +1,48 @@
 <div class="skill-panel">
-
   <div class="skill-panel__header">
-    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+    <img
+      class="skill-panel__pixel-icon"
+      [src]="pixelIcon()"
+      [alt]="pixelIcon()"
+      aria-hidden="true"
+    />
     <div>
       <h1 class="skill-panel__title">Bank</h1>
       <p class="skill-panel__subtitle">Store and manage your items and gold</p>
     </div>
-    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Bank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+    <button
+      class="skill-panel__help"
+      (click)="helpOpen.set(true)"
+      aria-label="About Bank"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+        <circle cx="12" cy="17" r=".5" fill="currentColor" />
       </svg>
     </button>
   </div>
 
   <div class="bank-toolbar">
     <div class="bank-toolbar__search">
-      <svg class="bank-toolbar__search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <circle cx="6.5" cy="6.5" r="5"/>
-        <path d="M10.5 10.5l3.5 3.5" stroke-linecap="round"/>
+      <svg
+        class="bank-toolbar__search-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        aria-hidden="true"
+      >
+        <circle cx="6.5" cy="6.5" r="5" />
+        <path d="M10.5 10.5l3.5 3.5" stroke-linecap="round" />
       </svg>
       <input
         class="bank-toolbar__input"
@@ -30,16 +53,26 @@
         aria-label="Search bank items"
       />
       @if (search()) {
-        <button class="bank-toolbar__clear" (click)="search.set('')" aria-label="Clear search">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round"/>
+        <button
+          class="bank-toolbar__clear"
+          (click)="search.set('')"
+          aria-label="Clear search"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
           </svg>
         </button>
       }
     </div>
     <div class="bank-toolbar__space">
       <span class="bank-toolbar__space-label">Bank space</span>
-      <span class="bank-toolbar__space-value">{{ bankSpace }} / {{ MAX_BANK_SLOTS }}</span>
+      <span class="bank-toolbar__space-value">{{ bankSpace }}</span>
     </div>
   </div>
 
@@ -73,8 +106,14 @@
               aria-label="Delete tab"
               (click)="deleteTab(tab.id, $event)"
             >
-              <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round"/>
+              <svg
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round" />
               </svg>
             </span>
           }
@@ -83,8 +122,14 @@
     }
 
     <button class="bank-tabs__add" (click)="addTab()" aria-label="Add tab">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <path d="M8 3v10M3 8h10" stroke-linecap="round"/>
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        aria-hidden="true"
+      >
+        <path d="M8 3v10M3 8h10" stroke-linecap="round" />
       </svg>
     </button>
   </nav>
@@ -92,11 +137,17 @@
   <div class="bank-grid" role="tabpanel">
     @if (filteredItems().length === 0) {
       <div class="bank-grid__empty">
-        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <rect x="8" y="14" width="32" height="24" rx="3"/>
-          <path d="M8 20h32"/>
-          <path d="M16 8l-4 6M32 8l4 6"/>
-          <circle cx="24" cy="31" r="3"/>
+        <svg
+          viewBox="0 0 48 48"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <rect x="8" y="14" width="32" height="24" rx="3" />
+          <path d="M8 20h32" />
+          <path d="M16 8l-4 6M32 8l4 6" />
+          <circle cx="24" cy="31" r="3" />
         </svg>
         @if (search()) {
           <p>No items match "{{ search() }}"</p>
@@ -107,31 +158,60 @@
       </div>
     } @else {
       @for (entry of filteredItems(); track entry.item.id) {
-        <button class="bank-slot" [title]="entry.item.name" (click)="selectedEntry.set(entry)" type="button" [attr.aria-label]="entry.item.name">
-          <img class="bank-slot__icon" [src]="entry.item.icon" [alt]="entry.item.name" />
+        <button
+          class="bank-slot"
+          [title]="entry.item.name"
+          (click)="selectedEntry.set(entry)"
+          type="button"
+          [attr.aria-label]="entry.item.name"
+        >
+          <img
+            class="bank-slot__icon"
+            [src]="entry.item.icon"
+            [alt]="entry.item.name"
+          />
           @if (entry.qty > 1) {
-            <span class="bank-slot__qty">{{ entry.qty >= 1000 ? (entry.qty / 1000 | number:'1.0-1') + 'k' : entry.qty }}</span>
+            <span class="bank-slot__qty">{{
+              entry.qty >= 1000
+                ? (entry.qty / 1000 | number: "1.0-1") + "k"
+                : entry.qty
+            }}</span>
           }
         </button>
       }
     }
   </div>
-
 </div>
 
 @if (helpOpen()) {
   <app-modal title="Bank" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
-    <p>The Bank lets you store all your items safely. You can access your bank from any bank chest or counter in the world.</p>
+    <p>
+      The Bank lets you store all your items safely. You can access your bank
+      from any bank chest or counter in the world.
+    </p>
   </app-modal>
 }
 
 @if (selectedEntry(); as entry) {
-  <div class="item-modal-backdrop" (click)="$event.target === $event.currentTarget && selectedEntry.set(null)">
+  <div
+    class="item-modal-backdrop"
+    (click)="$event.target === $event.currentTarget && selectedEntry.set(null)"
+  >
     <div class="item-modal" role="dialog" [attr.aria-label]="entry.item.name">
-
-      <button class="item-modal__close" (click)="selectedEntry.set(null)" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <path d="M18 6L6 18M6 6l12 12"/>
+      <button
+        class="item-modal__close"
+        (click)="selectedEntry.set(null)"
+        aria-label="Close"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6L6 18M6 6l12 12" />
         </svg>
       </button>
 
@@ -140,7 +220,9 @@
       </div>
 
       <div class="item-modal__info">
-        <span class="item-modal__type">{{ entry.item.subType ?? entry.item.type }}</span>
+        <span class="item-modal__type">{{
+          entry.item.subType ?? entry.item.type
+        }}</span>
         <h2 class="item-modal__name">{{ entry.item.name }}</h2>
         <span class="item-modal__qty">× {{ entry.qty | number }}</span>
         <p class="item-modal__desc">{{ entry.item.description }}</p>
@@ -159,7 +241,6 @@
           }
         </dl>
       </div>
-
     </div>
   </div>
 }
