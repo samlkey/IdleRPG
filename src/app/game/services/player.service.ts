@@ -113,6 +113,17 @@ export interface Equipment {
   axe: string;
   pickaxe: string;
   rod: string;
+  head:   string | null;
+  cape:   string | null;
+  neck:   string | null;
+  ammo:   string | null;
+  weapon: string | null;
+  body:   string | null;
+  shield: string | null;
+  legs:   string | null;
+  hands:  string | null;
+  feet:   string | null;
+  ring:   string | null;
 }
 
 export interface PlayerData {
@@ -157,6 +168,9 @@ const INITIAL_PLAYER: PlayerData = {
     axe: 'Iron',
     pickaxe: 'Iron',
     rod: 'Fly Fishing Rod',
+    head: null, cape: null, neck: null, ammo: null,
+    weapon: null, body: null, shield: null,
+    legs: null, hands: null, feet: null, ring: null,
   },
   skills: {
     attack: makeSkill(),

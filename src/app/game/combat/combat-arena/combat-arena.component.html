@@ -1,0 +1,76 @@
+<div class="combat-arena">
+
+  <!-- Split background images (one per side with different colour grading) -->
+  @if (background()) {
+    <img class="combat-arena__bg combat-arena__bg--player" [src]="background()" alt="" aria-hidden="true" />
+    <img class="combat-arena__bg combat-arena__bg--enemy"  [src]="background()" alt="" aria-hidden="true" />
+  }
+
+  <!-- Gradient overlays -->
+  <div class="combat-arena__overlay combat-arena__overlay--player"></div>
+  <div class="combat-arena__overlay combat-arena__overlay--enemy"></div>
+
+  <!-- Centre divider -->
+  <div class="combat-arena__divider" aria-hidden="true"></div>
+
+  <!-- ── Left: Player ──────────────────────────────────────────────────── -->
+  <div class="combat-arena__half combat-arena__half--player">
+    <div class="combat-arena__stage">
+      <svg class="ca-player" viewBox="0 0 32 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="16" cy="45" rx="7"  ry="1.5" class="ps-shadow"/>
+        <rect x="9"  y="0"  width="14" height="13" class="ps-skin"/>
+        <rect x="12" y="5"  width="3"  height="3"  class="ps-eye"/>
+        <rect x="17" y="5"  width="3"  height="3"  class="ps-eye"/>
+        <rect x="13" y="10" width="6"  height="2"  class="ps-mouth"/>
+        <rect x="9"  y="14" width="14" height="13" class="ps-shirt"/>
+        <rect x="2"  y="14" width="7"  height="6"  class="ps-shirt"/>
+        <rect x="23" y="14" width="7"  height="6"  class="ps-shirt"/>
+        <rect x="9"  y="27" width="14" height="3"  class="ps-belt"/>
+        <rect x="9"  y="30" width="6"  height="11" class="ps-pants"/>
+        <rect x="17" y="30" width="6"  height="11" class="ps-pants"/>
+        <rect x="8"  y="41" width="7"  height="3"  class="ps-boot"/>
+        <rect x="17" y="41" width="7"  height="3"  class="ps-boot"/>
+      </svg>
+    </div>
+
+    <div class="combat-arena__info">
+      <div class="combat-arena__name-row">
+        <span class="combat-arena__name">{{ playerName() }}</span>
+        <span class="combat-arena__tag">You</span>
+      </div>
+      <div class="combat-arena__hp-track">
+        <div class="combat-arena__hp-fill combat-arena__hp-fill--player" [style.width.%]="hpPercent()"></div>
+      </div>
+      <span class="combat-arena__hp-text">{{ hp() }} / {{ maxHp() }} HP</span>
+    </div>
+  </div>
+
+  <!-- ── Right: Enemy ──────────────────────────────────────────────────── -->
+  <div class="combat-arena__half combat-arena__half--enemy">
+    @if (monster(); as m) {
+      <div class="combat-arena__stage">
+        <img class="ca-monster" [src]="m.icon" [alt]="m.name" aria-hidden="true" />
+      </div>
+
+      <div class="combat-arena__info">
+        <div class="combat-arena__name-row">
+          <span class="combat-arena__name">{{ m.name }}</span>
+          <span class="combat-arena__level">Lv. {{ m.level }}</span>
+        </div>
+        <div class="combat-arena__hp-track">
+          <div class="combat-arena__hp-fill combat-arena__hp-fill--enemy" [style.width.%]="enemyHpPct()"></div>
+        </div>
+        <span class="combat-arena__hp-text">{{ enemyCurrentHp() }} / {{ m.stats.health }} HP</span>
+      </div>
+    } @else {
+      <div class="combat-arena__empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9 9l6 6M15 9l-6 6"/>
+        </svg>
+        <span>No enemies here</span>
+      </div>
+    }
+  </div>
+
+</div>

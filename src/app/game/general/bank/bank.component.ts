@@ -5,6 +5,8 @@ import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { PlayerService } from '../../services/player.service';
 import { GameItem, ItemService } from '../../services/item.service';
 
+export type EquipSlot = 'head' | 'cape' | 'neck' | 'ammo' | 'weapon' | 'body' | 'shield' | 'legs' | 'hands' | 'feet' | 'ring';
+
 export interface BankTab {
   id: string;
   label: string;
@@ -44,6 +46,28 @@ export class BankComponent {
     );
   });
   readonly MAX_BANK_SLOTS = 800;
+
+  readonly equipped = computed(() => {
+    const eq = this.playerService.player().equipment;
+    const r = (id: string | null) => id ? (this.itemService.searchItemById(id) ?? null) : null;
+    return {
+      head:   r(eq.head),
+      cape:   r(eq.cape),
+      neck:   r(eq.neck),
+      ammo:   r(eq.ammo),
+      weapon: r(eq.weapon),
+      body:   r(eq.body),
+      shield: r(eq.shield),
+      legs:   r(eq.legs),
+      hands:  r(eq.hands),
+      feet:   r(eq.feet),
+      ring:   r(eq.ring),
+    };
+  });
+
+  openEquipSlot(item: GameItem | null): void {
+    if (item) this.selectedEntry.set({ item, qty: 1 });
+  }
 
   readonly tabs = signal<BankTab[]>([
     { id: 'all', label: 'All', deletable: false },

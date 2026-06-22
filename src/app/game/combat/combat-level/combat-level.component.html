@@ -33,17 +33,74 @@
     }
   </div>
 
-  <!-- Two-column battle layout -->
+  <!-- Battle layout -->
   <div class="battle-grid">
-    <!-- Left: Player side -->
+
+    <!-- Full-width combined arena -->
+    <app-combat-arena
+      class="battle-arena"
+      [background]="'assets/backgrounds/player_background_1.png'"
+      [playerName]="playerService.player().name"
+      [hpPercent]="playerService.hpPercent()"
+      [hp]="playerService.player().hp"
+      [maxHp]="playerService.player().maxHp"
+      [monster]="selectedMonster()"
+      [enemyHpPct]="100"
+    />
+
+    <!-- Left: Player controls -->
     <div class="battle-col">
-      <app-player-arena
-        [background]="'assets/backgrounds/player_background_1.png'"
-        [name]="playerService.player().name"
-        [hpPercent]="playerService.hpPercent()"
-        [hp]="playerService.player().hp"
-        [maxHp]="playerService.player().maxHp"
-      />
+
+      <!-- Food + Attack interval -->
+      <div class="combat-controls">
+
+        <button class="food-btn" type="button" title="No food equipped" disabled>
+          <svg class="food-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 13c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/>
+            <path d="M4 14h16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3z"/>
+          </svg>
+          <span class="food-btn__label">Food</span>
+        </button>
+
+        <div class="attack-timer">
+          <div class="attack-timer__header">
+            <span class="attack-timer__label">Attack Speed</span>
+            <span class="attack-timer__val">{{ attackInterval() }}s</span>
+          </div>
+          <div class="attack-timer__track">
+            <div class="attack-timer__fill" [style.width.%]="attackProgress()"></div>
+          </div>
+          <span class="attack-timer__sub">Next attack in {{ remainingAttackTime() }}s</span>
+        </div>
+
+      </div>
+
+      <!-- Combat mode picker -->
+      <div class="mode-picker">
+        <button
+          class="mode-btn"
+          [class.mode-btn--selected]="combatMode() === 'passive'"
+          (click)="combatMode.set('passive')"
+          type="button"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3L4 7v5c0 5 3.5 7.5 8 10 4.5-2.5 8-5 8-10V7L12 3z"/>
+          </svg>
+          Passive Combat
+        </button>
+        <button
+          class="mode-btn"
+          [class.mode-btn--selected]="combatMode() === 'active'"
+          (click)="combatMode.set('active')"
+          type="button"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14.5 5.5l4 4-9 9H7v-2.5l7.5-10.5z"/>
+            <line x1="4" y1="20" x2="7" y2="20"/>
+          </svg>
+          Active Combat
+        </button>
+      </div>
 
       <div class="ability-bar">
         <h2 class="clp__stats-title">Abilities</h2>
@@ -55,45 +112,23 @@
           }
         </div>
       </div>
-
     </div>
 
-    <!-- Center: Enemy side -->
+    <!-- Right: Enemy info -->
     <div class="battle-col">
-      <app-enemy-display
-        [monster]="selectedMonster()"
-        [background]="'assets/backgrounds/player_background_1.png'"
-        [hpPercent]="100"
-      />
 
-      <div class="monster-list">
-        <h2 class="clp__stats-title">Enemies</h2>
-        @if (locationMonsters().length > 0) {
-          @for (m of locationMonsters(); track m.id) {
-            <button
-              class="monster-card"
-              [class.monster-card--selected]="selectedMonster()?.id === m.id"
-              (click)="selectMonster(m)"
-              type="button"
-            >
-              <img
-                class="monster-card__sprite"
-                [src]="m.icon"
-                [alt]="m.name"
-                aria-hidden="true"
-              />
-              <div class="monster-card__body">
-                <span class="monster-card__name">{{ m.name }}</span>
-                <span class="monster-card__sub"
-                  >Lv. {{ m.level }} · {{ m.stats.health }} HP</span
-                >
-              </div>
-              <span class="monster-card__arrow">›</span>
-            </button>
-          }
-        } @else {
-          <p class="no-monsters">No enemies here — try travelling.</p>
-        }
+      <!-- Enemy attack interval -->
+      <div class="combat-controls">
+        <div class="attack-timer">
+          <div class="attack-timer__header">
+            <span class="attack-timer__label">Enemy Attack Speed</span>
+            <span class="attack-timer__val">{{ enemyAttackInterval() }}s</span>
+          </div>
+          <div class="attack-timer__track">
+            <div class="attack-timer__fill attack-timer__fill--enemy" [style.width.%]="enemyAttackProgress()"></div>
+          </div>
+          <span class="attack-timer__sub">Next attack in {{ remainingEnemyAttackTime() }}s</span>
+        </div>
       </div>
 
       <!-- Enemy Stats -->

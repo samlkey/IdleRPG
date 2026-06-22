@@ -31,33 +31,312 @@
     </button>
   </div>
 
-  <div class="bank-toolbar">
-    <div class="bank-toolbar__search">
-      <svg
-        class="bank-toolbar__search-icon"
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        aria-hidden="true"
-      >
-        <circle cx="6.5" cy="6.5" r="5" />
-        <path d="M10.5 10.5l3.5 3.5" stroke-linecap="round" />
-      </svg>
-      <input
-        class="bank-toolbar__input"
-        type="search"
-        placeholder="Search items..."
-        [ngModel]="search()"
-        (ngModelChange)="search.set($event)"
-        aria-label="Search bank items"
-      />
-      @if (search()) {
+  <div class="bank-layout">
+
+    <!-- ── Left: Equipment Panel ─────────────────────────── -->
+    <aside class="equip-panel">
+      <span class="equip-panel__title">Equipment</span>
+
+      <div class="equip-grid">
+
+        <!-- Head -->
         <button
-          class="bank-toolbar__clear"
-          (click)="search.set('')"
-          aria-label="Clear search"
+          class="equip-slot equip-slot--connect-down"
+          style="grid-area: head"
+          [class.equip-slot--filled]="equipped().head"
+          [title]="equipped().head?.name ?? 'Head slot'"
+          (click)="openEquipSlot(equipped().head)"
         >
+          @if (equipped().head; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 14v-3a5 5 0 0 1 10 0v3H7z"/>
+              <rect x="5" y="14" width="14" height="3" rx="1"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Cape -->
+        <button
+          class="equip-slot equip-slot--connect-down"
+          style="grid-area: cape"
+          [class.equip-slot--filled]="equipped().cape"
+          [title]="equipped().cape?.name ?? 'Cape slot'"
+          (click)="openEquipSlot(equipped().cape)"
+        >
+          @if (equipped().cape; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 4h6l2 16H7L9 4z"/>
+              <path d="M7 20c1.5-1 3-1.5 5-1.5s3.5.5 5 1.5"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Neck -->
+        <button
+          class="equip-slot equip-slot--connect-down"
+          style="grid-area: neck"
+          [class.equip-slot--filled]="equipped().neck"
+          [title]="equipped().neck?.name ?? 'Neck slot'"
+          (click)="openEquipSlot(equipped().neck)"
+        >
+          @if (equipped().neck; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="15.5" r="3.5"/>
+              <path d="M12 12V8"/>
+              <path d="M9.5 8a2.5 2.5 0 0 1 5 0"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Ammo -->
+        <button
+          class="equip-slot equip-slot--connect-down"
+          style="grid-area: ammo"
+          [class.equip-slot--filled]="equipped().ammo"
+          [title]="equipped().ammo?.name ?? 'Ammo slot'"
+          (click)="openEquipSlot(equipped().ammo)"
+        >
+          @if (equipped().ammo; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="4" x2="12" y2="20"/>
+              <polyline points="9,7 12,4 15,7"/>
+              <line x1="11" y1="20" x2="13" y2="20"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Weapon -->
+        <button
+          class="equip-slot"
+          style="grid-area: weapon"
+          [class.equip-slot--filled]="equipped().weapon"
+          [title]="equipped().weapon?.name ?? 'Weapon slot'"
+          (click)="openEquipSlot(equipped().weapon)"
+        >
+          @if (equipped().weapon; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14.5 5.5l4 4-9 9H7v-2.5l7.5-10.5z"/>
+              <line x1="4" y1="20" x2="7" y2="20"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Body -->
+        <button
+          class="equip-slot equip-slot--connect-down"
+          style="grid-area: body"
+          [class.equip-slot--filled]="equipped().body"
+          [title]="equipped().body?.name ?? 'Body slot'"
+          (click)="openEquipSlot(equipped().body)"
+        >
+          @if (equipped().body; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 4h8l2 3v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7L8 4z"/>
+              <line x1="10" y1="4" x2="10" y2="9"/>
+              <line x1="14" y1="4" x2="14" y2="9"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Shield -->
+        <button
+          class="equip-slot"
+          style="grid-area: shield"
+          [class.equip-slot--filled]="equipped().shield"
+          [title]="equipped().shield?.name ?? 'Shield slot'"
+          (click)="openEquipSlot(equipped().shield)"
+        >
+          @if (equipped().shield; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3L4 7v5c0 5 3.5 7.5 8 10 4.5-2.5 8-5 8-10V7L12 3z"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Legs -->
+        <button
+          class="equip-slot equip-slot--connect-down"
+          style="grid-area: legs"
+          [class.equip-slot--filled]="equipped().legs"
+          [title]="equipped().legs?.name ?? 'Legs slot'"
+          (click)="openEquipSlot(equipped().legs)"
+        >
+          @if (equipped().legs; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 3h6v9l-1.5 9H12l-1.5-6.5L9 21H7.5L6 12V3z"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Hands -->
+        <button
+          class="equip-slot"
+          style="grid-area: hands"
+          [class.equip-slot--filled]="equipped().hands"
+          [title]="equipped().hands?.name ?? 'Gloves slot'"
+          (click)="openEquipSlot(equipped().hands)"
+        >
+          @if (equipped().hands; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 13V9a1 1 0 0 1 2 0v4M11 13V8a1 1 0 0 1 2 0v5M14 13V9a1 1 0 0 1 2 0v4"/>
+              <path d="M8 13h8l.5 3.5a4.5 4.5 0 0 1-9 0L8 13z"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Feet -->
+        <button
+          class="equip-slot"
+          style="grid-area: feet"
+          [class.equip-slot--filled]="equipped().feet"
+          [title]="equipped().feet?.name ?? 'Boots slot'"
+          (click)="openEquipSlot(equipped().feet)"
+        >
+          @if (equipped().feet; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 5v12h5.5l5.5-5.5V5H7z"/>
+              <line x1="7" y1="17" x2="17" y2="17"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Ring -->
+        <button
+          class="equip-slot"
+          style="grid-area: ring"
+          [class.equip-slot--filled]="equipped().ring"
+          [title]="equipped().ring?.name ?? 'Ring slot'"
+          (click)="openEquipSlot(equipped().ring)"
+        >
+          @if (equipped().ring; as item) {
+            <img class="equip-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="equip-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"/>
+              <circle cx="12" cy="12" r="2"/>
+            </svg>
+          }
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- ── Divider ─────────────────────────────────────────── -->
+    <div class="bank-divider" aria-hidden="true"></div>
+
+    <!-- ── Right: Bank Content ───────────────────────────── -->
+    <div class="bank-content">
+
+      <div class="bank-toolbar">
+        <div class="bank-toolbar__search">
+          <svg
+            class="bank-toolbar__search-icon"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <circle cx="6.5" cy="6.5" r="5" />
+            <path d="M10.5 10.5l3.5 3.5" stroke-linecap="round" />
+          </svg>
+          <input
+            class="bank-toolbar__input"
+            type="search"
+            placeholder="Search items..."
+            [ngModel]="search()"
+            (ngModelChange)="search.set($event)"
+            aria-label="Search bank items"
+          />
+          @if (search()) {
+            <button
+              class="bank-toolbar__clear"
+              (click)="search.set('')"
+              aria-label="Clear search"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+              </svg>
+            </button>
+          }
+        </div>
+        <div class="bank-toolbar__space">
+          <span class="bank-toolbar__space-label">Bank space</span>
+          <span class="bank-toolbar__space-value">{{ bankSpace }}</span>
+        </div>
+      </div>
+
+      <nav class="bank-tabs" role="tablist">
+        @for (tab of tabs(); track tab.id) {
+          <button
+            class="bank-tabs__tab"
+            [class.bank-tabs__tab--active]="activeTab() === tab.id"
+            role="tab"
+            [attr.aria-selected]="activeTab() === tab.id"
+            (click)="activeTab.set(tab.id)"
+            (dblclick)="startRename(tab, $event)"
+          >
+            @if (editingTabId() === tab.id) {
+              <input
+                class="bank-tabs__rename"
+                [ngModel]="editingLabel()"
+                (ngModelChange)="editingLabel.set($event)"
+                (blur)="commitRename()"
+                (keydown.enter)="commitRename()"
+                (keydown.escape)="cancelRename()"
+                (click)="$event.stopPropagation()"
+                autoFocus
+              />
+            } @else {
+              {{ tab.label }}
+              @if (tab.deletable) {
+                <span
+                  class="bank-tabs__delete"
+                  role="button"
+                  aria-label="Delete tab"
+                  (click)="deleteTab(tab.id, $event)"
+                >
+                  <svg
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    aria-hidden="true"
+                  >
+                    <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round" />
+                  </svg>
+                </span>
+              }
+            }
+          </button>
+        }
+        <button class="bank-tabs__add" (click)="addTab()" aria-label="Add tab">
           <svg
             viewBox="0 0 16 16"
             fill="none"
@@ -65,122 +344,61 @@
             stroke-width="1.5"
             aria-hidden="true"
           >
-            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+            <path d="M8 3v10M3 8h10" stroke-linecap="round" />
           </svg>
         </button>
-      }
-    </div>
-    <div class="bank-toolbar__space">
-      <span class="bank-toolbar__space-label">Bank space</span>
-      <span class="bank-toolbar__space-value">{{ bankSpace }}</span>
-    </div>
-  </div>
+      </nav>
 
-  <nav class="bank-tabs" role="tablist">
-    @for (tab of tabs(); track tab.id) {
-      <button
-        class="bank-tabs__tab"
-        [class.bank-tabs__tab--active]="activeTab() === tab.id"
-        role="tab"
-        [attr.aria-selected]="activeTab() === tab.id"
-        (click)="activeTab.set(tab.id)"
-        (dblclick)="startRename(tab, $event)"
-      >
-        @if (editingTabId() === tab.id) {
-          <input
-            class="bank-tabs__rename"
-            [ngModel]="editingLabel()"
-            (ngModelChange)="editingLabel.set($event)"
-            (blur)="commitRename()"
-            (keydown.enter)="commitRename()"
-            (keydown.escape)="cancelRename()"
-            (click)="$event.stopPropagation()"
-            autoFocus
-          />
-        } @else {
-          {{ tab.label }}
-          @if (tab.deletable) {
-            <span
-              class="bank-tabs__delete"
-              role="button"
-              aria-label="Delete tab"
-              (click)="deleteTab(tab.id, $event)"
+      <div class="bank-grid" role="tabpanel">
+        @if (filteredItems().length === 0) {
+          <div class="bank-grid__empty">
+            <svg
+              viewBox="0 0 48 48"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
             >
-              <svg
-                viewBox="0 0 10 10"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                aria-hidden="true"
-              >
-                <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round" />
-              </svg>
-            </span>
-          }
-        }
-      </button>
-    }
-
-    <button class="bank-tabs__add" (click)="addTab()" aria-label="Add tab">
-      <svg
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        aria-hidden="true"
-      >
-        <path d="M8 3v10M3 8h10" stroke-linecap="round" />
-      </svg>
-    </button>
-  </nav>
-
-  <div class="bank-grid" role="tabpanel">
-    @if (filteredItems().length === 0) {
-      <div class="bank-grid__empty">
-        <svg
-          viewBox="0 0 48 48"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          aria-hidden="true"
-        >
-          <rect x="8" y="14" width="32" height="24" rx="3" />
-          <path d="M8 20h32" />
-          <path d="M16 8l-4 6M32 8l4 6" />
-          <circle cx="24" cy="31" r="3" />
-        </svg>
-        @if (search()) {
-          <p>No items match "{{ search() }}"</p>
+              <rect x="8" y="14" width="32" height="24" rx="3" />
+              <path d="M8 20h32" />
+              <path d="M16 8l-4 6M32 8l4 6" />
+              <circle cx="24" cy="31" r="3" />
+            </svg>
+            @if (search()) {
+              <p>No items match "{{ search() }}"</p>
+            } @else {
+              <p>Your bank is empty</p>
+              <span>Items you collect will appear here</span>
+            }
+          </div>
         } @else {
-          <p>Your bank is empty</p>
-          <span>Items you collect will appear here</span>
+          @for (entry of filteredItems(); track entry.item.id) {
+            <button
+              class="bank-slot"
+              [title]="entry.item.name"
+              (click)="selectedEntry.set(entry)"
+              type="button"
+              [attr.aria-label]="entry.item.name"
+            >
+              <img
+                class="bank-slot__icon"
+                [src]="entry.item.icon"
+                [alt]="entry.item.name"
+              />
+              @if (entry.qty > 1) {
+                <span class="bank-slot__qty">{{
+                  entry.qty >= 1000
+                    ? (entry.qty / 1000 | number: "1.0-1") + "k"
+                    : entry.qty
+                }}</span>
+              }
+            </button>
+          }
         }
       </div>
-    } @else {
-      @for (entry of filteredItems(); track entry.item.id) {
-        <button
-          class="bank-slot"
-          [title]="entry.item.name"
-          (click)="selectedEntry.set(entry)"
-          type="button"
-          [attr.aria-label]="entry.item.name"
-        >
-          <img
-            class="bank-slot__icon"
-            [src]="entry.item.icon"
-            [alt]="entry.item.name"
-          />
-          @if (entry.qty > 1) {
-            <span class="bank-slot__qty">{{
-              entry.qty >= 1000
-                ? (entry.qty / 1000 | number: "1.0-1") + "k"
-                : entry.qty
-            }}</span>
-          }
-        </button>
-      }
-    }
-  </div>
+
+    </div><!-- /bank-content -->
+  </div><!-- /bank-layout -->
 </div>
 
 @if (helpOpen()) {

@@ -6,14 +6,13 @@ import { MonsterService, Monster } from '../../services/monster.service';
 import { ItemService, GameItem } from '../../services/item.service';
 import { GameLocation } from '../../services/location.service';
 import { WORLDS } from '../../data/world.data';
-import { EnemyDisplayComponent } from '../enemy-display/enemy-display.component';
-import { PlayerArenaComponent } from '../player-arena/player-arena.component';
+import { CombatArenaComponent } from '../combat-arena/combat-arena.component';
 
 interface CombatStat { id: SkillId; label: string; icon: string; color: string; }
 
 @Component({
   selector: 'app-combat-level',
-  imports: [DecimalPipe, EnemyDisplayComponent, PlayerArenaComponent],
+  imports: [DecimalPipe, CombatArenaComponent],
   templateUrl: './combat-level.component.html',
   styleUrl: './combat-level.component.scss',
 })
@@ -33,7 +32,19 @@ export class CombatLevelComponent {
     { id: 'hitpoints', label: 'Hitpoints', icon: 'assets/icons/hitpoints.png', color: '#f43f5e' },
   ];
 
-  readonly selectedMonster = signal<Monster | null>(null);
+  readonly selectedMonster   = signal<Monster | null>(null);
+  readonly combatMode        = signal<'passive' | 'active'>('passive');
+  readonly attackInterval    = signal(2.4);
+  readonly attackProgress    = signal(0);
+  readonly enemyAttackInterval  = signal(3.0);
+  readonly enemyAttackProgress  = signal(0);
+
+  readonly remainingAttackTime = computed(() =>
+    ((1 - this.attackProgress() / 100) * this.attackInterval()).toFixed(1)
+  );
+  readonly remainingEnemyAttackTime = computed(() =>
+    ((1 - this.enemyAttackProgress() / 100) * this.enemyAttackInterval()).toFixed(1)
+  );
 
   readonly locationMonsters = computed(() => {
     const ids = this.locationService.current().monsters ?? [];

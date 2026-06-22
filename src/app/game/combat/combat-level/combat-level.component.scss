@@ -47,12 +47,16 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   }
 }
 
-// ── Two-column battle grid ────────────────────────────────────────────────────
+// ── Battle grid ───────────────────────────────────────────────────────────────
 .battle-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   align-items: start;
+}
+
+.battle-arena {
+  grid-column: 1 / -1;
 }
 
 .battle-col {
@@ -230,6 +234,48 @@ $text-muted:  rgba(203, 193, 228, 0.45);
     font-size: 0.65rem;
     color: $text-muted;
     font-variant-numeric: tabular-nums;
+  }
+}
+
+// ── Combat mode picker ────────────────────────────────────────────────────────
+
+.mode-picker {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mode-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.5rem;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+  color: $text-muted;
+  font-size: 0.75rem;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(.mode-btn--selected) {
+    background: rgba(255, 255, 255, 0.04);
+    color: $text-base;
+  }
+
+  &--selected {
+    background: rgba($accent, 0.12);
+    border-color: rgba($accent, 0.4);
+    color: #a78bfa;
   }
 }
 
@@ -470,4 +516,104 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   border: 1px dashed rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   margin: 0;
+}
+
+// ── Combat controls (food + attack timer) ─────────────────────────────────────
+
+.combat-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem;
+  min-height: calc(58px + 2 * 0.85rem);
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 10px;
+}
+
+.food-btn {
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  cursor: not-allowed;
+  transition: background 150ms ease, border-color 150ms ease;
+
+  &:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &__icon {
+    width: 26px;
+    height: 26px;
+    color: $text-muted;
+    opacity: 0.45;
+  }
+
+  &__label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $text-muted;
+    opacity: 0.65;
+  }
+}
+
+.attack-timer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  &__label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: $text-muted;
+  }
+
+  &__val {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-base;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, $accent, #a78bfa);
+    border-radius: 99px;
+    transition: width 100ms linear;
+
+    &--enemy { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+  }
+
+  &__sub {
+    font-size: 0.62rem;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+  }
 }
