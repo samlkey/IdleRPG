@@ -16,21 +16,7 @@
   <!-- ── Left: Player ──────────────────────────────────────────────────── -->
   <div class="combat-arena__half combat-arena__half--player">
     <div class="combat-arena__stage">
-      <svg class="ca-player" viewBox="0 0 32 46" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <ellipse cx="16" cy="45" rx="7"  ry="1.5" class="ps-shadow"/>
-        <rect x="9"  y="0"  width="14" height="13" class="ps-skin"/>
-        <rect x="12" y="5"  width="3"  height="3"  class="ps-eye"/>
-        <rect x="17" y="5"  width="3"  height="3"  class="ps-eye"/>
-        <rect x="13" y="10" width="6"  height="2"  class="ps-mouth"/>
-        <rect x="9"  y="14" width="14" height="13" class="ps-shirt"/>
-        <rect x="2"  y="14" width="7"  height="6"  class="ps-shirt"/>
-        <rect x="23" y="14" width="7"  height="6"  class="ps-shirt"/>
-        <rect x="9"  y="27" width="14" height="3"  class="ps-belt"/>
-        <rect x="9"  y="30" width="6"  height="11" class="ps-pants"/>
-        <rect x="17" y="30" width="6"  height="11" class="ps-pants"/>
-        <rect x="8"  y="41" width="7"  height="3"  class="ps-boot"/>
-        <rect x="17" y="41" width="7"  height="3"  class="ps-boot"/>
-      </svg>
+      <img class="ca-player" [src]="anim.idleFrame()" alt="" aria-hidden="true" />
     </div>
 
     <div class="combat-arena__info">

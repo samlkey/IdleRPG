@@ -1,5 +1,6 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Monster } from '../../services/monster.service';
+import { CharacterAnimationService } from '../../services/character-animation.service';
 
 @Component({
   selector: 'app-combat-arena',
@@ -8,6 +9,7 @@ import { Monster } from '../../services/monster.service';
   styleUrl: './combat-arena.component.scss',
 })
 export class CombatArenaComponent {
+  readonly anim = inject(CharacterAnimationService);
   readonly background  = input<string>('');
   readonly playerName  = input<string>('Adventurer');
   readonly hpPercent   = input<number>(100);

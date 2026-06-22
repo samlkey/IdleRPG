@@ -40,41 +40,16 @@ $accent: #7c3aed;
   transform-origin: center bottom;
 
   &--working {
-    animation: char-work 0.5s ease-in-out infinite;
+    animation: none;
   }
 }
 
 .char-figure {
-  width: 48px;
-  height: auto;
   display: block;
-}
-
-// ── SVG element fills ─────────────────────────────────────
-
-.char-shadow {
-  fill: rgba(0, 0, 0, 0.3);
-}
-.char-skin {
-  fill: #f5c7a2;
-}
-.char-eye {
-  fill: #2d1a4e;
-}
-.char-mouth {
-  fill: #d4937a;
-}
-.char-shirt {
-  fill: $accent;
-}
-.char-belt {
-  fill: #2d1b69;
-}
-.char-pants {
-  fill: #3b1f8c;
-}
-.char-boot {
-  fill: #1a0f3d;
+  width: 200px;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 // ── Status label ──────────────────────────────────────────
