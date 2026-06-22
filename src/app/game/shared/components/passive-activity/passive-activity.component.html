@@ -1,0 +1,122 @@
+<button
+  class="passive-card"
+  [class.passive-card--processing]="isProcessing()"
+  [class.passive-card--ready]="isReady()"
+  [class.passive-card--disabled]="disabled()"
+  [disabled]="disabled() || isProcessing()"
+  (click)="onClick()"
+  type="button"
+>
+
+  <!-- Ready badge -->
+  @if (isReady()) {
+    <div class="passive-card__ready-badge" aria-live="polite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Ready!
+    </div>
+  }
+
+  <!-- Info -->
+  <div class="passive-card__info">
+    <span class="passive-card__label">
+      @if (isProcessing()) { Processing }
+      @else if (isReady()) { Complete }
+      @else { Passive }
+    </span>
+    <h2 class="passive-card__name">{{ name() }}</h2>
+  </div>
+
+  <!-- Item flow -->
+  <div class="passive-card__items">
+    @let s = slot();
+    @if (s?.inputItem && s?.outputItem) {
+      @let inp = s.inputItem;
+      @let out = s.outputItem;
+      <div class="passive-card__item" [class.passive-card__item--faded]="isProcessing()">
+        <img class="passive-card__item-img" [src]="inp?.icon" [alt]="inp?.name" />
+        <span class="passive-card__item-name">{{ inp?.name }}</span>
+      </div>
+      <div class="passive-card__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="passive-card__item" [class.passive-card__item--glow]="isReady()">
+        <img class="passive-card__item-img" [src]="out?.icon" [alt]="out?.name" />
+        <span class="passive-card__item-name">{{ out?.name }}</span>
+      </div>
+    } @else {
+      <div class="passive-card__empty-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 8v4m0 4h.01" stroke-linecap="round"/>
+        </svg>
+        Select a recipe to begin
+      </div>
+    }
+  </div>
+
+  <!-- Progress bar -->
+  <div class="passive-card__progress-track">
+    <div class="passive-card__progress-fill" [style.width.%]="progressPct()"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="passive-card__footer">
+    <span class="passive-card__status">
+      @if (isProcessing()) {
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v3.75l2.5 1.5" stroke-linecap="round"/>
+        </svg>
+        {{ timeRemaining() }}
+      } @else if (isReady()) {
+        Tap to collect
+      } @else {
+        Tap to select recipe
+      }
+    </span>
+    <span class="passive-card__pct">{{ progressPct() | number:'1.0-0' }}%</span>
+  </div>
+
+</button>
+
+<!-- Recipe selection modal -->
+@if (modalOpen()) {
+  <app-modal
+    title="Select Recipe"
+    (close)="modalOpen.set(false)"
+  >
+    <div class="recipe-list">
+      @for (recipe of availableRecipes(); track recipe.input.id) {
+        <button
+          class="recipe-card"
+          (click)="selectRecipe(recipe)"
+          type="button"
+        >
+          <div class="recipe-card__item">
+            <img class="recipe-card__icon" [src]="recipe.input.icon" [alt]="recipe.input.name" />
+            <span class="recipe-card__name">{{ recipe.input.name }}</span>
+            <span class="recipe-card__count" [class.recipe-card__count--empty]="inputCount(recipe) === 0">
+              x{{ inputCount(recipe) }}
+            </span>
+          </div>
+
+          <div class="recipe-card__arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="recipe-card__item">
+            <img class="recipe-card__icon" [src]="recipe.output.icon" [alt]="recipe.output.name" />
+            <span class="recipe-card__name">{{ recipe.output.name }}</span>
+            <span class="recipe-card__yield">x{{ recipe.quantity }}</span>
+            <span class="recipe-card__duration">{{ formatDuration(recipe.duration) }}</span>
+          </div>
+        </button>
+      }
+    </div>
+  </app-modal>
+}

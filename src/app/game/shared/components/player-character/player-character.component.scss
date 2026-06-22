@@ -1,0 +1,137 @@
+$accent: #7c3aed;
+
+// ── Stage ─────────────────────────────────────────────────
+
+.char-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  height: 320px;
+  padding: 0 0 1.25rem;
+  flex-shrink: 0;
+  position: relative;
+  background: url("../../../../../assets/backgrounds/player_background_1.png")
+    center / cover no-repeat;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(9, 9, 15, 0.2) 0%,
+      rgba(9, 9, 15, 0.05) 100%
+    );
+    pointer-events: none;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// ── Character frame & animations ──────────────────────────
+
+.char-frame {
+  animation: char-idle 2.8s ease-in-out infinite;
+  transform-origin: center bottom;
+
+  &--working {
+    animation: char-work 0.5s ease-in-out infinite;
+  }
+}
+
+.char-figure {
+  width: 48px;
+  height: auto;
+  display: block;
+}
+
+// ── SVG element fills ─────────────────────────────────────
+
+.char-shadow {
+  fill: rgba(0, 0, 0, 0.3);
+}
+.char-skin {
+  fill: #f5c7a2;
+}
+.char-eye {
+  fill: #2d1a4e;
+}
+.char-mouth {
+  fill: #d4937a;
+}
+.char-shirt {
+  fill: $accent;
+}
+.char-belt {
+  fill: #2d1b69;
+}
+.char-pants {
+  fill: #3b1f8c;
+}
+.char-boot {
+  fill: #1a0f3d;
+}
+
+// ── Status label ──────────────────────────────────────────
+
+.char-status {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  }
+
+  &__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+    animation: dot-pulse 1.1s ease-in-out infinite alternate;
+  }
+}
+
+// ── Keyframes ─────────────────────────────────────────────
+
+@keyframes char-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes char-work {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(5deg);
+  }
+}
+
+@keyframes dot-pulse {
+  from {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}

@@ -58,3 +58,10 @@ Get crystal cores from mining, combat, . Specific cores for different types i.e 
 Attune crystals in the crystallisation tab, takes time but is passive. Result in Fire Crystal, etc. No location specific like Farming is 
 
 To get quick shops offer crystals, but at a huge cost. 
+
+
+------
+
+Animation Panel
+
+Put crits there

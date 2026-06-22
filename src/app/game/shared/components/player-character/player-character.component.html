@@ -1,0 +1,40 @@
+<div class="char-stage">
+
+  <div class="char-frame" [class.char-frame--working]="state() === 'working'">
+    <svg class="char-figure" viewBox="0 0 32 46" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shadow -->
+      <ellipse cx="16" cy="45" rx="7" ry="1.5" class="char-shadow"/>
+      <!-- Head -->
+      <rect x="9" y="0" width="14" height="13" class="char-skin"/>
+      <!-- Eyes -->
+      <rect x="12" y="5" width="3" height="3" class="char-eye"/>
+      <rect x="17" y="5" width="3" height="3" class="char-eye"/>
+      <!-- Mouth -->
+      <rect x="13" y="10" width="6" height="2" class="char-mouth"/>
+      <!-- Body / shirt -->
+      <rect x="9" y="14" width="14" height="13" class="char-shirt"/>
+      <!-- Left arm -->
+      <rect x="2" y="14" width="7" height="6" class="char-shirt"/>
+      <!-- Right arm -->
+      <rect x="23" y="14" width="7" height="6" class="char-shirt"/>
+      <!-- Belt -->
+      <rect x="9" y="27" width="14" height="3" class="char-belt"/>
+      <!-- Left leg -->
+      <rect x="9" y="30" width="6" height="11" class="char-pants"/>
+      <!-- Right leg -->
+      <rect x="17" y="30" width="6" height="11" class="char-pants"/>
+      <!-- Left boot -->
+      <rect x="8" y="41" width="7" height="3" class="char-boot"/>
+      <!-- Right boot -->
+      <rect x="17" y="41" width="7" height="3" class="char-boot"/>
+    </svg>
+  </div>
+
+  <div class="char-status">
+    @if (state() === 'working') {
+      <span class="char-status__dot" aria-hidden="true"></span>
+    }
+    <span class="char-status__label">{{ activityLabel() }}</span>
+  </div>
+
+</div>

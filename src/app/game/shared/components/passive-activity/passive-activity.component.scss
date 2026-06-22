@@ -1,0 +1,319 @@
+$surface:    #111118;
+$border:     rgba(255, 255, 255, 0.07);
+$accent:     #7c3aed;
+$accent-lt:  #a78bfa;
+$green:      #22c55e;
+$green-lt:   #4ade80;
+$text-base:  rgba(203, 193, 228, 0.85);
+$text-muted: rgba(203, 193, 228, 0.45);
+
+// ── Passive card ─────────────────────────────────────────────────────────────
+
+.passive-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  height: 340px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 120ms ease, background 150ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: rgba($accent-lt, 0.45);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
+    background: lighten($surface, 2.5%);
+    transform: translateY(-2px);
+    .passive-card__name { color: #fff; }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.25);
+  }
+
+  &:focus-visible { outline: 2px solid $accent-lt; outline-offset: 2px; }
+
+  &--processing {
+    border-color: rgba($accent-lt, 0.5);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.2), 0 8px 28px rgba(0, 0, 0, 0.4);
+    background: rgba($accent, 0.04);
+    cursor: default;
+
+    .passive-card__progress-fill { background: linear-gradient(90deg, $accent, $accent-lt); transition: width 100ms linear; }
+    .passive-card__pct { color: $accent-lt; font-weight: 600; }
+  }
+
+  &--ready {
+    border-color: rgba($green, 0.65);
+    box-shadow: 0 0 0 1px rgba($green, 0.2), 0 8px 32px rgba($green, 0.15);
+    background: rgba($green, 0.04);
+    animation: ready-pulse 0.8s ease-in-out infinite alternate;
+
+    .passive-card__progress-fill { background: linear-gradient(90deg, #16a34a, $green-lt); }
+    .passive-card__pct { color: $green-lt; font-weight: 600; }
+    .passive-card__status { color: $green-lt; }
+  }
+
+  &--disabled, &:disabled {
+    cursor: not-allowed;
+    .passive-card__info, .passive-card__items, .passive-card__progress-track { opacity: 0.35; filter: grayscale(0.6); }
+  }
+
+  // ── Ready badge ─────────────────────────────────────────
+  &__ready-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba($green, 0.15);
+    border: 1px solid rgba($green, 0.5);
+    border-radius: 99px;
+    padding: 0.2rem 0.65rem 0.2rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $green-lt;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    z-index: 2;
+    animation: badge-in 150ms ease;
+
+    svg { width: 12px; height: 12px; }
+  }
+
+  // ── Info ────────────────────────────────────────────────
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 1.25rem 1.5rem 0.75rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  &__name {
+    margin: 0;
+    font-family: 'Georgia', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e2d9f3;
+    letter-spacing: 0.01em;
+  }
+
+  // ── Item flow ───────────────────────────────────────────
+  &__items {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0 1.5rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    transition: opacity 200ms ease, filter 200ms ease;
+
+    &--faded { opacity: 0.4; filter: grayscale(0.5); }
+    &--glow .passive-card__item-img { filter: drop-shadow(0 0 10px rgba($green, 0.7)); }
+  }
+
+  &__item-img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  }
+
+  &__item-name {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    color: $text-muted;
+    flex-shrink: 0;
+    svg { width: 18px; height: 18px; opacity: 0.5; }
+  }
+
+  &__empty-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: $text-muted;
+    font-size: 0.75rem;
+    text-align: center;
+    svg { width: 28px; height: 28px; opacity: 0.35; }
+  }
+
+  // ── Progress bar ────────────────────────────────────────
+  &__progress-track {
+    width: calc(100% - 2rem);
+    height: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 0 1rem;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $accent, $accent-lt);
+    border-radius: 99px;
+    transition: width 300ms ease;
+  }
+
+  // ── Footer ──────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.6rem 1rem 0.9rem;
+    font-size: 0.75rem;
+    color: $text-muted;
+    min-height: 56px;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-variant-numeric: tabular-nums;
+    svg { width: 12px; height: 12px; opacity: 0.6; flex-shrink: 0; }
+  }
+
+  &__pct { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+}
+
+// ── Recipe selection modal ────────────────────────────────────────────────────
+
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recipe-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms ease, background 120ms ease, transform 100ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: rgba($accent-lt, 0.5);
+    background: rgba($accent, 0.08);
+    transform: translateX(2px);
+  }
+
+  &:focus-visible { outline: 2px solid $accent-lt; outline-offset: 2px; }
+
+  &--disabled, &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    filter: grayscale(0.4);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2d9f3;
+  }
+
+  &__count {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+
+    &--empty { color: rgba(239, 68, 68, 0.8); }
+  }
+
+  &__yield {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $green-lt;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__duration {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__arrow {
+    color: $text-muted;
+    flex-shrink: 0;
+    svg { width: 16px; height: 16px; opacity: 0.45; }
+  }
+}
+
+@keyframes ready-pulse {
+  from { box-shadow: 0 0 0 1px rgba($green, 0.15), 0 8px 28px rgba($green, 0.1); }
+  to   { box-shadow: 0 0 0 2px rgba($green, 0.4),  0 8px 36px rgba($green, 0.3); }
+}
+
+@keyframes badge-in {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}

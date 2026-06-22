@@ -16,7 +16,7 @@
       />
       <div>
         <h1 class="skill-panel__title">Crystallisation</h1>
-        <p class="skill-panel__subtitle">Attune to the power of crystals</p>
+        <p class="skill-panel__subtitle">Transform materials into crystals</p>
       </div>
       <button
         class="skill-panel__help"
@@ -38,31 +38,78 @@
         </svg>
       </button>
     </div>
-
-    <div class="xp-bar">
-      <div class="xp-bar__label">
-        <span>Level 1</span>
-        <span>0 / 83 XP</span>
-      </div>
-      <div class="xp-bar__track">
-        <div class="xp-bar__fill" style="width: 0%"></div>
-      </div>
-    </div>
-
-    <p class="placeholder">Crystallisation actions will appear here.</p>
   </div>
 
-  @if (helpOpen()) {
-    <app-modal
-      title="Crystallisation"
-      [icon]="pixelIcon()"
-      (close)="helpOpen.set(false)"
-    >
-      <p>
-        Crystallisation lets you attune to the power of crystals, creating
-        jewellery, armour, and other items from raw materials like hides, gems,
-        and clay.
-      </p>
-    </app-modal>
-  }
+  <div class="xp-bar">
+    <div class="xp-bar__label">
+      <span>Level {{ skillData.level }}</span>
+      <span
+        >{{ skillData.xpIntoLevel | number }} /
+        {{ skillData.xpForLevel | number }} XP</span
+      >
+    </div>
+    <div class="xp-bar__track">
+      <div
+        class="xp-bar__fill"
+        [style.width.%]="
+          skillData.xpForLevel > 0
+            ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100
+            : 100
+        "
+      ></div>
+    </div>
+  </div>
+
+  <div class="skill-info">
+    <div class="skill-info__item">
+      <span class="skill-info__label">Skill Level</span>
+      <span class="skill-info__value">{{ skillData.level }}/99</span>
+    </div>
+    <div class="skill-info__item">
+      <span class="skill-info__label">Total Skill XP</span>
+      <span class="skill-info__value">{{ skillData.xp | number }}</span>
+    </div>
+  </div>
+
+  <div class="activity-grid">
+    <app-passive-activity
+      slotId="catalyst_0"
+      name="Catalyst Slot 1"
+      [slotMap]="CrystalSlotMap"
+    />
+
+    <app-passive-activity
+      slotId="catalyst_1"
+      name="Catalyst Slot 2"
+      [slotMap]="CrystalSlotMap"
+    />
+
+    <app-passive-activity
+      slotId="catalyst_2"
+      name="Catalyst Slot 3"
+      [slotMap]="CrystalSlotMap"
+    />
+  </div>
 </div>
+
+@if (helpOpen()) {
+  <app-modal
+    title="Crystallisation"
+    [icon]="pixelIcon()"
+    (close)="helpOpen.set(false)"
+  >
+    <p>
+      Crystallisation is a non-combat skill that allows you to transform
+      materials into crystals.
+    </p>
+    <p>
+      Crystals can be used for various crafting and alchemy purposes. Higher
+      Crystallisation levels unlock access to better materials, granting more XP
+      and rarer crystals.
+    </p>
+    <p>
+      Equip better tools to crystallise materials faster. The tool tier
+      determines your crystallisation speed.
+    </p>
+  </app-modal>
+}

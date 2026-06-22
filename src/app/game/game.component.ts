@@ -37,6 +37,7 @@ import { LocationService } from './services/location.service';
 import { ItemService } from './services/item.service';
 import { QuestService } from './services/quest.service';
 import { ActiveBuffsComponent } from './shared/components/active-buffs/active-buffs.component';
+import { PlayerCharacterComponent } from './shared/components/player-character/player-character.component';
 // Settings
 import { SettingsComponent } from './settings/settings.component';
 
@@ -93,6 +94,7 @@ interface NavSection {
     LevelUpComponent,
     QuestCompleteModalComponent,
     ActiveBuffsComponent,
+    PlayerCharacterComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',

@@ -257,6 +257,14 @@ export const ITEMS: GameItem[] = [
     type: 'resource',
     subType: 'crystal',
   },
+  {
+    id: 'water-crystal',
+    name: 'Water Crystal',
+    description: 'A refined water crystal.',
+    icon: 'assets/objects/water_crystal.png',
+    type: 'resource',
+    subType: 'crystal',
+  },
   //TODO: Remove these
   // ── Runes ────────────────────────────────────────────────────────────────────
   {
