@@ -1,86 +1,165 @@
-$bg:         #09090f;
-$surface:    #111118;
-$surface-lt: #1a1a26;
-$border:     rgba(255, 255, 255, 0.07);
-$accent:     #7c3aed;
-$text-base:  rgba(203, 193, 228, 0.85);
-$text-muted: rgba(203, 193, 228, 0.45);
+$bg:          #09090f;
+$content-pad: 2rem;
+$surface:     #111118;
+$surface-lt:  #1a1a26;
+$border:      rgba(255, 255, 255, 0.07);
+$accent:      #7c3aed;
+$red:         #ef4444;
+$text-base:   rgba(203, 193, 228, 0.85);
+$text-muted:  rgba(203, 193, 228, 0.45);
 
-.clp {
-  max-width: 480px;
-  margin: 0 auto;
+// ── Skill-panel layout ────────────────────────────────────────────────────────
+.skill-panel {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
-// ── Hero ──────────────────────────────────────────────────────────────────────
-.clp__hero {
-  display: flex;
-  justify-content: center;
-  padding: 2rem 0 1rem;
-}
-
-.clp__hero-badge {
+// ── Combat level badge (right side of header) ─────────────────────────────────
+.clp-lvl-badge {
+  margin-left: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  padding: 1.75rem 3rem;
-  background: radial-gradient(ellipse at top, rgba($accent, 0.15), transparent 70%);
-  border: 1px solid rgba($accent, 0.25);
-  border-radius: 12px;
-  position: relative;
+  padding: 0.4rem 0.75rem;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba($red, 0.3);
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-color: rgba($accent, 0.4);
-    border-style: solid;
+  &__num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fca5a5;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
-  &::before { top: 6px; left: 6px;  border-width: 1px 0 0 1px; border-radius: 2px 0 0 0; }
-  &::after  { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; border-radius: 0 0 2px 0; }
+
+  &__label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 0.1rem;
+  }
 }
 
-.clp__hero-swords {
-  width: 22px;
-  height: 22px;
-  color: rgba(239, 68, 68, 0.65);
-  margin-bottom: 0.25rem;
+// ── Two-column battle grid ────────────────────────────────────────────────────
+.battle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
 }
 
-.clp__hero-num {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1;
-  color: #e2d9f3;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
+.battle-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.clp__hero-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+// ── Monster list ──────────────────────────────────────────────────────────────
+.monster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.monster-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  &--selected {
+    background: rgba($red, 0.08);
+    border-color: rgba($red, 0.35);
+  }
+
+  &__sprite {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-base;
+  }
+
+  &__sub {
+    font-size: 0.7rem;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__arrow {
+    font-size: 1.1rem;
+    color: $text-muted;
+    flex-shrink: 0;
+  }
+}
+
+.no-monsters {
+  font-size: 0.8rem;
   color: $text-muted;
+  text-align: center;
+  padding: 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
 }
 
-// ── Stats list ────────────────────────────────────────────────────────────────
+// ── Combat stats ──────────────────────────────────────────────────────────────
 .clp__stats {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
 }
 
+.clp__stats-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin: 0 0 0.5rem;
+}
+
 .clp-stat {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.9rem;
   border-radius: 8px;
   background: $surface-lt;
   border: 1px solid $border;
@@ -92,8 +171,8 @@ $text-muted: rgba(203, 193, 228, 0.45);
   }
 
   &__icon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     flex-shrink: 0;
     image-rendering: pixelated;
     mix-blend-mode: screen;
@@ -104,7 +183,7 @@ $text-muted: rgba(203, 193, 228, 0.45);
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.25rem;
     min-width: 0;
   }
 
@@ -115,20 +194,20 @@ $text-muted: rgba(203, 193, 228, 0.45);
   }
 
   &__name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: $text-base;
   }
 
   &__level {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: $text-base;
     font-variant-numeric: tabular-nums;
   }
 
   &__max {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 400;
     color: $text-muted;
   }
@@ -148,8 +227,247 @@ $text-muted: rgba(203, 193, 228, 0.45);
   }
 
   &__xp {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     color: $text-muted;
     font-variant-numeric: tabular-nums;
   }
+}
+
+// ── Ability bar ───────────────────────────────────────────────────────────────
+.ability-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 0.85rem;
+
+  &__slots {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.4rem;
+  }
+}
+
+.ability-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+  cursor: not-allowed;
+  transition: border-color 150ms ease, background 150ms ease;
+
+  &:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba($accent, 0.5);
+  }
+
+  &__key {
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: $text-muted;
+    line-height: 1;
+    opacity: 0.6;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 25%;
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+  }
+}
+
+// ── Header kill requirements ──────────────────────────────────────────────────
+.clp-kill-reqs {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.clp-kill-req-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  background: rgba($red, 0.06);
+  border: 1px solid rgba($red, 0.2);
+
+  &__icon {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    color: rgba($red, 0.7);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+  }
+
+  &__name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-base;
+    line-height: 1.2;
+  }
+
+  &__count {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba($red, 0.8);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ── Enemy stats panel ─────────────────────────────────────────────────────────
+.enemy-stats-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 0.85rem;
+}
+
+.enemy-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+}
+
+.enemy-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    mix-blend-mode: screen;
+    opacity: 0.85;
+  }
+
+  &__label {
+    flex: 1;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  &__val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: $text-base;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ── Loot panels ───────────────────────────────────────────────────────────────
+.loot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.loot-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.loot-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: $surface-lt;
+  border: 1px solid $border;
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  }
+
+  &__name {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: $text-base;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  &__qty {
+    font-size: 0.72rem;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  &__chance {
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+}
+
+.loot-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: $text-muted;
+  text-align: center;
+
+  svg {
+    width: 32px;
+    height: 32px;
+    opacity: 0.4;
+  }
+
+  span {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
+
+.loot-empty {
+  font-size: 0.8rem;
+  color: $text-muted;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin: 0;
 }

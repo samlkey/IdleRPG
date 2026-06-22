@@ -1,13 +1,14 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { LocationService } from '../../services/location.service';
 import { FishingLocationComponent, FishingLocation } from './fishing-location/fishing-location.component';
 
 @Component({
   selector: 'app-fishing',
-  imports: [DecimalPipe, ModalComponent, FishingLocationComponent],
+  imports: [DecimalPipe, ModalComponent, FishingLocationComponent, ActivityBadgeComponent],
   templateUrl: './fishing.component.html',
   styleUrl: './fishing.component.scss',
 })

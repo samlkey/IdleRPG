@@ -18,49 +18,79 @@
     </div>
   </div>
 
-  <div class="location-list">
-    @for (loc of locations; track loc.id) {
-      <div class="location-card"
-        [class.location-card--current]="isCurrent(loc)"
-        [class.location-card--locked]="!canTravel(loc)">
+  <!-- Node Map — fills remaining height, bleeds to content edges -->
+  <div class="map-canvas-wrapper">
+    <svg class="map-canvas" viewBox="0 0 280 165" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Connection lines -->
+      @for (edge of edges; track edge.fromId + edge.toId) {
+        <line
+          [attr.x1]="edge.x1" [attr.y1]="edge.y1"
+          [attr.x2]="edge.x2" [attr.y2]="edge.y2"
+          class="map-edge" />
+      }
 
-        <div class="location-card__hero">
-          <img class="location-card__bg" [src]="loc.background" alt="" aria-hidden="true" />
-          <div class="location-card__overlay"></div>
-          <div class="location-card__hero-content">
-            <div class="location-card__title-row">
-              <h3 class="location-card__name">{{ loc.name }}</h3>
-              @if (isCurrent(loc)) {
-                <span class="location-card__here-badge">You are here</span>
-              } @else if (!canTravel(loc)) {
-                <span class="location-card__lock-badge">
-                  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" width="10" height="10">
-                    <path d="M11 6V5a3 3 0 0 0-6 0v1H3v9h10V6h-2zm-4-1a2 2 0 0 1 4 0v1H7V5z"/>
-                  </svg>
-                  Level {{ loc.travelReq }}
-                </span>
-              }
-            </div>
-            <p class="location-card__desc">{{ loc.description }}</p>
-          </div>
-        </div>
-
-        <div class="location-card__activities">
-          @for (line of activitySummary(loc); track line) {
-            <div class="location-card__activity-line">{{ line }}</div>
-          }
-        </div>
-
-        <div class="location-card__footer">
+      <!-- Location nodes -->
+      @for (loc of locations; track loc.id) {
+        <g
+          [attr.transform]="'translate(' + loc.x + ',' + loc.y + ')'"
+          class="map-node"
+          [class.map-node--current]="isCurrent(loc)"
+          [class.map-node--locked]="!canTravel(loc)"
+          [class.map-node--selected]="isSelected(loc)"
+          (click)="selectNode(loc)"
+          role="button"
+          [attr.aria-label]="loc.name">
+          <circle r="5" class="map-node__aura" />
+          <circle r="3.5" class="map-node__ring" />
+          <circle r="2" class="map-node__fill" />
           @if (isCurrent(loc)) {
-            <button class="location-card__btn location-card__btn--current" disabled>Current Location</button>
-          } @else if (canTravel(loc)) {
-            <button class="location-card__btn location-card__btn--travel" (click)="travel(loc)">Travel Here</button>
-          } @else {
-            <button class="location-card__btn location-card__btn--locked" disabled>Locked</button>
+            <path d="M0,-1.6 L-1.8,0 L-1.4,0 L-1.4,1.8 L1.4,1.8 L1.4,0 L1.8,0 Z" class="map-node__home-icon" />
+          }
+          <text y="9" class="map-node__label">{{ loc.name }}</text>
+        </g>
+      }
+    </svg>
+
+    <!-- Detail panel overlaid at the bottom of the canvas -->
+    @if (selected()) {
+      <div class="location-detail"
+           [class.location-detail--current]="isCurrent(selected()!)"
+           [class.location-detail--locked]="!canTravel(selected()!)">
+        <div class="location-detail__header">
+          <h3 class="location-detail__name">{{ selected()!.name }}</h3>
+          @if (isCurrent(selected()!)) {
+            <span class="detail-badge detail-badge--here">You are here</span>
+          } @else if (!canTravel(selected()!)) {
+            <span class="detail-badge detail-badge--locked">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="10" height="10" aria-hidden="true">
+                <path d="M11 6V5a3 3 0 0 0-6 0v1H3v9h10V6h-2zm-4-1a2 2 0 0 1 4 0v1H7V5z"/>
+              </svg>
+              Level {{ selected()!.travelReq }}
+            </span>
           }
         </div>
+        <p class="location-detail__desc">{{ selected()!.description }}</p>
+        <div class="location-detail__activities">
+          @for (line of activitySummary(selected()!); track line) {
+            <span class="activity-chip">{{ line }}</span>
+          }
+        </div>
+        @if (!isCurrent(selected()!)) {
+          <button
+            class="travel-btn"
+            [class.travel-btn--locked]="!canTravel(selected()!)"
+            [disabled]="!canTravel(selected()!)"
+            (click)="travel(selected()!)">
+            @if (canTravel(selected()!)) {
+              Travel Here
+            } @else {
+              Requires Level {{ selected()!.travelReq }}
+            }
+          </button>
+        }
       </div>
+    } @else {
+      <p class="map-hint">Select a location on the map</p>
     }
   </div>
 </div>

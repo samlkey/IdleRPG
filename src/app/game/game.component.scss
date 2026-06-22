@@ -96,6 +96,51 @@ $text-base: rgba(203, 193, 228, 0.85);
   box-shadow:
     0 -4px 20px rgba($accent, 0.1),
     inset 0 1px 0 rgba($accent, 0.15);
+  position: relative;
+}
+
+.char-panel__toggle {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1a1a2e;
+  border: 1px solid rgba($accent, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 150ms ease, border-color 150ms ease;
+
+  &:hover {
+    background: rgba($accent, 0.2);
+    border-color: rgba($accent, 0.7);
+  }
+}
+
+.char-panel__toggle-chevron {
+  width: 14px;
+  height: 14px;
+  color: rgba($accent, 0.85);
+  transition: transform 250ms ease;
+
+  &--up {
+    transform: rotate(180deg);
+  }
+}
+
+.char-panel__scene {
+  overflow: hidden;
+  max-height: 400px;
+  transition: max-height 300ms ease;
+
+  &--collapsed {
+    max-height: 0;
+  }
 }
 
 // ── Character card ────────────────────────────────────────
@@ -412,15 +457,14 @@ $text-base: rgba(203, 193, 228, 0.85);
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.6rem 1rem 0.65rem;
-  border-top: 1px solid $border;
   background: rgba(52, 211, 153, 0.04);
   border-left: 2px solid rgba(52, 211, 153, 0.5);
+  border-bottom: 1px solid $border;
   // button reset
   width: 100%;
   text-align: left;
   border-top: none;
   border-right: none;
-  border-bottom: none;
   cursor: pointer;
   transition:
     background 150ms ease,

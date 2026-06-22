@@ -61,15 +61,6 @@
     }
     </div><!-- /.sidebar__scroll -->
 
-    <!-- Current location strip -->
-    <button class="current-location" (click)="activePanel.set('map')" type="button" title="Open Map">
-      <span class="current-location__label">Location</span>
-      <div class="current-location__row">
-        <img class="current-location__icon" src="assets/objects/map.png" alt="" aria-hidden="true" />
-        <span class="current-location__name">{{ locationService.current().name }}</span>
-      </div>
-    </button>
-
     <!-- Tracked quest strip -->
     @if (playerService.trackedQuest(); as tq) {
       <button class="tracked-quest" (click)="navigateToTrackedQuest()" type="button"
@@ -92,6 +83,17 @@
 
     <!-- Character panel (pinned to bottom) -->
     <div class="char-panel">
+    <button
+      class="char-panel__toggle"
+      type="button"
+      (click)="charCollapsed.set(!charCollapsed())"
+      [attr.aria-expanded]="!charCollapsed()"
+      title="{{ charCollapsed() ? 'Show character' : 'Hide character' }}"
+    >
+      <svg class="char-panel__toggle-chevron" [class.char-panel__toggle-chevron--up]="!charCollapsed()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
     <div class="char-card">
       <div class="char-card__avatar" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -122,7 +124,17 @@
       <app-active-buffs />
     </div>
 
-    <app-player-character />
+    <!-- Location strip -->
+    <button class="current-location" (click)="activePanel.set('map')" type="button" title="Open Map">
+      <span class="current-location__label">Location</span>
+      <div class="current-location__row">
+        <img class="current-location__icon" src="assets/objects/map.png" alt="" aria-hidden="true" />
+        <span class="current-location__name">{{ locationService.current().name }}</span>
+      </div>
+    </button>
+    <div class="char-panel__scene" [class.char-panel__scene--collapsed]="charCollapsed()">
+      <app-player-character />
+    </div>
     </div>
 
   </nav>

@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivityComponent } from '../../shared/components/activity/activity.component';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
 import { LocationService } from '../../services/location.service';
@@ -9,7 +10,7 @@ import { DropTable, GameItem, ItemService } from '../../services/item.service';
 
 @Component({
   selector: 'app-mining',
-  imports: [ActivityComponent, ModalComponent, DecimalPipe],
+  imports: [ActivityComponent, ModalComponent, DecimalPipe, ActivityBadgeComponent],
   templateUrl: './mining.component.html',
   styleUrl: './mining.component.scss',
 })

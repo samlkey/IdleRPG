@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivityComponent } from '../../shared/components/activity/activity.component';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
 import { GameItem, DropTable, ItemService } from '../../services/item.service';
@@ -31,7 +32,7 @@ interface SmithingCategory {
 
 @Component({
   selector: 'app-smithing',
-  imports: [ActivityComponent, DecimalPipe, ModalComponent],
+  imports: [ActivityComponent, DecimalPipe, ModalComponent, ActivityBadgeComponent],
   templateUrl: './smithing.component.html',
   styleUrl: './smithing.component.scss',
 })

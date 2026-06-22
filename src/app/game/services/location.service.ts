@@ -1,7 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { ActivityService } from './activity.service';
 import { QuestService } from './quest.service';
-import { LOCATIONS } from '../data/location.data';
+import { WORLDS } from '../data/world.data';
+import { Monster } from './monster.service';
 
 export interface LocationActivities {
   woodcutting?: string[];
@@ -9,6 +10,7 @@ export interface LocationActivities {
   fishingSpot?: string[];
   thievingArea?: string[];
   agilityCourse?: string[];
+  farming?: Record<string, number>;
   quests?: string[];
 }
 
@@ -19,11 +21,21 @@ export interface GameLocation {
   background: string;
   travelReq: number;
   activities: LocationActivities;
+  monsters?: string[];
+  killReq?: number;
+  x: number;
+  y: number;
+  connections: string[];
+}
+
+export interface World {
+  id: string;
+  locations: GameLocation[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
-  private readonly _current = signal<GameLocation>(LOCATIONS[0]);
+  private readonly _current = signal<GameLocation>(WORLDS[0].locations[0]);
   private readonly activityService = inject(ActivityService);
   private readonly questService = inject(QuestService);
 

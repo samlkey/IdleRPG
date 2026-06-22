@@ -2,13 +2,14 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { ActivityComponent } from '../../shared/components/activity/activity.component';
+import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
 import { LocationService } from '../../services/location.service';
 
 @Component({
   selector: 'app-agility',
-  imports: [DecimalPipe, ModalComponent, ActivityComponent],
+  imports: [DecimalPipe, ModalComponent, ActivityComponent, ActivityBadgeComponent],
   templateUrl: './agility.component.html',
   styleUrl: './agility.component.scss',
 })

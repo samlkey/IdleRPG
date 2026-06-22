@@ -105,7 +105,8 @@ export class GameComponent {
   readonly itemService = inject(ItemService);
   readonly questService = inject(QuestService);
 
-  activePanel = signal<PanelId>('quests');
+  activePanel    = signal<PanelId>('quests');
+  charCollapsed  = signal(false);
 
   /** Live current step for the tracked quest, read directly from QuestService. */
   readonly trackedStep = computed(() => {
@@ -157,7 +158,7 @@ export class GameComponent {
           pixelIcon: 'assets/objects/map.png',
           badgeType: 'location',
           component: MapComponent,
-          locked: true,
+          locked: false,
         },
         {
           id: 'house',
@@ -215,7 +216,7 @@ export class GameComponent {
               navigateTo: 'combat-level',
             },
           ],
-          locked: true,
+          locked: false,
         },
       ],
     },
@@ -337,7 +338,7 @@ export class GameComponent {
           pixelIcon: 'assets/icons/farming.png',
           badgeType: 'skill',
           component: FarmingComponent,
-          locked: true,
+          locked: false,
         },
         {
           id: 'agility',

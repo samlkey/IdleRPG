@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
 import { LocationService } from '../../services/location.service';
@@ -8,7 +9,7 @@ import { ThievingLocationComponent, ThievingLocation } from './thieving-location
 
 @Component({
   selector: 'app-thieving',
-  imports: [DecimalPipe, ModalComponent, ThievingLocationComponent],
+  imports: [DecimalPipe, ModalComponent, ThievingLocationComponent, ActivityBadgeComponent],
   templateUrl: './thieving.component.html',
   styleUrl: './thieving.component.scss',
 })

@@ -3,14 +3,24 @@ $content-pad: 2rem;
 $surface:     #111118;
 $border:      rgba(255, 255, 255, 0.07);
 $purple:      #a78bfa;
+$teal:        #18d4e8;
+$green:       #4ade80;
 $text:        rgba(203, 193, 228, 0.85);
 $muted:       rgba(255, 255, 255, 0.4);
 
-// ── Skill panel hero (mirrors pattern from other skill components) ────
+// ── Skill panel — fill content area height ────────────────────────────────
+.skill-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────
 .skill-panel__hero {
   position: relative;
+  flex-shrink: 0;
   margin: -$content-pad (-$content-pad) 0;
-  height: 220px;
+  height: 160px;
   overflow: hidden;
 }
 
@@ -87,169 +97,232 @@ $muted:       rgba(255, 255, 255, 0.4);
   &:hover { color: rgba(255, 255, 255, 0.85); }
 }
 
-.location-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1.5rem;
+// ── Map Canvas — fills remaining height, bleeds to content edges ──────────
+.map-canvas-wrapper {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  margin: 0 (-$content-pad) (-$content-pad);
+  background: #07080f;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 25% 65%, rgba(15, 40, 90, 0.45) 0%, transparent 65%),
+      radial-gradient(ellipse at 75% 30%, rgba(10, 30, 70, 0.35) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
-.location-card {
-  border: 1px solid $border;
-  border-radius: 12px;
-  overflow: hidden;
-  background: $surface;
-  transition: border-color 0.2s;
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
 
-  &--current {
-    border-color: rgba($purple, 0.5);
+// ── SVG Edges ─────────────────────────────────────────────────────────────
+.map-edge {
+  stroke: rgba(100, 190, 220, 0.22);
+  stroke-width: 0.4;
+  stroke-linecap: round;
+}
+
+// ── SVG Nodes ─────────────────────────────────────────────────────────────
+.map-node {
+  cursor: pointer;
+
+  &__aura {
+    fill: rgba(24, 212, 232, 0.1);
+    stroke: rgba(24, 212, 232, 0.18);
+    stroke-width: 0.5;
   }
 
-  &--locked {
-    opacity: 0.55;
+  &__ring {
+    fill: rgba(6, 18, 35, 0.95);
+    stroke: $teal;
+    stroke-width: 0.6;
+    filter: drop-shadow(0 0 1.5px rgba(24, 212, 232, 0.55));
+  }
+
+  &__fill {
+    fill: rgba(15, 75, 110, 0.9);
+  }
+
+  &__label {
+    fill: rgba(255, 255, 255, 0.72);
+    font-size: 4px;
+    text-anchor: middle;
+    font-family: 'Georgia', serif;
     pointer-events: none;
   }
 
-  // ── Hero ───────────────────────────────────────────────
-  &__hero {
-    position: relative;
-    height: 100px;
-    overflow: hidden;
+  &__home-icon {
+    fill: rgba(255, 255, 255, 0.92);
+    pointer-events: none;
   }
 
-  &__bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 40%;
-    image-rendering: pixelated;
+  &:hover {
+    .map-node__aura {
+      fill: rgba(24, 212, 232, 0.2);
+      stroke: rgba(24, 212, 232, 0.35);
+    }
   }
 
-  &__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);
+  &--current {
+    .map-node__aura {
+      fill: rgba(74, 222, 128, 0.13);
+      stroke: rgba(74, 222, 128, 0.25);
+    }
+    .map-node__ring {
+      stroke: $green;
+      filter: drop-shadow(0 0 1.5px rgba(74, 222, 128, 0.65));
+    }
+    .map-node__fill { fill: rgba(15, 70, 35, 0.9); }
   }
 
-  &__hero-content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 0.6rem 0.9rem;
-    z-index: 1;
-    gap: 0.2rem;
+  &--selected:not(.map-node--current) {
+    .map-node__aura {
+      fill: rgba(167, 139, 250, 0.15);
+      stroke: rgba(167, 139, 250, 0.35);
+    }
+    .map-node__ring {
+      stroke: $purple;
+      filter: drop-shadow(0 0 1.5px rgba(167, 139, 250, 0.6));
+    }
   }
 
-  &__title-row {
+  &--locked {
+    cursor: default;
+
+    .map-node__aura { display: none; }
+    .map-node__ring { stroke: rgba(120, 120, 150, 0.5); filter: none; }
+    .map-node__fill { fill: rgba(20, 20, 35, 0.8); }
+    .map-node__label { fill: rgba(255, 255, 255, 0.3); }
+
+    &:hover .map-node__aura { display: none; }
+  }
+}
+
+// ── Location Detail — absolute overlay at bottom of canvas ────────────────
+.location-detail {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 2.5rem), 420px);
+  z-index: 2;
+  padding: 1rem;
+  background: rgba(#111118, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid $border;
+  border-radius: 10px;
+
+  &--current { border-color: rgba($green, 0.3); }
+  &--locked { opacity: 0.8; }
+
+  &__header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-bottom: 0.4rem;
   }
 
   &__name {
     margin: 0;
     font-family: 'Georgia', serif;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #fff;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.8);
   }
 
   &__desc {
-    margin: 0;
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.7);
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-    line-height: 1.3;
+    margin: 0 0 0.75rem;
+    font-size: 0.75rem;
+    color: $muted;
+    line-height: 1.45;
   }
 
-  &__here-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: rgba($purple, 0.25);
-    border: 1px solid rgba($purple, 0.5);
-    color: #c4b5fd;
-    border-radius: 99px;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-  }
-
-  &__lock-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.6);
-    border-radius: 99px;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.65rem;
-    font-weight: 600;
-  }
-
-  // ── Activity lines ─────────────────────────────────────
   &__activities {
-    padding: 0.6rem 0.9rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    border-bottom: 1px solid $border;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.detail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 99px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+
+  &--here {
+    background: rgba($green, 0.18);
+    border: 1px solid rgba($green, 0.4);
+    color: $green;
   }
 
-  &__activity-line {
-    font-size: 0.72rem;
-    color: $text;
-    line-height: 1.4;
-
-    &::before {
-      content: '▸ ';
-      color: $purple;
-    }
+  &--locked {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: $muted;
   }
+}
 
-  // ── Footer ────────────────────────────────────────────
-  &__footer {
-    padding: 0.6rem 0.9rem;
+.activity-chip {
+  font-size: 0.68rem;
+  color: $text;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $border;
+  border-radius: 4px;
+  padding: 0.2rem 0.45rem;
+
+  &::before {
+    content: '▸ ';
+    color: $purple;
   }
+}
 
-  &__btn {
-    width: 100%;
-    padding: 0.45rem 1rem;
-    border-radius: 8px;
-    border: none;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s, opacity 0.15s;
+.travel-btn {
+  width: 100%;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: $purple;
+  color: #0d0d1a;
 
-    &--travel {
-      background: $purple;
-      color: #0d0d1a;
+  &:hover { background: lighten(#a78bfa, 8%); }
 
-      &:hover {
-        background: lighten(#a78bfa, 8%);
-      }
-    }
-
-    &--current {
-      background: rgba($purple, 0.15);
-      color: #c4b5fd;
-      cursor: default;
-      border: 1px solid rgba($purple, 0.3);
-    }
-
-    &--locked {
-      background: rgba(255, 255, 255, 0.06);
-      color: $muted;
-      cursor: not-allowed;
-    }
+  &--locked {
+    background: rgba(255, 255, 255, 0.06);
+    color: $muted;
+    cursor: not-allowed;
   }
+}
+
+.map-hint {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: $muted;
+  font-size: 0.78rem;
+  z-index: 2;
+  pointer-events: none;
 }

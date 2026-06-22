@@ -1,5 +1,6 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { DecimalPipe } from '@angular/common';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
@@ -11,7 +12,7 @@ import { ItemService } from '../../services/item.service';
 
 @Component({
   selector: 'app-cooking',
-  imports: [DecimalPipe, ModalComponent, CookingActivityComponent],
+  imports: [DecimalPipe, ModalComponent, CookingActivityComponent, ActivityBadgeComponent],
   templateUrl: './cooking.component.html',
   styleUrl: './cooking.component.scss',
 })

@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { ITEMS } from '../data/item.data';
 import { QUESTS } from '../data/quests.data';
-import { LOCATIONS } from '../data/location.data';
+import { WORLDS } from '../data/world.data';
 import { SKILL_IDS } from './player.service';
 
 // TODO: Refactor this to read item.data.ts for all the assets instead of hardcoding them here. This will ensure that any new items added to item.data.ts will automatically be preloaded without needing to update this list manually.
@@ -57,7 +57,9 @@ export class PreloadService {
       return icons;
     });
 
-    const locationAssets = LOCATIONS.map((location) => location.background);
+    const locationAssets = WORLDS[0].locations.map(
+      (location) => location.background,
+    );
 
     const skillIconAssets = SKILL_IDS.map((id) => `assets/icons/${id}.png`);
 
