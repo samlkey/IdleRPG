@@ -12,6 +12,8 @@ interface BankTab {
   deletable: boolean;
 }
 
+//TODO: This will become the existing player-character comp without PixiJS, and the existing player-character comp will become a new one that uses PixiJS for smooth animations. This is because this only needs an Idle animation, and wont follow the animations of the new integration.
+
 @Component({
   selector: 'app-character',
   imports: [ModalComponent, FormsModule, DecimalPipe, PlayerCharacterComponent],
@@ -20,25 +22,27 @@ interface BankTab {
 })
 export class CharacterComponent {
   pixelIcon = input<string>('');
-  helpOpen  = signal(false);
-  search    = signal('');
+  helpOpen = signal(false);
+  search = signal('');
 
   selectedEntry = signal<{ item: GameItem; qty: number } | null>(null);
-  activeTab     = signal<string>('all');
-  editingTabId  = signal<string | null>(null);
-  editingLabel  = signal('');
+  activeTab = signal<string>('all');
+  editingTabId = signal<string | null>(null);
+  editingLabel = signal('');
 
   private readonly playerService = inject(PlayerService);
-  readonly itemService           = inject(ItemService);
+  readonly itemService = inject(ItemService);
   private nextTabId = 1;
 
-  get bankSpace() { return this.playerService.bankSpace(); }
+  get bankSpace() {
+    return this.playerService.bankSpace();
+  }
 
   readonly filteredItems = computed(() => {
-    const inv   = this.itemService.inventory();
+    const inv = this.itemService.inventory();
     const query = this.search().toLowerCase().trim();
-    return Object.values(inv).filter(({ item }) =>
-      !query || item.name.toLowerCase().includes(query)
+    return Object.values(inv).filter(
+      ({ item }) => !query || item.name.toLowerCase().includes(query),
     );
   });
 
@@ -48,7 +52,7 @@ export class CharacterComponent {
 
   addTab(): void {
     const id = `tab-${this.nextTabId++}`;
-    this.tabs.update(t => [...t, { id, label: 'New Tab', deletable: true }]);
+    this.tabs.update((t) => [...t, { id, label: 'New Tab', deletable: true }]);
     this.activeTab.set(id);
     this.editingTabId.set(id);
     this.editingLabel.set('New Tab');
@@ -56,7 +60,7 @@ export class CharacterComponent {
 
   deleteTab(id: string, event: MouseEvent): void {
     event.stopPropagation();
-    this.tabs.update(t => t.filter(x => x.id !== id));
+    this.tabs.update((t) => t.filter((x) => x.id !== id));
     if (this.activeTab() === id) this.activeTab.set('all');
   }
 
@@ -68,10 +72,12 @@ export class CharacterComponent {
   }
 
   commitRename(): void {
-    const id    = this.editingTabId();
+    const id = this.editingTabId();
     const label = this.editingLabel().trim();
     if (id && label) {
-      this.tabs.update(t => t.map(x => x.id === id ? { ...x, label } : x));
+      this.tabs.update((t) =>
+        t.map((x) => (x.id === id ? { ...x, label } : x)),
+      );
     }
     this.editingTabId.set(null);
   }
@@ -82,7 +88,7 @@ export class CharacterComponent {
 
   dropPct(qty: number): string {
     if (qty >= 1_000_000) return (qty / 1_000_000).toFixed(1) + 'm';
-    if (qty >= 1_000)     return (qty / 1_000).toFixed(1) + 'k';
+    if (qty >= 1_000) return (qty / 1_000).toFixed(1) + 'k';
     return qty.toString();
   }
 }
