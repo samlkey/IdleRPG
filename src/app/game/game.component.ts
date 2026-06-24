@@ -5,7 +5,7 @@ import { LevelUpComponent } from './shared/components/level-up/level-up.componen
 import { QuestCompleteModalComponent } from './shared/components/quest-complete-modal/quest-complete-modal.component';
 // General
 import { QuestsComponent } from './general/quests/quests.component';
-import { BankComponent } from './general/bank/bank.component';
+import { CharacterComponent } from './general/character/character.component';
 import { HouseComponent } from './general/house/house.component';
 import { ShopComponent } from './general/shop/shop.component';
 import { MapComponent } from './general/map/map.component';
@@ -46,7 +46,7 @@ export type PanelId =
   | SkillId
   | 'shop'
   | 'quests'
-  | 'bank'
+  | 'character'
   | 'house'
   | 'map'
   | 'settings'
@@ -105,8 +105,8 @@ export class GameComponent {
   readonly itemService = inject(ItemService);
   readonly questService = inject(QuestService);
 
-  activePanel    = signal<PanelId>('quests');
-  charCollapsed  = signal(false);
+  activePanel = signal<PanelId>('quests');
+  charCollapsed = signal(false);
 
   /** Live current step for the tracked quest, read directly from QuestService. */
   readonly trackedStep = computed(() => {
@@ -136,11 +136,11 @@ export class GameComponent {
           component: QuestsComponent,
         },
         {
-          id: 'bank',
-          label: 'Bank',
-          pixelIcon: 'assets/icons/bank.png',
+          id: 'character',
+          label: 'Character',
+          pixelIcon: 'assets/icons/character.png',
           badgeType: 'bank-space',
-          component: BankComponent,
+          component: CharacterComponent,
           unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 0 },
           highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 },
         },

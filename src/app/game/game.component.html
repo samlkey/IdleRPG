@@ -95,21 +95,23 @@
       </svg>
     </button>
     <div class="char-card">
-      <div class="char-card__avatar" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/>
-        </svg>
-      </div>
-      <div class="char-card__info">
-        <span class="char-card__name">{{ playerService.player().name }}</span>
-        <div class="char-card__levels">
-          <span class="char-card__level">Total Lvl {{ playerService.totalLevel() }}</span>
-          <span class="char-card__combat-level">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"/>
-            </svg>
-            Combat {{ playerService.player().combatLevel }}
-          </span>
+      <div class="char-card__row">
+        <div class="char-card__avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/>
+          </svg>
+        </div>
+        <div class="char-card__info">
+          <span class="char-card__name">{{ playerService.player().name }}</span>
+          <div class="char-card__levels">
+            <span class="char-card__level">Total Lvl {{ playerService.totalLevel() }}</span>
+            <span class="char-card__combat-level">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"/>
+              </svg>
+              Combat {{ playerService.player().combatLevel }}
+            </span>
+          </div>
         </div>
       </div>
       <div class="char-card__hp">

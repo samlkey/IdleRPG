@@ -18,7 +18,7 @@ export const MONSTERS: Monster[] = [
     },
     drops: [
       { itemId: 'goblin-ear', chance: 0.5, qty: 1 },
-      { itemId: 'copper-ore', chance: 0.2, qty: 1 },
+      { itemId: 'copper-ore', chance: 1, qty: 1 },
     ],
   },
 ];

@@ -22,7 +22,20 @@ export interface Stats {
 
 @Injectable({ providedIn: 'root' })
 export class MonsterService {
-  searchItemById(monsterId: Monster['id']): Monster | undefined {
+  public searchItemById(monsterId: Monster['id']): Monster | undefined {
     return MONSTERS.find((monster) => monster.id === monsterId);
+  }
+
+  public rollDrop(monsterId: Monster['id']): string[] | undefined {
+    const monster = this.searchItemById(monsterId);
+    if (!monster) return undefined;
+    return monster.drops
+      .filter((drop) => this.rollChance(drop.chance))
+      .map((drop) => drop.itemId);
+  }
+
+  private rollChance(chance: number): boolean {
+    if (chance >= 1) return true;
+    return Math.random() < chance;
   }
 }

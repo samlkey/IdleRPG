@@ -43,7 +43,12 @@ $bg: #09090f;
 
   &--player {
     left: 0;
-    background: linear-gradient(to bottom, transparent 50%, rgba($bg, 0.7) 85%, $bg 100%);
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba($bg, 0.7) 85%,
+      $bg 100%
+    );
   }
 
   &--enemy {
@@ -92,7 +97,7 @@ $bg: #09090f;
 .combat-arena__stage {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
@@ -110,9 +115,8 @@ $bg: #09090f;
 // ── Monster sprite ─────────────────────────────────────────────────────────────
 
 .ca-monster {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
+  width: 120px;
+  height: auto;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.7));
@@ -209,6 +213,55 @@ $bg: #09090f;
     font-size: 0.8rem;
     letter-spacing: 0.04em;
   }
+}
+
+// ── Kill-req overlay (top-right) ───────────────────────────────────────────────
+
+.combat-arena__kill-reqs {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.combat-arena__kill-req {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(10, 10, 20, 0.72);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  backdrop-filter: blur(6px);
+}
+
+.combat-arena__kill-req-icon {
+  width: 11px;
+  height: 11px;
+  color: rgba(239, 68, 68, 0.85);
+  flex-shrink: 0;
+}
+
+.combat-arena__kill-req-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.combat-arena__kill-req-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+
+.combat-arena__kill-req-count {
+  font-size: 0.6rem;
+  color: rgba(239, 68, 68, 0.8);
+  line-height: 1;
 }
 
 // ── Animations ─────────────────────────────────────────────────────────────────

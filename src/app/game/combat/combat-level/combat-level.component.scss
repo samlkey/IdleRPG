@@ -330,51 +330,6 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   }
 }
 
-// ── Header kill requirements ──────────────────────────────────────────────────
-.clp-kill-reqs {
-  margin-left: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.clp-kill-req-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 8px;
-  background: rgba($red, 0.06);
-  border: 1px solid rgba($red, 0.2);
-
-  &__icon {
-    width: 13px;
-    height: 13px;
-    flex-shrink: 0;
-    color: rgba($red, 0.7);
-  }
-
-  &__body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
-  }
-
-  &__name {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: $text-base;
-    line-height: 1.2;
-  }
-
-  &__count {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: rgba($red, 0.8);
-    font-variant-numeric: tabular-nums;
-  }
-}
-
 // ── Enemy stats panel ─────────────────────────────────────────────────────────
 .enemy-stats-panel {
   display: flex;

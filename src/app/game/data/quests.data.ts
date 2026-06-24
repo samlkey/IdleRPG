@@ -58,14 +58,14 @@ export const QUESTS: Quest[] = [
             speaker: 'Manuel',
             text: "You may have noticed you've collected some items from your Woodcutting",
           },
-          { speaker: 'Manuel', text: "Let's take a look into your bank" },
+          { speaker: 'Manuel', text: "Let's take a look into your character" },
         ],
         tasks: [
           {
             action: 'Navigate to',
-            description: 'Bank',
-            icon: 'assets/icons/bank.png',
-            condition: { type: 'navigation', tab: 'bank' },
+            description: 'Character',
+            icon: 'assets/icons/character.png',
+            condition: { type: 'navigation', tab: 'character' },
             completed: false,
           },
         ],

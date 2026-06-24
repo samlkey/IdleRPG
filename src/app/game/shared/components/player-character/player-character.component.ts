@@ -1,10 +1,12 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivityService } from '../../../services/activity.service';
 import { PassiveService } from '../../../services/passive.service';
 import {
   CharacterAnimation,
   CharacterAnimationService,
 } from '../../../services/character-animation.service';
+import { PlayerService } from '../../../services/player.service';
+import { ItemService, GameItem } from '../../../services/item.service';
 
 type CharacterState = 'idle' | 'working';
 
@@ -15,8 +17,33 @@ type CharacterState = 'idle' | 'working';
 })
 export class PlayerCharacterComponent {
   private readonly activityService = inject(ActivityService);
-  private readonly passiveService = inject(PassiveService);
-  private readonly anim = inject(CharacterAnimationService);
+  private readonly passiveService  = inject(PassiveService);
+  private readonly anim            = inject(CharacterAnimationService);
+  private readonly playerService   = inject(PlayerService);
+  private readonly itemService     = inject(ItemService);
+
+  showEquipToggle = input(false);
+  large = input(false);
+  readonly equipOpen = signal(false);
+
+  readonly equipped = computed(() => {
+    const eq = this.playerService.player().equipment;
+    const r = (id: string | null): GameItem | null =>
+      id ? (this.itemService.searchItemById(id) ?? null) : null;
+    return {
+      head:   r(eq.head),
+      cape:   r(eq.cape),
+      neck:   r(eq.neck),
+      ammo:   r(eq.ammo),
+      weapon: r(eq.weapon),
+      body:   r(eq.body),
+      shield: r(eq.shield),
+      legs:   r(eq.legs),
+      hands:  r(eq.hands),
+      feet:   r(eq.feet),
+      ring:   r(eq.ring),
+    };
+  });
 
   readonly state = computed<CharacterState>(() => {
     if (this.activityService.current()) return 'working';
@@ -52,18 +79,12 @@ export class PlayerCharacterComponent {
 
   readonly currentFrame = computed(() => {
     switch (this.currentAnimation()) {
-      case 'woodcutting':
-        return this.anim.woodcuttingFrame();
-      case 'mining':
-        return this.anim.miningFrame();
-      case 'smithing':
-        return this.anim.smithingFrame();
-      case 'fishing':
-        return this.anim.fishingFrame();
-      case 'firemaking':
-        return this.anim.firemakingFrame();
-      default:
-        return this.anim.idleFrame();
+      case 'woodcutting': return this.anim.woodcuttingFrame();
+      case 'mining':      return this.anim.miningFrame();
+      case 'smithing':    return this.anim.smithingFrame();
+      case 'fishing':     return this.anim.fishingFrame();
+      case 'firemaking':  return this.anim.firemakingFrame();
+      default:            return this.anim.idleFrame();
     }
   });
 }

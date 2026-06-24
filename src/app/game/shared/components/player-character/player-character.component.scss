@@ -1,17 +1,36 @@
 $accent: #7c3aed;
+$accent-lt: #a78bfa;
+$border: rgba(255, 255, 255, 0.1);
+
+:host {
+  display: block;
+  flex: 1;
+  min-height: 0;
+}
 
 // ── Stage ─────────────────────────────────────────────────
 
 .char-stage {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
   gap: 0.6rem;
-  height: 250px;
+  min-height: 250px;
+  height: 100%;
   padding: 0 0 1.25rem;
-  flex-shrink: 0;
-  position: relative;
+
+  &--large {
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    overflow: hidden;
+
+    .char-status {
+      display: none;
+    }
+  }
   background: url("../../../../../assets/backgrounds/player_background_1.png")
     center / cover no-repeat;
 
@@ -27,7 +46,7 @@ $accent: #7c3aed;
     pointer-events: none;
   }
 
-  > * {
+  > *:not(.char-equip-overlay):not(.char-armour-btn) {
     position: relative;
     z-index: 1;
   }
@@ -48,6 +67,10 @@ $accent: #7c3aed;
   display: block;
   width: 200px;
   height: auto;
+
+  .char-stage--large & {
+    width: 600px;
+  }
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
@@ -78,6 +101,129 @@ $accent: #7c3aed;
   }
 }
 
+// ── Armour toggle button ──────────────────────────────────
+
+.char-armour-btn {
+  position: absolute;
+  bottom: 0.65rem;
+  right: 0.65rem;
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(9, 9, 15, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+  backdrop-filter: blur(4px);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: rgba($accent, 0.25);
+    border-color: rgba($accent-lt, 0.5);
+    color: $accent-lt;
+  }
+
+  &--active {
+    background: rgba($accent, 0.3);
+    border-color: rgba($accent-lt, 0.6);
+    color: $accent-lt;
+  }
+}
+
+// ── Equipment overlay ─────────────────────────────────────
+
+.char-equip-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: rgba(9, 9, 15, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  animation: equip-in 150ms ease;
+}
+
+// ── Equipment grid ────────────────────────────────────────
+
+.char-equip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(5, 80px);
+  gap: 5px;
+  grid-template-areas:
+    ". head ."
+    "cape neck ammo"
+    "weapon body shield"
+    ". legs ."
+    "hands feet ring";
+}
+
+.ceq-slot {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  padding: 0;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+
+  &--filled {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba($accent-lt, 0.4);
+    }
+  }
+
+  &--connect-down::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  &__icon {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  &__ph {
+    width: 55%;
+    height: 55%;
+    color: rgba(255, 255, 255, 0.18);
+  }
+}
+
 // ── Keyframes ─────────────────────────────────────────────
 
 @keyframes char-idle {
@@ -90,16 +236,6 @@ $accent: #7c3aed;
   }
 }
 
-@keyframes char-work {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-5deg);
-  }
-  50% {
-    transform: translateY(-3px) rotate(5deg);
-  }
-}
-
 @keyframes dot-pulse {
   from {
     opacity: 0.35;
@@ -108,5 +244,14 @@ $accent: #7c3aed;
   to {
     opacity: 1;
     transform: scale(1.25);
+  }
+}
+
+@keyframes equip-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

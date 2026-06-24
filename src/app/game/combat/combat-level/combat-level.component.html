@@ -11,26 +11,10 @@
       <h1 class="skill-panel__title">Combat</h1>
       <p class="skill-panel__subtitle">Fight monsters across the world</p>
     </div>
-    @if (upcomingKillReqs().length > 0) {
-      <div class="clp-kill-reqs">
-        @for (loc of upcomingKillReqs(); track loc.id) {
-          <div class="clp-kill-req-row">
-            <svg class="clp-kill-req-row__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25z" />
-            </svg>
-            <div class="clp-kill-req-row__body">
-              <span class="clp-kill-req-row__name">{{ loc.name }}</span>
-              <span class="clp-kill-req-row__count">{{ loc.killReq }} kill{{ loc.killReq === 1 ? '' : 's' }}</span>
-            </div>
-          </div>
-        }
-      </div>
-    } @else {
-      <div class="clp-lvl-badge">
-        <span class="clp-lvl-badge__num">{{ playerService.player().combatLevel }}</span>
-        <span class="clp-lvl-badge__label">Cmb Lvl</span>
-      </div>
-    }
+    <div class="clp-lvl-badge">
+      <span class="clp-lvl-badge__num">{{ playerService.player().combatLevel }}</span>
+      <span class="clp-lvl-badge__label">Cmb Lvl</span>
+    </div>
   </div>
 
   <!-- Battle layout -->
@@ -45,7 +29,8 @@
       [hp]="playerService.player().hp"
       [maxHp]="playerService.player().maxHp"
       [monster]="selectedMonster()"
-      [enemyHpPct]="100"
+      [enemyHpPct]="enemyHpPct()"
+      [killReqLocs]="upcomingKillReqs()"
     />
 
     <!-- Left: Player controls -->

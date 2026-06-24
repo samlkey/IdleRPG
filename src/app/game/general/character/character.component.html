@@ -1,0 +1,177 @@
+<div class="char-page">
+
+  <!-- Header -->
+  <div class="skill-panel__header">
+    <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
+    <div>
+      <h1 class="skill-panel__title">Character</h1>
+      <p class="skill-panel__subtitle">Manage your equipment and bank</p>
+    </div>
+    <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Character">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Split body -->
+  <div class="char-page__body">
+
+    <!-- ── Left: Character panel ───────────────────────────── -->
+    <div class="char-page__left">
+      <div class="char-panel-container">
+        <app-player-character [showEquipToggle]="true" [large]="true" />
+      </div>
+    </div>
+
+    <div class="char-page__divider" aria-hidden="true"></div>
+
+    <!-- ── Right: Bank ────────────────────────────────────── -->
+    <div class="char-page__right">
+
+      <div class="bank-toolbar">
+        <div class="bank-toolbar__search">
+          <svg class="bank-toolbar__search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="6.5" cy="6.5" r="5"/>
+            <path d="M10.5 10.5l3.5 3.5" stroke-linecap="round"/>
+          </svg>
+          <input
+            class="bank-toolbar__input"
+            type="search"
+            placeholder="Search items..."
+            [ngModel]="search()"
+            (ngModelChange)="search.set($event)"
+            aria-label="Search bank items"
+          />
+          @if (search()) {
+            <button class="bank-toolbar__clear" (click)="search.set('')" aria-label="Clear search">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          }
+        </div>
+        <div class="bank-toolbar__space">
+          <span class="bank-toolbar__space-label">Bank space</span>
+          <span class="bank-toolbar__space-value">{{ bankSpace }}</span>
+        </div>
+      </div>
+
+      <nav class="bank-tabs" role="tablist">
+        @for (tab of tabs(); track tab.id) {
+          <button
+            class="bank-tabs__tab"
+            [class.bank-tabs__tab--active]="activeTab() === tab.id"
+            role="tab"
+            [attr.aria-selected]="activeTab() === tab.id"
+            (click)="activeTab.set(tab.id)"
+            (dblclick)="startRename(tab, $event)"
+          >
+            @if (editingTabId() === tab.id) {
+              <input
+                class="bank-tabs__rename"
+                [ngModel]="editingLabel()"
+                (ngModelChange)="editingLabel.set($event)"
+                (blur)="commitRename()"
+                (keydown.enter)="commitRename()"
+                (keydown.escape)="cancelRename()"
+                (click)="$event.stopPropagation()"
+                autoFocus
+              />
+            } @else {
+              {{ tab.label }}
+              @if (tab.deletable) {
+                <span class="bank-tabs__delete" role="button" aria-label="Delete tab" (click)="deleteTab(tab.id, $event)">
+                  <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path d="M2 2l6 6M8 2l-6 6" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              }
+            }
+          </button>
+        }
+        <button class="bank-tabs__add" (click)="addTab()" aria-label="Add tab">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M8 3v10M3 8h10" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </nav>
+
+      <div class="bank-grid" role="tabpanel">
+        @if (filteredItems().length === 0) {
+          <div class="bank-grid__empty">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="8" y="14" width="32" height="24" rx="3"/>
+              <path d="M8 20h32"/><path d="M16 8l-4 6M32 8l4 6"/>
+              <circle cx="24" cy="31" r="3"/>
+            </svg>
+            @if (search()) {
+              <p>No items match "{{ search() }}"</p>
+            } @else {
+              <p>Your bank is empty</p>
+              <span>Items you collect will appear here</span>
+            }
+          </div>
+        } @else {
+          @for (entry of filteredItems(); track entry.item.id) {
+            <button
+              class="bank-slot"
+              [title]="entry.item.name"
+              (click)="selectedEntry.set(entry)"
+              type="button"
+              [attr.aria-label]="entry.item.name"
+            >
+              <img class="bank-slot__icon" [src]="entry.item.icon" [alt]="entry.item.name" />
+              @if (entry.qty > 1) {
+                <span class="bank-slot__qty">{{ dropPct(entry.qty) }}</span>
+              }
+            </button>
+          }
+        }
+      </div>
+
+    </div><!-- /char-page__right -->
+  </div><!-- /char-page__body -->
+</div><!-- /char-page -->
+
+@if (helpOpen()) {
+  <app-modal title="Character" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
+    <p>View your character, manage your equipment, and browse your bank storage.</p>
+    <p>Click the shield icon on your character to toggle the equipment overlay.</p>
+  </app-modal>
+}
+
+@if (selectedEntry(); as entry) {
+  <div class="item-modal-backdrop" (click)="$event.target === $event.currentTarget && selectedEntry.set(null)">
+    <div class="item-modal" role="dialog" [attr.aria-label]="entry.item.name">
+      <button class="item-modal__close" (click)="selectedEntry.set(null)" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="item-modal__image">
+        <img [src]="entry.item.icon" [alt]="entry.item.name" />
+      </div>
+      <div class="item-modal__info">
+        <span class="item-modal__type">{{ entry.item.subType ?? entry.item.type }}</span>
+        <h2 class="item-modal__name">{{ entry.item.name }}</h2>
+        <span class="item-modal__qty">× {{ entry.qty | number }}</span>
+        <p class="item-modal__desc">{{ entry.item.description }}</p>
+        <dl class="item-modal__stats">
+          @if (entry.item.value) {
+            <div class="item-modal__stat">
+              <dt>Value</dt><dd>{{ entry.item.value | number }} gp</dd>
+            </div>
+          }
+          @if (entry.item.levelReq) {
+            <div class="item-modal__stat">
+              <dt>Level req.</dt><dd>{{ entry.item.levelReq }}</dd>
+            </div>
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+}

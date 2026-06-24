@@ -51,7 +51,7 @@ export const WORLDS: World[] = [
           mining: ['Copper Ore', 'Tin Ore'],
         },
         monsters: ['bat'],
-        killReq: 1,
+        killReq: 35,
       },
       {
         id: 'tutorial-shores',

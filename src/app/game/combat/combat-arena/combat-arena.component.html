@@ -13,6 +13,23 @@
   <!-- Centre divider -->
   <div class="combat-arena__divider" aria-hidden="true"></div>
 
+  <!-- Kill-requirement badges (top-right overlay) -->
+  @if (killReqLocs().length > 0) {
+    <div class="combat-arena__kill-reqs">
+      @for (loc of killReqLocs(); track loc.id) {
+        <div class="combat-arena__kill-req">
+          <svg class="combat-arena__kill-req-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 1a6 6 0 0 0-6 6 5.99 5.99 0 0 0 3 5.2V14h1v1h4v-1h1v-1.8A5.99 5.99 0 0 0 14 7a6 6 0 0 0-6-6zm-2 8.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+          </svg>
+          <div class="combat-arena__kill-req-body">
+            <span class="combat-arena__kill-req-name">{{ loc.name }}</span>
+            <span class="combat-arena__kill-req-count">{{ loc.killReq }} kill{{ loc.killReq === 1 ? '' : 's' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
   <!-- ── Left: Player ──────────────────────────────────────────────────── -->
   <div class="combat-arena__half combat-arena__half--player">
     <div class="combat-arena__stage">

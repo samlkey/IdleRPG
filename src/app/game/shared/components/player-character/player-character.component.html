@@ -1,4 +1,4 @@
-<div class="char-stage">
+<div class="char-stage" [class.char-stage--large]="large()">
 
   <div class="char-frame" [class.char-frame--working]="state() === 'working'">
     <img class="char-figure" [src]="currentFrame()" alt="" aria-hidden="true" />
@@ -10,5 +10,163 @@
     }
     <span class="char-status__label">{{ activityLabel() }}</span>
   </div>
+
+  @if (showEquipToggle()) {
+  <!-- Armour toggle -->
+  <button
+    class="char-armour-btn"
+    [class.char-armour-btn--active]="equipOpen()"
+    (click)="equipOpen.set(!equipOpen())"
+    type="button"
+    title="Toggle Equipment"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 3L4 7v5c0 5 3.5 7.5 8 10 4.5-2.5 8-5 8-10V7L12 3z"/>
+    </svg>
+  </button>
+
+  <!-- Equipment overlay -->
+  @if (equipOpen()) {
+    <div class="char-equip-overlay">
+      <div class="char-equip-grid">
+
+        <!-- Head -->
+        <button class="ceq-slot ceq-slot--connect-down" style="grid-area: head"
+          [class.ceq-slot--filled]="equipped().head" [title]="equipped().head?.name ?? 'Head slot'">
+          @if (equipped().head; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M7 14v-3a5 5 0 0 1 10 0v3H7z"/><rect x="5" y="14" width="14" height="3" rx="1"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Cape -->
+        <button class="ceq-slot ceq-slot--connect-down" style="grid-area: cape"
+          [class.ceq-slot--filled]="equipped().cape" [title]="equipped().cape?.name ?? 'Cape slot'">
+          @if (equipped().cape; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M9 4h6l2 16H7L9 4z"/><path d="M7 20c1.5-1 3-1.5 5-1.5s3.5.5 5 1.5"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Neck -->
+        <button class="ceq-slot ceq-slot--connect-down" style="grid-area: neck"
+          [class.ceq-slot--filled]="equipped().neck" [title]="equipped().neck?.name ?? 'Neck slot'">
+          @if (equipped().neck; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <circle cx="12" cy="15.5" r="3.5"/><path d="M12 12V8"/><path d="M9.5 8a2.5 2.5 0 0 1 5 0"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Ammo -->
+        <button class="ceq-slot ceq-slot--connect-down" style="grid-area: ammo"
+          [class.ceq-slot--filled]="equipped().ammo" [title]="equipped().ammo?.name ?? 'Ammo slot'">
+          @if (equipped().ammo; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <line x1="12" y1="4" x2="12" y2="20"/><polyline points="9,7 12,4 15,7"/><line x1="11" y1="20" x2="13" y2="20"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Weapon -->
+        <button class="ceq-slot" style="grid-area: weapon"
+          [class.ceq-slot--filled]="equipped().weapon" [title]="equipped().weapon?.name ?? 'Weapon slot'">
+          @if (equipped().weapon; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M14.5 5.5l4 4-9 9H7v-2.5l7.5-10.5z"/><line x1="4" y1="20" x2="7" y2="20"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Body -->
+        <button class="ceq-slot ceq-slot--connect-down" style="grid-area: body"
+          [class.ceq-slot--filled]="equipped().body" [title]="equipped().body?.name ?? 'Body slot'">
+          @if (equipped().body; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M8 4h8l2 3v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7L8 4z"/>
+              <line x1="10" y1="4" x2="10" y2="9"/><line x1="14" y1="4" x2="14" y2="9"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Shield -->
+        <button class="ceq-slot" style="grid-area: shield"
+          [class.ceq-slot--filled]="equipped().shield" [title]="equipped().shield?.name ?? 'Shield slot'">
+          @if (equipped().shield; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M12 3L4 7v5c0 5 3.5 7.5 8 10 4.5-2.5 8-5 8-10V7L12 3z"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Legs -->
+        <button class="ceq-slot ceq-slot--connect-down" style="grid-area: legs"
+          [class.ceq-slot--filled]="equipped().legs" [title]="equipped().legs?.name ?? 'Legs slot'">
+          @if (equipped().legs; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M9 3h6v9l-1.5 9H12l-1.5-6.5L9 21H7.5L6 12V3z"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Hands -->
+        <button class="ceq-slot" style="grid-area: hands"
+          [class.ceq-slot--filled]="equipped().hands" [title]="equipped().hands?.name ?? 'Gloves slot'">
+          @if (equipped().hands; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M8 13V9a1 1 0 0 1 2 0v4M11 13V8a1 1 0 0 1 2 0v5M14 13V9a1 1 0 0 1 2 0v4"/>
+              <path d="M8 13h8l.5 3.5a4.5 4.5 0 0 1-9 0L8 13z"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Feet -->
+        <button class="ceq-slot" style="grid-area: feet"
+          [class.ceq-slot--filled]="equipped().feet" [title]="equipped().feet?.name ?? 'Boots slot'">
+          @if (equipped().feet; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <path d="M7 5v12h5.5l5.5-5.5V5H7z"/><line x1="7" y1="17" x2="17" y2="17"/>
+            </svg>
+          }
+        </button>
+
+        <!-- Ring -->
+        <button class="ceq-slot" style="grid-area: ring"
+          [class.ceq-slot--filled]="equipped().ring" [title]="equipped().ring?.name ?? 'Ring slot'">
+          @if (equipped().ring; as item) {
+            <img class="ceq-slot__icon" [src]="item.icon" [alt]="item.name" />
+          } @else {
+            <svg class="ceq-slot__ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+          }
+        </button>
+
+      </div>
+    </div>
+  }
+  } <!-- /showEquipToggle -->
 
 </div>
