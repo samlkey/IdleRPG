@@ -1,12 +1,12 @@
-$bg:          #09090f;
+$bg: #09090f;
 $content-pad: 2rem;
-$surface:     #111118;
-$surface-lt:  #1a1a26;
-$border:      rgba(255, 255, 255, 0.07);
-$accent:      #7c3aed;
-$red:         #ef4444;
-$text-base:   rgba(203, 193, 228, 0.85);
-$text-muted:  rgba(203, 193, 228, 0.45);
+$surface: #111118;
+$surface-lt: #1a1a26;
+$border: rgba(255, 255, 255, 0.07);
+$accent: #7c3aed;
+$red: #ef4444;
+$text-base: rgba(203, 193, 228, 0.85);
+$text-muted: rgba(203, 193, 228, 0.45);
 
 // ── Skill-panel layout ────────────────────────────────────────────────────────
 .skill-panel {
@@ -167,7 +167,9 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   border-radius: 8px;
   background: $surface-lt;
   border: 1px solid $border;
-  transition: border-color 150ms ease, background 150ms ease;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.03);
@@ -259,7 +261,10 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   font-family: inherit;
   letter-spacing: 0.02em;
   cursor: pointer;
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
 
   svg {
     width: 18px;
@@ -289,10 +294,92 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   border-radius: 10px;
   padding: 0.85rem;
 
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .clp__stats-title { margin: 0; }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
   &__slots {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 0.4rem;
+  }
+}
+
+.start-combat-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba($red, 0.35);
+  background: rgba($red, 0.08);
+  color: rgba($red, 0.7);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  svg {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(.start-combat-btn--active) {
+    background: rgba($red, 0.15);
+    color: $red;
+  }
+
+  &--active {
+    background: rgba($red, 0.18);
+    border-color: rgba($red, 0.55);
+    color: #fca5a5;
+  }
+}
+
+.auto-abilities-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: $surface-lt;
+  color: $text-muted;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(.auto-abilities-btn--active) {
+    background: rgba(255, 255, 255, 0.05);
+    color: $text-base;
+  }
+
+  &--active {
+    background: rgba($accent, 0.15);
+    border-color: rgba($accent, 0.45);
+    color: #a78bfa;
   }
 }
 
@@ -303,7 +390,9 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   background: $surface-lt;
   border: 1px solid $border;
   cursor: not-allowed;
-  transition: border-color 150ms ease, background 150ms ease;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
 
   &:not(:disabled):hover {
     background: rgba(255, 255, 255, 0.05);
@@ -322,7 +411,7 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 25%;
     border: 1px dashed rgba(255, 255, 255, 0.08);
@@ -379,19 +468,15 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   }
 }
 
-// ── Loot panels ───────────────────────────────────────────────────────────────
-.loot-grid {
+// ── Enemy stats + possible loot side by side ──────────────────────────────────
+.enemy-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   align-items: start;
 }
 
-.loot-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
+// ── Loot panels ───────────────────────────────────────────────────────────────
 
 .loot-row {
   display: flex;
@@ -476,14 +561,14 @@ $text-muted:  rgba(203, 193, 228, 0.45);
 // ── Combat controls (food + attack timer) ─────────────────────────────────────
 
 .combat-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.5rem;
   padding: 0.85rem;
-  min-height: calc(58px + 2 * 0.85rem);
   background: $bg;
   border: 1px solid $border;
   border-radius: 10px;
+  align-items: start;
 }
 
 .food-btn {
@@ -499,7 +584,9 @@ $text-muted:  rgba(203, 193, 228, 0.45);
   justify-content: center;
   gap: 0.2rem;
   cursor: not-allowed;
-  transition: background 150ms ease, border-color 150ms ease;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
 
   &:not(:disabled):hover {
     background: rgba(255, 255, 255, 0.05);
@@ -524,7 +611,6 @@ $text-muted:  rgba(203, 193, 228, 0.45);
 }
 
 .attack-timer {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -563,12 +649,58 @@ $text-muted:  rgba(203, 193, 228, 0.45);
     border-radius: 99px;
     transition: width 100ms linear;
 
-    &--enemy { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+    &--enemy {
+      background: linear-gradient(90deg, #b91c1c, #ef4444);
+    }
   }
 
   &__sub {
     font-size: 0.62rem;
     color: $text-muted;
     font-variant-numeric: tabular-nums;
+  }
+}
+
+// ── HP display (sits alongside attack timer in combat-controls) ───────────────
+.hp-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  &__label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: $text-muted;
+  }
+
+  &__val {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-base;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #15803d, #4ade80);
+    border-radius: 99px;
+    transition: width 200ms ease;
+
+    &--enemy { background: linear-gradient(90deg, #b91c1c, #ef4444); }
   }
 }

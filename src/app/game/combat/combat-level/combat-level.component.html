@@ -1,5 +1,4 @@
 <div class="skill-panel">
-
   <div class="skill-panel__header">
     <img
       class="skill-panel__pixel-icon"
@@ -12,86 +11,112 @@
       <p class="skill-panel__subtitle">Fight monsters across the world</p>
     </div>
     <div class="clp-lvl-badge">
-      <span class="clp-lvl-badge__num">{{ playerService.player().combatLevel }}</span>
+      <span class="clp-lvl-badge__num">{{
+        playerService.player().combatLevel
+      }}</span>
       <span class="clp-lvl-badge__label">Cmb Lvl</span>
     </div>
   </div>
 
   <!-- Battle layout -->
   <div class="battle-grid">
-
     <!-- Full-width combined arena -->
     <app-combat-arena
       class="battle-arena"
       [background]="'assets/backgrounds/player_background_1.png'"
       [playerName]="playerService.player().name"
-      [hpPercent]="playerService.hpPercent()"
-      [hp]="playerService.player().hp"
-      [maxHp]="playerService.player().maxHp"
       [monster]="selectedMonster()"
-      [enemyHpPct]="enemyHpPct()"
       [killReqLocs]="upcomingKillReqs()"
     />
 
     <!-- Left: Player controls -->
     <div class="battle-col">
-
       <!-- Food + Attack interval -->
       <div class="combat-controls">
-
-        <button class="food-btn" type="button" title="No food equipped" disabled>
-          <svg class="food-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M4 13c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/>
-            <path d="M4 14h16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3z"/>
-          </svg>
-          <span class="food-btn__label">Food</span>
-        </button>
-
+        <div class="hp-display">
+          <div class="hp-display__header">
+            <span class="hp-display__label">Health</span>
+            <span class="hp-display__val"
+              >{{ playerService.player().hp }} /
+              {{ playerService.player().maxHp }}</span
+            >
+          </div>
+          <div class="hp-display__track">
+            <div
+              class="hp-display__fill"
+              [style.width.%]="playerService.hpPercent()"
+            ></div>
+          </div>
+        </div>
         <div class="attack-timer">
           <div class="attack-timer__header">
             <span class="attack-timer__label">Attack Speed</span>
             <span class="attack-timer__val">{{ attackInterval() }}s</span>
           </div>
           <div class="attack-timer__track">
-            <div class="attack-timer__fill" [style.width.%]="attackProgress()"></div>
+            <div
+              class="attack-timer__fill"
+              [style.width.%]="attackProgress()"
+            ></div>
           </div>
-          <span class="attack-timer__sub">Next attack in {{ remainingAttackTime() }}s</span>
+          <span class="attack-timer__sub"
+            >Next attack in {{ remainingAttackTime() }}s</span
+          >
         </div>
-
-      </div>
-
-      <!-- Combat mode picker -->
-      <div class="mode-picker">
-        <button
-          class="mode-btn"
-          [class.mode-btn--selected]="combatMode() === 'passive'"
-          (click)="combatMode.set('passive')"
-          type="button"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3L4 7v5c0 5 3.5 7.5 8 10 4.5-2.5 8-5 8-10V7L12 3z"/>
-          </svg>
-          Passive Combat
-        </button>
-        <button
-          class="mode-btn"
-          [class.mode-btn--selected]="combatMode() === 'active'"
-          (click)="combatMode.set('active')"
-          type="button"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M14.5 5.5l4 4-9 9H7v-2.5l7.5-10.5z"/>
-            <line x1="4" y1="20" x2="7" y2="20"/>
-          </svg>
-          Active Combat
-        </button>
       </div>
 
       <div class="ability-bar">
-        <h2 class="clp__stats-title">Abilities</h2>
+        <div class="ability-bar__header">
+          <h2 class="clp__stats-title">Abilities</h2>
+          <div class="ability-bar__actions">
+            <button
+              class="auto-abilities-btn"
+              [class.auto-abilities-btn--active]="autoAbilities()"
+              (click)="autoAbilities.set(!autoAbilities())"
+              type="button"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+              Auto Abilities
+            </button>
+            <button
+              class="start-combat-btn"
+              [class.start-combat-btn--active]="inCombat()"
+              (click)="inCombat.set(!inCombat())"
+              type="button"
+            >
+              @if (inCombat()) {
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <rect x="6" y="5" width="4" height="14" rx="1" />
+                  <rect x="14" y="5" width="4" height="14" rx="1" />
+                </svg>
+                Run/Escape
+              } @else {
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M6 4l14 8-14 8V4z" />
+                </svg>
+                Start Combat
+              }
+            </button>
+          </div>
+        </div>
         <div class="ability-bar__slots">
-          @for (slot of [1,2,3,4,5,6]; track slot) {
-            <button class="ability-slot" type="button" disabled title="No ability equipped">
+          @for (slot of [1, 2, 3, 4, 5, 6]; track slot) {
+            <button
+              class="ability-slot"
+              type="button"
+              disabled
+              title="No ability equipped"
+            >
               <span class="ability-slot__key">{{ slot }}</span>
             </button>
           }
@@ -101,78 +126,128 @@
 
     <!-- Right: Enemy info -->
     <div class="battle-col">
-
       <!-- Enemy attack interval -->
       <div class="combat-controls">
+        <div class="hp-display">
+          <div class="hp-display__header">
+            <span class="hp-display__label">Enemy Health</span>
+            <span class="hp-display__val"
+              >{{ enemyHp() }} /
+              {{ selectedMonster()?.stats?.health ?? 0 }}</span
+            >
+          </div>
+          <div class="hp-display__track">
+            <div
+              class="hp-display__fill hp-display__fill--enemy"
+              [style.width.%]="enemyHpPct()"
+            ></div>
+          </div>
+        </div>
+
         <div class="attack-timer">
           <div class="attack-timer__header">
             <span class="attack-timer__label">Enemy Attack Speed</span>
             <span class="attack-timer__val">{{ enemyAttackInterval() }}s</span>
           </div>
           <div class="attack-timer__track">
-            <div class="attack-timer__fill attack-timer__fill--enemy" [style.width.%]="enemyAttackProgress()"></div>
+            <div
+              class="attack-timer__fill attack-timer__fill--enemy"
+              [style.width.%]="enemyAttackProgress()"
+            ></div>
           </div>
-          <span class="attack-timer__sub">Next attack in {{ remainingEnemyAttackTime() }}s</span>
+          <span class="attack-timer__sub"
+            >Next attack in {{ remainingEnemyAttackTime() }}s</span
+          >
         </div>
       </div>
 
-      <!-- Enemy Stats -->
-      <div class="enemy-stats-panel">
-        <h2 class="clp__stats-title">Enemy Stats</h2>
-        @if (selectedMonster(); as m) {
-          <div class="enemy-stats-grid">
-            <div class="enemy-stat">
-              <img class="enemy-stat__icon" src="assets/icons/hitpoints.png" alt="Health" aria-hidden="true" />
-              <span class="enemy-stat__label">Health</span>
-              <span class="enemy-stat__val">{{ m.stats.health }}</span>
+      <!-- Enemy Stats + Possible Loot side by side -->
+      <div class="enemy-info-grid">
+        <!-- Enemy Stats -->
+        <div class="enemy-stats-panel">
+          <h2 class="clp__stats-title">Enemy Stats</h2>
+          @if (selectedMonster(); as m) {
+            <div class="enemy-stats-grid">
+              <div class="enemy-stat">
+                <img
+                  class="enemy-stat__icon"
+                  src="assets/icons/hitpoints.png"
+                  alt="Health"
+                  aria-hidden="true"
+                />
+                <span class="enemy-stat__label">Health</span>
+                <span class="enemy-stat__val">{{ m.stats.health }}</span>
+              </div>
+              <div class="enemy-stat">
+                <img
+                  class="enemy-stat__icon"
+                  src="assets/icons/attack.png"
+                  alt="Attack"
+                  aria-hidden="true"
+                />
+                <span class="enemy-stat__label">Attack</span>
+                <span class="enemy-stat__val">{{ m.stats.attack }}</span>
+              </div>
+              <div class="enemy-stat">
+                <img
+                  class="enemy-stat__icon"
+                  src="assets/icons/strength.png"
+                  alt="Strength"
+                  aria-hidden="true"
+                />
+                <span class="enemy-stat__label">Strength</span>
+                <span class="enemy-stat__val">{{ m.stats.strength }}</span>
+              </div>
+              <div class="enemy-stat">
+                <img
+                  class="enemy-stat__icon"
+                  src="assets/icons/defence.png"
+                  alt="Defence"
+                  aria-hidden="true"
+                />
+                <span class="enemy-stat__label">Defence</span>
+                <span class="enemy-stat__val">{{ m.stats.defense }}</span>
+              </div>
+              <div class="enemy-stat">
+                <img
+                  class="enemy-stat__icon"
+                  src="assets/icons/ranged.png"
+                  alt="Ranged"
+                  aria-hidden="true"
+                />
+                <span class="enemy-stat__label">Ranged</span>
+                <span class="enemy-stat__val">{{ m.stats.ranged }}</span>
+              </div>
+              <div class="enemy-stat">
+                <img
+                  class="enemy-stat__icon"
+                  src="assets/icons/magic.png"
+                  alt="Magic"
+                  aria-hidden="true"
+                />
+                <span class="enemy-stat__label">Magic</span>
+                <span class="enemy-stat__val">{{ m.stats.magic }}</span>
+              </div>
             </div>
-            <div class="enemy-stat">
-              <img class="enemy-stat__icon" src="assets/icons/attack.png" alt="Attack" aria-hidden="true" />
-              <span class="enemy-stat__label">Attack</span>
-              <span class="enemy-stat__val">{{ m.stats.attack }}</span>
+          } @else {
+            <div class="loot-hint">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 1-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21a48.25 48.25 0 0 1-8.135-.687c-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"
+                />
+              </svg>
+              <span>Select an enemy to<br />view their stats</span>
             </div>
-            <div class="enemy-stat">
-              <img class="enemy-stat__icon" src="assets/icons/strength.png" alt="Strength" aria-hidden="true" />
-              <span class="enemy-stat__label">Strength</span>
-              <span class="enemy-stat__val">{{ m.stats.strength }}</span>
-            </div>
-            <div class="enemy-stat">
-              <img class="enemy-stat__icon" src="assets/icons/defence.png" alt="Defence" aria-hidden="true" />
-              <span class="enemy-stat__label">Defence</span>
-              <span class="enemy-stat__val">{{ m.stats.defense }}</span>
-            </div>
-            <div class="enemy-stat">
-              <img class="enemy-stat__icon" src="assets/icons/ranged.png" alt="Ranged" aria-hidden="true" />
-              <span class="enemy-stat__label">Ranged</span>
-              <span class="enemy-stat__val">{{ m.stats.ranged }}</span>
-            </div>
-            <div class="enemy-stat">
-              <img class="enemy-stat__icon" src="assets/icons/magic.png" alt="Magic" aria-hidden="true" />
-              <span class="enemy-stat__label">Magic</span>
-              <span class="enemy-stat__val">{{ m.stats.magic }}</span>
-            </div>
-          </div>
-        } @else {
-          <div class="loot-hint">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 1-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21a48.25 48.25 0 0 1-8.135-.687c-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-            </svg>
-            <span>Select an enemy to<br />view their stats</span>
-          </div>
-        }
-      </div>
-
-      <div class="loot-grid">
-
-        <!-- Loot to Collect -->
-        <div class="loot-panel">
-          <h2 class="clp__stats-title">Loot to Collect</h2>
-          <div class="loot-hint">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0z" />
-            </svg>
-            <span>Defeat enemies to<br />collect loot</span>
-          </div>
+          }
         </div>
 
         <!-- Possible Loot (drop table) -->
@@ -193,7 +268,10 @@
                   @if (drop.qty && drop.qty > 1) {
                     <span class="loot-row__qty">×{{ drop.qty }}</span>
                   }
-                  <span class="loot-row__chance" [style.color]="dropColor(drop.chance)">
+                  <span
+                    class="loot-row__chance"
+                    [style.color]="dropColor(drop.chance)"
+                  >
                     {{ dropPct(drop.chance) }}
                   </span>
                 </div>
@@ -203,16 +281,25 @@
             }
           } @else {
             <div class="loot-hint">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+                />
               </svg>
               <span>Select an enemy to<br />view drop table</span>
             </div>
           }
         </div>
-
       </div>
     </div>
-
   </div>
 </div>

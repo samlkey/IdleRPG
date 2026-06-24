@@ -33,7 +33,8 @@ export class CombatLevelComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly selectedMonster = signal<Monster | null>(null);
-  readonly combatMode = signal<'passive' | 'active' | 'null'>('null');
+  readonly inCombat        = signal(false);
+  readonly autoAbilities   = signal(false);
   readonly attackInterval = signal(2.4);
   readonly attackProgress = signal(0);
   readonly enemyAttackInterval = signal(3.0);
@@ -61,8 +62,7 @@ export class CombatLevelComponent {
 
   constructor() {
     effect(() => {
-      const mode = this.combatMode();
-      if (mode === 'passive' || mode === 'active') {
+      if (this.inCombat()) {
         this.startCombat();
       } else {
         this.stopCombat();

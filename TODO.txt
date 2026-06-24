@@ -71,3 +71,9 @@ Put crits there
 Combat?
 
 Abilities? 
+Magic tab is just skills that use crystals
+combat is through equipped wands and staffs. These take crystals to charge and cast one spell
+
+PIXI.JS FOR COMBAT TAB
+
+LOOT WILL BE IN THE COMBAT-ARENA
