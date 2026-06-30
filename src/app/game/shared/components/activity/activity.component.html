@@ -13,12 +13,9 @@
   <!-- Crit overlay -->
   @if (isCrit()) {
     <div class="activity-card__crit-overlay" aria-live="polite">
-      <!-- Countdown ring -->
       <div class="activity-card__crit-ring-wrap">
         <svg class="activity-card__crit-ring" viewBox="0 0 52 52" aria-hidden="true">
-          <!-- Track -->
           <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(245,158,11,0.15)" stroke-width="4"/>
-          <!-- Countdown arc -->
           <circle cx="26" cy="26" r="22" fill="none"
             stroke="#fbbf24" stroke-width="4"
             stroke-linecap="round"
@@ -27,11 +24,8 @@
             transform="rotate(-90 26 26)"
           />
         </svg>
-        <span class="activity-card__crit-seconds">
-          {{ critSecondsLeft | number:'1.1-1' }}
-        </span>
+        <span class="activity-card__crit-seconds">{{ critSecondsLeft | number:'1.1-1' }}</span>
       </div>
-      <!-- Label -->
       <div class="activity-card__crit-label">
         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
           <polygon points="8,1 10.2,6 15.5,6.6 11.5,10.4 12.6,15.5 8,12.8 3.4,15.5 4.5,10.4 0.5,6.6 5.8,6"/>
@@ -41,16 +35,28 @@
     </div>
   }
 
-  <!-- Top info -->
-  <div class="activity-card__info">
-    <span class="activity-card__action">{{ action() }}</span>
+  <!-- Header -->
+  <div class="activity-card__header">
+    <div class="activity-card__header-top">
+      <span class="activity-card__action">{{ action() }}</span>
+      <div class="activity-card__reqs">
+        @for (req of requirements(); track req.skill) {
+          @if (req.level > 1) {
+            <div class="activity-card__req" [title]="(req.skill ?? '') + ' level ' + req.level">
+              <img class="activity-card__req-icon" [src]="req.icon" [alt]="req.skill ?? ''" aria-hidden="true" />
+              <span class="activity-card__req-level">{{ req.level }}</span>
+            </div>
+          }
+        }
+      </div>
+    </div>
     <h2 class="activity-card__target">{{ target() }}</h2>
     <div class="activity-card__meta">
       @if (xp()) {
-        <span class="activity-card__xp">{{ xp() }} Skill XP</span>
+        <span class="activity-card__xp">{{ xp() }} XP</span>
       }
       @if (xp() && duration()) {
-        <span class="activity-card__sep">/</span>
+        <span class="activity-card__sep">·</span>
       }
       @if (duration()) {
         <span class="activity-card__duration">
@@ -58,7 +64,7 @@
             <circle cx="8" cy="8" r="6.5"/>
             <path d="M8 4.5v3.75l2.5 1.5" stroke-linecap="round"/>
           </svg>
-          {{ duration() }} seconds
+          {{ duration() }}s
         </span>
       }
     </div>
@@ -67,104 +73,134 @@
   <!-- Image -->
   <div class="activity-card__image-wrap">
     @if (image()) {
-      <img class="activity-card__image" [src]="image()" alt="" aria-hidden="true" />
+      <div class="activity-card__image-stack">
+        <!-- Base: always visible, dark/desaturated -->
+        <img class="activity-card__image activity-card__image--base"
+             [src]="image()" alt="" aria-hidden="true" />
+        <!-- Fill: clips from top down as progress increases -->
+        <img class="activity-card__image activity-card__image--fill"
+             [src]="image()" alt="" aria-hidden="true"
+             [style.clip-path]="fillClipPath()" />
+      </div>
     }
   </div>
 
-  <!-- Smelting ingredients (middle) -->
-  @if (type() === 'smelting' && inputItems().length) {
-    <div class="activity-card__ingredients">
-      @for (req of inputItems(); track req.item.id) {
-        <div class="activity-card__ingredient"
-             [class.activity-card__ingredient--short]="ingredientCount(req.item.id) < req.qty">
-          <img class="activity-card__ingredient-icon" [src]="req.item.icon" alt="" aria-hidden="true" />
-          <span class="activity-card__ingredient-count">
-            {{ ingredientCount(req.item.id) }}<span class="activity-card__ingredient-req">/{{ req.qty }}</span>
+  <!-- IO Panel -->
+  <div class="activity-card__io">
+
+    <!-- Outputs -->
+    @if (dropTable()?.drops?.length) {
+      <div class="activity-card__io-section">
+        <span class="activity-card__io-label">Outputs</span>
+        <div class="activity-card__io-items">
+          @for (drop of dropTable()!.drops; track drop.item.id) {
+            <div class="activity-card__io-item">
+              <img class="activity-card__io-icon" [src]="drop.item.icon" [alt]="drop.item.name" aria-hidden="true" />
+              <span class="activity-card__io-name">{{ drop.item.name }}</span>
+              <span class="activity-card__io-qty">×{{ drop.qty ?? 1 }}</span>
+              @if (drop.chance < 1) {
+                <span class="activity-card__io-chance">{{ drop.chance * 100 | number:'1.0-1' }}%</span>
+              } @else {
+                <span class="activity-card__io-always">Always</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Inputs — smelting -->
+    @if (type() === 'smelting' && inputItems().length) {
+      <div class="activity-card__io-section activity-card__io-section--inputs">
+        <div class="activity-card__io-label-row">
+          <span class="activity-card__io-label">Inputs</span>
+          <span class="activity-card__io-sets">
+            {{ setsAvailable() ?? 0 }} set{{ (setsAvailable() ?? 0) !== 1 ? 's' : '' }} available
           </span>
         </div>
-      }
-      <span class="activity-card__sets">
-        {{ setsAvailable() ?? 0 }} set{{ (setsAvailable() ?? 0) !== 1 ? 's' : '' }}
-      </span>
-    </div>
-  }
+        <div class="activity-card__io-items">
+          @for (req of inputItems(); track req.item.id) {
+            <div class="activity-card__io-item" [class.activity-card__io-item--short]="ingredientCount(req.item.id) < req.qty">
+              <img class="activity-card__io-icon" [src]="req.item.icon" [alt]="req.item.name" aria-hidden="true" />
+              <span class="activity-card__io-name">{{ req.item.name }}</span>
+              <span class="activity-card__io-qty">
+                {{ ingredientCount(req.item.id) }}<span class="activity-card__io-qty-req">/{{ req.qty }}</span>
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    }
 
-  <!-- Progress bar -->
-  <div class="activity-card__progress-track">
-    <div
-      class="activity-card__progress-fill"
-      [style.width.%]="progressPct()"
-    ></div>
-  </div>
-
-  <!-- Depletion bar -->
-  @if (type() === 'depletion') {
-    <div class="activity-card__depletion">
-      @if (isFullReplenishing()) {
-        <div class="activity-card__charges activity-card__charges--replenishing">
-          <div class="activity-card__replenish-track">
-            <div class="activity-card__replenish-fill" [style.width.%]="displayReplenishPct()"></div>
+    <!-- Inputs — consumption -->
+    @if (type() === 'consumption' && inputItem()) {
+      <div class="activity-card__io-section activity-card__io-section--inputs">
+        <span class="activity-card__io-label">Inputs</span>
+        <div class="activity-card__io-items">
+          <div class="activity-card__io-item">
+            <img class="activity-card__io-icon" [src]="inputItem()!.icon" [alt]="inputItem()!.name" aria-hidden="true" />
+            <span class="activity-card__io-name">{{ inputItem()!.name }}</span>
+            <span class="activity-card__io-qty">{{ inputItemCount() }} remaining</span>
           </div>
         </div>
-        <span class="activity-card__charge-label activity-card__charge-label--replenishing">Replenishing…</span>
-      } @else {
+      </div>
+    }
+
+  </div>
+
+  <!-- Footer: progress + bars -->
+  <div class="activity-card__foot">
+
+    <div class="activity-card__progress-row">
+      <div class="activity-card__progress-track">
+        <div class="activity-card__progress-fill" [style.width.%]="progressPct()"></div>
+      </div>
+      <span class="activity-card__progress-label">
+        @if (active() || isCrit()) {
+          {{ progressPct() | number:'1.0-0' }}%
+        } @else {
+          0%
+        }
+      </span>
+    </div>
+
+    @if (type() === 'depletion') {
+      <div class="activity-card__depletion">
+        @if (isFullReplenishing()) {
+          <div class="activity-card__charges activity-card__charges--replenishing">
+            <div class="activity-card__replenish-track">
+              <div class="activity-card__replenish-fill" [style.width.%]="displayReplenishPct()"></div>
+            </div>
+          </div>
+          <span class="activity-card__charge-label activity-card__charge-label--replenishing">Replenishing…</span>
+        } @else {
+          <div class="activity-card__charges">
+            @for (seg of chargeSegments(); track seg) {
+              <div
+                class="activity-card__charge"
+                [class.activity-card__charge--filled]="seg < displayCharges()"
+              ></div>
+            }
+          </div>
+          <span class="activity-card__charge-label">{{ displayCharges() }}/{{ maxCharges() }}</span>
+        }
+      </div>
+    }
+
+    @if (type() === 'bonus') {
+      <div class="activity-card__bonus">
         <div class="activity-card__charges">
-          @for (seg of chargeSegments(); track seg) {
+          @for (seg of bonusSegments(); track seg) {
             <div
-              class="activity-card__charge"
-              [class.activity-card__charge--filled]="seg < displayCharges()"
+              class="activity-card__charge activity-card__charge--bonus"
+              [class.activity-card__charge--bonus-filled]="seg < displayBonusStep()"
             ></div>
           }
         </div>
-        <span class="activity-card__charge-label">{{ displayCharges() }}/{{ maxCharges() }}</span>
-      }
-    </div>
-  }
-
-  <!-- Bonus bar -->
-  @if (type() === 'bonus') {
-    <div class="activity-card__bonus">
-      <div class="activity-card__charges">
-        @for (seg of bonusSegments(); track seg) {
-          <div
-            class="activity-card__charge activity-card__charge--bonus"
-            [class.activity-card__charge--bonus-filled]="seg < displayBonusStep()"
-          ></div>
-        }
+        <span class="activity-card__charge-label activity-card__charge-label--bonus">+{{ bonusXp() }} XP</span>
       </div>
-      <span class="activity-card__charge-label activity-card__charge-label--bonus">+{{ bonusXp() }} XP</span>
-    </div>
-  }
+    }
 
-  <!-- Consumption counter -->
-  @if (type() === 'consumption' && inputItemCount() !== null) {
-    <div class="activity-card__consumption">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <path d="M8 2C8 2 4 6 4 9.5a4 4 0 0 0 8 0C12 6 8 2 8 2z" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>{{ inputItemCount() }} remaining</span>
-    </div>
-  }
-
-  <!-- Footer -->
-  <div class="activity-card__footer">
-    <div class="activity-card__requirements">
-      @for (req of requirements(); track req.skill) {
-        @if (req.level > 1) {
-          <div class="activity-card__req" [title]="req.skill ? req.skill + ' ' + req.level : ''">
-            <img class="activity-card__req-icon" [src]="req.icon" [alt]="req.skill ?? ''" aria-hidden="true" />
-            <span class="activity-card__req-level">{{ req.level }}</span>
-          </div>
-        }
-      }
-    </div>
-    <div class="activity-card__progress-label">
-      @if (active() || isCrit()) {
-        {{ progressPct() | number:'1.0-0' }}%
-      } @else {
-        0%
-      }
-    </div>
   </div>
 
 </button>

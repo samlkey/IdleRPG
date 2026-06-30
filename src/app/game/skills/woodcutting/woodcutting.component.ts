@@ -1,23 +1,18 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivityComponent } from '../../shared/components/activity/activity.component';
-import { ModalComponent } from '../../shared/components/modal/modal.component';
-import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
 import { LocationService } from '../../services/location.service';
-import { GameItem, DropTable, ItemService } from '../../services/item.service';
+import { DropTable, ItemService } from '../../services/item.service';
 
 @Component({
   selector: 'app-woodcutting',
-  imports: [ActivityComponent, DecimalPipe, ModalComponent, ActivityBadgeComponent],
+  imports: [ActivityComponent, DecimalPipe],
   templateUrl: './woodcutting.component.html',
   styleUrl: './woodcutting.component.scss',
 })
-export class WoodcuttingComponent {
-  pixelIcon = input<string>('');
-  helpOpen = signal(false);
-
+export class WoodcuttingComponent implements OnInit {
   readonly playerService = inject(PlayerService);
   readonly itemService = inject(ItemService);
   readonly activityService = inject(ActivityService);
@@ -32,143 +27,60 @@ export class WoodcuttingComponent {
       id: 'normal-tree',
       name: 'Normal Tree',
       drops: [
-        {
-          item: this.itemService.searchItemById('normal-log')!,
-          chance: 1,
-          qty: 1,
-        },
-        {
-          item: this.itemService.searchItemById('normal-seed')!,
-          chance: 0.5,
-          qty: 1,
-        },
+        { item: this.itemService.searchItemById('normal-log')!, chance: 1, qty: 1 },
+        { item: this.itemService.searchItemById('normal-seed')!, chance: 0.5, qty: 1 },
       ],
     },
     {
       id: 'oak-tree',
       name: 'Oak Tree',
-      drops: [
-        {
-          item: this.itemService.searchItemById('oak-log')!,
-          chance: 1,
-          qty: 1,
-        },
-      ],
+      drops: [{ item: this.itemService.searchItemById('oak-log')!, chance: 1, qty: 1 }],
     },
     {
       id: 'willow-tree',
       name: 'Willow Tree',
-      drops: [
-        {
-          item: this.itemService.searchItemById('willow-log')!,
-          chance: 1,
-          qty: 1,
-        },
-      ],
+      drops: [{ item: this.itemService.searchItemById('willow-log')!, chance: 1, qty: 1 }],
     },
     {
       id: 'maple-tree',
       name: 'Maple Tree',
-      drops: [
-        {
-          item: this.itemService.searchItemById('maple-log')!,
-          chance: 1,
-          qty: 1,
-        },
-      ],
+      drops: [{ item: this.itemService.searchItemById('maple-log')!, chance: 1, qty: 1 }],
     },
     {
       id: 'yew-tree',
       name: 'Yew Tree',
-      drops: [
-        {
-          item: this.itemService.searchItemById('yew-log')!,
-          chance: 1,
-          qty: 1,
-        },
-      ],
+      drops: [{ item: this.itemService.searchItemById('yew-log')!, chance: 1, qty: 1 }],
     },
     {
       id: 'magic-tree',
       name: 'Magic Tree',
-      drops: [
-        {
-          item: this.itemService.searchItemById('magic-log')!,
-          chance: 1,
-          qty: 1,
-        },
-      ],
+      drops: [{ item: this.itemService.searchItemById('magic-log')!, chance: 1, qty: 1 }],
     },
   ];
 
   private readonly allTrees = [
-    {
-      name: 'Normal Tree',
-      src: 'assets/objects/tree.png',
-      level: 1,
-      xp: 300,
-      time: 5,
-      critChance: 0.4,
-      disabled: false,
-      dropTable: this.allDropTables[0],
-    },
-    {
-      name: 'Oak Tree',
-      src: 'assets/objects/oak_tree.png',
-      level: 15,
-      xp: 37.5,
-      time: 10,
-      critChance: 0.4,
-      disabled: true,
-      dropTable: this.allDropTables[1],
-    },
-    {
-      name: 'Willow Tree',
-      src: 'assets/objects/willow_tree.png',
-      level: 30,
-      xp: 67.5,
-      time: 15,
-      critChance: 0.4,
-      disabled: true,
-      dropTable: this.allDropTables[2],
-    },
-    {
-      name: 'Maple Tree',
-      src: 'assets/objects/maple_tree.png',
-      level: 45,
-      xp: 100,
-      time: 20,
-      critChance: 0.4,
-      disabled: true,
-      dropTable: this.allDropTables[3],
-    },
-    {
-      name: 'Yew Tree',
-      src: 'assets/objects/yew_tree.png',
-      level: 60,
-      xp: 175,
-      time: 30,
-      critChance: 0.4,
-      disabled: true,
-      dropTable: this.allDropTables[4],
-    },
-    {
-      name: 'Magic Tree',
-      src: 'assets/objects/magic_tree.png',
-      level: 75,
-      xp: 250,
-      time: 60,
-      critChance: 0.4,
-      disabled: true,
-      dropTable: this.allDropTables[5],
-    },
+    { name: 'Normal Tree',  src: 'assets/objects/tree.png',        level: 1,  xp: 300,  time: 5,  dropTable: this.allDropTables[0] },
+    { name: 'Oak Tree',     src: 'assets/objects/oak_tree.png',    level: 15, xp: 37.5, time: 10, dropTable: this.allDropTables[1] },
+    { name: 'Willow Tree',  src: 'assets/objects/willow_tree.png', level: 30, xp: 67.5, time: 15, dropTable: this.allDropTables[2] },
+    { name: 'Maple Tree',   src: 'assets/objects/maple_tree.png',  level: 45, xp: 100,  time: 20, dropTable: this.allDropTables[3] },
+    { name: 'Yew Tree',     src: 'assets/objects/yew_tree.png',    level: 60, xp: 175,  time: 30, dropTable: this.allDropTables[4] },
+    { name: 'Magic Tree',   src: 'assets/objects/magic_tree.png',  level: 75, xp: 250,  time: 60, dropTable: this.allDropTables[5] },
   ];
 
   readonly trees = computed(() => {
-    const available =
-      this.locationService.current().activities.woodcutting ?? [];
-    return this.allTrees.filter((t) => available.includes(t.name));
+    const available = this.locationService.current().activities.woodcutting ?? [];
+    return this.allTrees.filter(t => available.includes(t.name));
   });
+
+  readonly selectedTree = signal<(typeof this.allTrees)[number] | null>(null);
+
+  ngOnInit(): void {
+    const current = this.activityService.current();
+    if (current?.skillPanel === 'woodcutting') {
+      const match = this.allTrees.find(t => t.name === current.name);
+      if (match) this.selectedTree.set(match);
+    }
+  }
 
   selectTree(tree: (typeof this.allTrees)[0]): void {
     if (this.activityService.current()?.name === tree.name) {

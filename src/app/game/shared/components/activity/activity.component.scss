@@ -1,46 +1,45 @@
-$surface:  #111118;
-$border:   rgba(255, 255, 255, 0.07);
-$accent:   #7c3aed;
+$accent:    #7c3aed;
 $accent-lt: #a78bfa;
-$text-base: rgba(203, 193, 228, 0.85);
+$green:     #22c55e;
+$green-lt:  #4ade80;
+$amber:     #f59e0b;
+$amber-lt:  #fbbf24;
+$red:       #ef4444;
+$red-lt:    #f87171;
+$text-base: rgba(203, 193, 228, 0.9);
 $text-muted: rgba(203, 193, 228, 0.45);
+$divider:   rgba(255, 255, 255, 0.07);
 
+// ── Card shell ────────────────────────────────────────────
 .activity-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0;
   width: 100%;
-  height: 100%;
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: 12px;
-  height: 340px;
+  background: rgba(4, 4, 10, 0.52);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
   overflow: hidden;
   cursor: pointer;
   text-align: left;
   padding: 0;
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 120ms ease, background 150ms ease;
+  transition:
+    border-color 200ms ease,
+    box-shadow   200ms ease;
 
   &:hover:not(:disabled) {
-    border-color: rgba($accent-lt, 0.45);
-    box-shadow: 0 0 0 1px rgba($accent-lt, 0.15), 0 8px 24px rgba(0, 0, 0, 0.35);
-    background: lighten($surface, 2.5%);
-    transform: translateY(-2px);
+    border-color: rgba($accent-lt, 0.4);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.12),
+                0 16px 48px rgba(0, 0, 0, 0.5);
 
-    .activity-card__target {
-      color: #fff;
-    }
-
-    .activity-card__image {
-      filter: drop-shadow(0 6px 16px rgba($accent, 0.4));
-    }
+    .activity-card__target { color: #fff; }
+    .activity-card__image  { filter: drop-shadow(0 8px 24px rgba($accent, 0.45)); }
   }
 
   &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 0 0 1px rgba($accent-lt, 0.25);
+    box-shadow: 0 0 0 1px rgba($accent-lt, 0.2);
   }
 
   &:focus-visible {
@@ -48,83 +47,64 @@ $text-muted: rgba(203, 193, 228, 0.45);
     outline-offset: 2px;
   }
 
+  // ── Active state ────────────────────────────────────────
+  &--active {
+    border-color: rgba($green, 0.5);
+    box-shadow: 0 0 0 1px rgba($green, 0.15),
+                0 12px 36px rgba(0, 0, 0, 0.5);
+
+    .activity-card__progress-fill {
+      background: linear-gradient(90deg, #16a34a, $green-lt);
+      transition: width 100ms linear;
+    }
+    .activity-card__progress-label { color: $green-lt; font-weight: 600; }
+  }
+
   // ── Crit state ──────────────────────────────────────────
   &--crit {
-    border-color: rgba(245, 158, 11, 0.8);
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25), 0 8px 32px rgba(245, 158, 11, 0.2);
-    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba($amber, 0.8);
+    box-shadow: 0 0 0 2px rgba($amber, 0.2),
+                0 12px 40px rgba($amber, 0.2);
     animation: crit-pulse 0.5s ease-in-out infinite alternate;
 
     .activity-card__progress-fill {
-      background: linear-gradient(90deg, #d97706, #fbbf24);
+      background: linear-gradient(90deg, #d97706, $amber-lt);
       transition: width 100ms linear;
     }
-
-    .activity-card__progress-label {
-      color: #fbbf24;
-      font-weight: 600;
-    }
-
-    .activity-card__image {
-      filter: drop-shadow(0 4px 16px rgba(245, 158, 11, 0.55));
-    }
+    .activity-card__progress-label { color: $amber-lt; font-weight: 600; }
+    .activity-card__image { filter: drop-shadow(0 4px 20px rgba($amber, 0.6)); }
   }
 
   // ── Caught / delay state ────────────────────────────────
   &--caught {
-    border-color: rgba(239, 68, 68, 0.6);
-    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2), 0 8px 28px rgba(0, 0, 0, 0.4);
-    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba($red, 0.55);
+    box-shadow: 0 0 0 1px rgba($red, 0.15),
+                0 12px 36px rgba(0, 0, 0, 0.5);
     cursor: not-allowed;
     pointer-events: none;
     animation: caught-pulse 0.6s ease-in-out infinite alternate;
 
     .activity-card__progress-fill {
-      background: linear-gradient(90deg, #991b1b, #f87171);
+      background: linear-gradient(90deg, #991b1b, $red-lt);
       transition: width 100ms linear;
     }
-
-    .activity-card__progress-label { color: #f87171; font-weight: 600; }
-    .activity-card__image { filter: drop-shadow(0 4px 16px rgba(239, 68, 68, 0.45)); }
-  }
-
-  // ── Active state ────────────────────────────────────────
-  &--active {
-    border-color: rgba(34, 197, 94, 0.55);
-    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.2), 0 8px 28px rgba(0, 0, 0, 0.4);
-    background: rgba(34, 197, 94, 0.04);
-
-    .activity-card__progress-fill {
-      background: linear-gradient(90deg, #16a34a, #4ade80);
-      transition: width 100ms linear;
-    }
-
-    .activity-card__progress-label {
-      color: #4ade80;
-      font-weight: 600;
-    }
+    .activity-card__progress-label { color: $red-lt; font-weight: 600; }
+    .activity-card__image { filter: drop-shadow(0 4px 16px rgba($red, 0.5)); }
   }
 
   // ── Depleted state ──────────────────────────────────────
   &--depleted {
     cursor: not-allowed;
 
-    .activity-card__info,
+    .activity-card__header,
     .activity-card__image-wrap,
-    .activity-card__progress-track,
-    .activity-card__progress-label {
-      opacity: 0.35;
-      filter: grayscale(0.6);
-    }
+    .activity-card__io { opacity: 0.35; filter: grayscale(0.6); }
 
     &:hover:not(:disabled) {
-      border-color: $border;
+      border-color: rgba(255, 255, 255, 0.1);
       box-shadow: none;
-      background: $surface;
-      transform: none;
-
       .activity-card__target { color: #e2d9f3; }
-      .activity-card__image  { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+      .activity-card__image  { filter: none; }
     }
   }
 
@@ -133,193 +113,346 @@ $text-muted: rgba(203, 193, 228, 0.45);
   &:disabled {
     cursor: not-allowed;
 
-    .activity-card__info,
+    .activity-card__header,
     .activity-card__image-wrap,
-    .activity-card__progress-track,
-    .activity-card__progress-label {
-      opacity: 0.35;
-      filter: grayscale(0.6);
-    }
+    .activity-card__io { opacity: 0.3; filter: grayscale(0.7); }
   }
+}
 
-  // ── Info block ──────────────────────────────────────────
-  &__info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.2rem;
-    padding: 1.25rem 1.5rem 1rem;
-    width: 100%;
-    text-align: center;
+// ── Header ────────────────────────────────────────────────
+.activity-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.4rem 1.6rem 1.25rem;
+  border-bottom: 1px solid $divider;
+}
+
+.activity-card__header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-card__action {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.activity-card__reqs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.activity-card__req {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem 0.2rem 0.3rem;
+}
+
+.activity-card__req-icon {
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  filter: brightness(1.3);
+}
+
+.activity-card__req-level {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #e2d9f3;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-card__target {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #ede9f8;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.activity-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: $text-muted;
+  margin-top: 0.1rem;
+}
+
+.activity-card__xp {
+  color: $text-base;
+  font-weight: 500;
+}
+
+.activity-card__sep {
+  opacity: 0.35;
+}
+
+.activity-card__duration {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.55;
   }
+}
 
-  &__action {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: $text-muted;
-  }
+// ── Image ─────────────────────────────────────────────────
+.activity-card__image-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1.5rem;
 
-  &__target {
-    margin: 0;
-    font-family: 'Georgia', serif;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #e2d9f3;
-    letter-spacing: 0.01em;
-  }
-
-  &__meta {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    color: $text-muted;
-    margin-top: 0.1rem;
-  }
-
-  &__xp {
-    color: $text-base;
-    font-weight: 500;
-  }
-
-  &__sep {
-    opacity: 0.4;
-  }
-
-  &__duration {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-
-    svg {
-      width: 12px;
-      height: 12px;
-      opacity: 0.6;
-    }
-  }
-
-  // ── Image ───────────────────────────────────────────────
-  &__image-wrap {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.5rem 1.5rem 1.25rem;
-    min-height: 96px;
-  }
-
-  &__image {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    image-rendering: pixelated;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
-  }
-
-  // ── Progress bar ────────────────────────────────────────
-  &__progress-track {
-    width: calc(100% - 2rem);
-    height: 6px;
-    background: rgba(255, 255, 255, 0.07);
-    border-radius: 99px;
-    overflow: hidden;
-    margin: 0 1rem;
-  }
-
-  &__progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, $accent, $accent-lt);
-    border-radius: 99px;
-    transition: width 300ms ease;
-  }
-
-  // ── Depletion bar ───────────────────────────────────────
-  &__depletion {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: calc(100% - 2rem);
-    margin: 0.4rem 1rem 0;
-  }
-
-  &__charges {
-    display: flex;
-    gap: 3px;
-    flex: 1;
-  }
-
-  &__charge {
-    flex: 1;
-    height: 5px;
-    border-radius: 99px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: hidden;
-    position: relative;
-
-    &--filled {
-      background: $accent-lt;
-      border-color: rgba($accent-lt, 0.4);
-    }
-
-    &--replenishing {
-      background: rgba(255, 255, 255, 0.08);
-    }
-  }
-
-  &__charge-fill {
+  &::before {
+    content: '';
     position: absolute;
     inset: 0;
+    background: radial-gradient(ellipse at 50% 60%, rgba($accent, 0.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+}
+
+.activity-card__image-stack {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  z-index: 1;
+}
+
+.activity-card__image {
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+  image-rendering: pixelated;
+
+  &--base {
+    display: block;
+    filter: grayscale(1) brightness(0.28);
+  }
+
+  &--fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    background: rgba($accent-lt, 0.5);
-    border-radius: 99px;
-    transition: width 100ms linear;
+    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
+    transition: clip-path 80ms linear;
+  }
+}
+
+// Tint the fill image to match the current activity state
+.activity-card--active .activity-card__image--fill {
+  filter: drop-shadow(0 0 14px rgba($green, 0.45));
+}
+.activity-card--crit .activity-card__image--fill {
+  filter: drop-shadow(0 0 18px rgba($amber, 0.65));
+}
+.activity-card--caught .activity-card__image--fill {
+  filter: drop-shadow(0 0 14px rgba($red, 0.5));
+}
+
+// ── IO Panel ──────────────────────────────────────────────
+.activity-card__io {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid $divider;
+}
+
+.activity-card__io-section {
+  padding: 0.85rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  & + & {
+    border-top: 1px solid $divider;
   }
 
-  &__charge-label {
-    font-size: 0.65rem;
-    font-variant-numeric: tabular-nums;
-    color: $text-muted;
-    white-space: nowrap;
-    letter-spacing: 0.04em;
+  &--inputs {
+    background: rgba(255, 255, 255, 0.015);
+  }
+}
 
-    &--replenishing {
-      color: rgba(52, 211, 153, 0.75);
-      font-style: italic;
-    }
+.activity-card__io-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activity-card__io-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.activity-card__io-sets {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: rgba(203, 193, 228, 0.35);
+  letter-spacing: 0.04em;
+}
+
+.activity-card__io-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.activity-card__io-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+
+  &--short {
+    background: rgba($red, 0.07);
+    border-color: rgba($red, 0.25);
+
+    .activity-card__io-name { color: $red-lt; }
+    .activity-card__io-icon { filter: drop-shadow(0 0 4px rgba($red, 0.5)); }
+  }
+}
+
+.activity-card__io-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.activity-card__io-name {
+  flex: 1;
+  font-size: 0.82rem;
+  color: $text-base;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-card__io-qty {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $text-muted;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.activity-card__io-qty-req {
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.activity-card__io-chance {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(167, 139, 250, 0.75);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.activity-card__io-always {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba($green-lt, 0.65);
+  letter-spacing: 0.04em;
+}
+
+// ── Footer ────────────────────────────────────────────────
+.activity-card__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.6rem 1.2rem;
+  border-top: 1px solid $divider;
+}
+
+.activity-card__progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.activity-card__progress-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.activity-card__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $accent, $accent-lt);
+  border-radius: 99px;
+  transition: width 300ms ease;
+}
+
+.activity-card__progress-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: $text-muted;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+// ── Depletion / bonus bars ────────────────────────────────
+.activity-card__depletion,
+.activity-card__bonus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.activity-card__charges {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+
+  &--replenishing { flex: 1; }
+}
+
+.activity-card__charge {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  &--filled {
+    background: $accent-lt;
+    border-color: rgba($accent-lt, 0.4);
   }
 
-  &__replenish-track {
-    flex: 1;
-    height: 5px;
-    border-radius: 99px;
+  &--bonus {
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: hidden;
-  }
-
-  &__replenish-fill {
-    height: 100%;
-    background: rgba(52, 211, 153, 0.7);
-    border-radius: 99px;
-    transition: width 100ms linear;
-  }
-
-  // ── Bonus bar ───────────────────────────────────────────
-  &__bonus {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: calc(100% - 2rem);
-    margin: 0.4rem 1rem 0;
-  }
-
-  &__charge--bonus {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.07);
 
     &-filled {
       background: #34d399;
@@ -327,226 +460,104 @@ $text-muted: rgba(203, 193, 228, 0.45);
       box-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
     }
   }
-
-  &__charge-label--bonus {
-    color: rgba(52, 211, 153, 0.85);
-    font-size: 0.65rem;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    letter-spacing: 0.04em;
-    font-weight: 600;
-  }
-
-  // ── Consumption counter ─────────────────────────────────
-  &__consumption {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    padding: 7px 10px;
-    background: rgba(251, 146, 60, 0.1);
-    border-top: 2px solid rgba(251, 146, 60, 0.25);
-    margin-top: 2px;
-
-    svg {
-      width: 14px;
-      height: 14px;
-      color: #fb923c;
-      flex-shrink: 0;
-    }
-
-    span {
-      font-size: 0.8rem;
-      color: #fb923c;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.02em;
-    }
-  }
-
-  // ── Smelting ingredients ────────────────────────────────
-  &__ingredients {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    position: relative;
-  }
-
-  &__ingredient {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    padding: 6px 10px;
-
-    &--short {
-      background: rgba(239, 68, 68, 0.08);
-      border-color: rgba(239, 68, 68, 0.3);
-
-      .activity-card__ingredient-count { color: #f87171; }
-      .activity-card__ingredient-icon  { filter: drop-shadow(0 0 4px rgba(239,68,68,0.5)); }
-    }
-  }
-
-  &__ingredient-icon {
-    width: 36px;
-    height: 36px;
-    image-rendering: pixelated;
-    flex-shrink: 0;
-  }
-
-  &__ingredient-count {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: $text-base;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-  }
-
-  &__ingredient-req {
-    font-weight: 400;
-    color: $text-muted;
-  }
-
-  &__sets {
-    position: absolute;
-    right: 10px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: $text-muted;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  // ── Footer ──────────────────────────────────────────────
-  &__footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.6rem 1rem 0.9rem;
-    font-size: 0.75rem;
-    color: $text-muted;
-    min-height: 56px;
-  }
-
-  &__requirements {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  &__req {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 0.35rem 0.65rem 0.35rem 0.45rem;
-    cursor: default;
-  }
-
-  &__req-icon {
-    width: 20px;
-    height: 20px;
-    image-rendering: pixelated;
-    mix-blend-mode: screen;
-    filter: brightness(1.3);
-  }
-
-  &__req-level {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #e2d9f3;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-  }
-
-  &__progress-label {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-  }
-
-  // ── Crit overlay ─────────────────────────────────────────
-  &__crit-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    background: rgba(0, 0, 0, 0.45);
-    border-radius: 12px;
-    pointer-events: none;
-    animation: crit-overlay-in 150ms ease;
-    z-index: 2;
-  }
-
-  &__crit-ring-wrap {
-    position: relative;
-    width: 72px;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.7));
-  }
-
-  &__crit-ring {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  &__crit-seconds {
-    position: relative;
-    font-size: 1.15rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    color: #fbbf24;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-
-  &__crit-label {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.8rem 0.3rem 0.6rem;
-    background: rgba(245, 158, 11, 0.18);
-    border: 1px solid rgba(245, 158, 11, 0.55);
-    border-radius: 99px;
-    color: #fbbf24;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    animation: crit-badge-pulse 0.5s ease-in-out infinite alternate;
-
-    svg { width: 11px; height: 11px; }
-  }
 }
 
+.activity-card__replenish-track {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.activity-card__replenish-fill {
+  height: 100%;
+  background: rgba(52, 211, 153, 0.7);
+  border-radius: 99px;
+  transition: width 100ms linear;
+}
+
+.activity-card__charge-label {
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+  color: $text-muted;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+
+  &--replenishing { color: rgba(52, 211, 153, 0.75); font-style: italic; }
+  &--bonus { color: rgba(52, 211, 153, 0.85); font-weight: 600; }
+}
+
+// ── Crit overlay ──────────────────────────────────────────
+.activity-card__crit-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 18px;
+  pointer-events: none;
+  animation: crit-overlay-in 150ms ease;
+  z-index: 2;
+}
+
+.activity-card__crit-ring-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 12px rgba($amber-lt, 0.75));
+}
+
+.activity-card__crit-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.activity-card__crit-seconds {
+  position: relative;
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: $amber-lt;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.activity-card__crit-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.85rem 0.3rem 0.65rem;
+  background: rgba($amber, 0.18);
+  border: 1px solid rgba($amber, 0.55);
+  border-radius: 99px;
+  color: $amber-lt;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: crit-badge-pulse 0.5s ease-in-out infinite alternate;
+
+  svg { width: 11px; height: 11px; }
+}
+
+// ── Animations ────────────────────────────────────────────
 @keyframes crit-pulse {
-  from { box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2), 0 8px 32px rgba(245, 158, 11, 0.15); }
-  to   { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.45), 0 8px 40px rgba(245, 158, 11, 0.35); }
+  from { box-shadow: 0 0 0 2px rgba($amber, 0.2), 0 12px 40px rgba($amber, 0.15); }
+  to   { box-shadow: 0 0 0 3px rgba($amber, 0.45), 0 12px 48px rgba($amber, 0.35); }
 }
 
 @keyframes caught-pulse {
-  from { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2), 0 8px 28px rgba(239, 68, 68, 0.1); }
-  to   { box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.45), 0 8px 36px rgba(239, 68, 68, 0.3); }
+  from { box-shadow: 0 0 0 1px rgba($red, 0.2), 0 12px 36px rgba($red, 0.1); }
+  to   { box-shadow: 0 0 0 2px rgba($red, 0.45), 0 12px 40px rgba($red, 0.3); }
 }
 
 @keyframes crit-overlay-in {
@@ -556,5 +567,5 @@ $text-muted: rgba(203, 193, 228, 0.45);
 
 @keyframes crit-badge-pulse {
   from { opacity: 0.8; }
-  to   { opacity: 1; }
+  to   { opacity: 1;   }
 }

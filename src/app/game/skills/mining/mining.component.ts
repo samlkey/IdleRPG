@@ -1,8 +1,6 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivityComponent } from '../../shared/components/activity/activity.component';
-import { ModalComponent } from '../../shared/components/modal/modal.component';
-import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
 import { PlayerService } from '../../services/player.service';
 import { ActivityService } from '../../services/activity.service';
 import { LocationService } from '../../services/location.service';
@@ -10,14 +8,14 @@ import { DropTable, GameItem, ItemService } from '../../services/item.service';
 
 @Component({
   selector: 'app-mining',
-  imports: [ActivityComponent, ModalComponent, DecimalPipe, ActivityBadgeComponent],
+  imports: [
+    ActivityComponent,
+    DecimalPipe,
+  ],
   templateUrl: './mining.component.html',
   styleUrl: './mining.component.scss',
 })
-export class MiningComponent {
-  pixelIcon = input<string>('');
-  helpOpen = signal(false);
-
+export class MiningComponent implements OnInit {
   readonly playerService = inject(PlayerService);
   readonly itemService = inject(ItemService);
   readonly activityService = inject(ActivityService);
@@ -224,6 +222,16 @@ export class MiningComponent {
     const available = this.locationService.current().activities.mining ?? [];
     return this.allRocks.filter((r) => available.includes(r.name));
   });
+
+  readonly selectedRock = signal<(typeof this.allRocks)[number] | null>(null);
+
+  ngOnInit(): void {
+    const current = this.activityService.current();
+    if (current?.skillPanel === 'mining') {
+      const match = this.allRocks.find(r => r.name === current.name);
+      if (match) this.selectedRock.set(match);
+    }
+  }
 
   selectRock(rock: (typeof this.allRocks)[0]): void {
     if (this.activityService.current()?.name === rock.name) {

@@ -3,6 +3,8 @@ import { NgComponentOutlet } from '@angular/common';
 import { NotificationsComponent } from './shared/components/notifications/notifications.component';
 import { LevelUpComponent } from './shared/components/level-up/level-up.component';
 import { QuestCompleteModalComponent } from './shared/components/quest-complete-modal/quest-complete-modal.component';
+import { SkillTopBarComponent } from './shared/components/skill-top-bar/skill-top-bar.component';
+import { ModalComponent } from './shared/components/modal/modal.component';
 // General
 import { QuestsComponent } from './general/quests/quests.component';
 import { CharacterComponent } from './general/character/character.component';
@@ -31,13 +33,14 @@ import { HunterComponent } from './skills/hunter/hunter.component';
 import { ConstructionComponent } from './skills/construction/construction.component';
 import { CrystallisationComponent } from './skills/crystallisation/crystallisation.component';
 // Service
-import { PlayerService, SkillId } from './services/player.service';
+import { PlayerService, SkillId, SkillData } from './services/player.service';
 import { QuestTask } from './shared/components/quest-card/quest-card.component';
 import { LocationService } from './services/location.service';
 import { ItemService } from './services/item.service';
 import { QuestService } from './services/quest.service';
 import { ActiveBuffsComponent } from './shared/components/active-buffs/active-buffs.component';
 import { PlayerCharacterComponent } from './shared/components/player-character/player-character.component';
+
 // Settings
 import { SettingsComponent } from './settings/settings.component';
 
@@ -56,6 +59,8 @@ interface NavItem {
   id: PanelId;
   label: string;
   pixelIcon: string;
+  subtitle?: string;
+  helpText?: string;
   /** 'skill' → reads level from PlayerService; 'qp' → quest points; 'none' → no badge */
   badgeType?:
     | 'skill'
@@ -95,6 +100,8 @@ interface NavSection {
     QuestCompleteModalComponent,
     ActiveBuffsComponent,
     PlayerCharacterComponent,
+    SkillTopBarComponent,
+    ModalComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
@@ -107,6 +114,15 @@ export class GameComponent {
 
   activePanel = signal<PanelId>('quests');
   charCollapsed = signal(false);
+  bottomBarOpen = signal(false);
+  helpOpen = signal(false);
+
+  readonly NAV_RING_C = 2 * Math.PI * 19;
+
+  navXpProgress(id: PanelId): number {
+    const s = this.playerService.skill(id as SkillId);
+    return s.xpForLevel > 0 ? s.xpIntoLevel / s.xpForLevel : 1;
+  }
 
   /** Live current step for the tracked quest, read directly from QuestService. */
   readonly trackedStep = computed(() => {
@@ -124,52 +140,50 @@ export class GameComponent {
     return null;
   }
 
-  readonly sections: NavSection[] = [
+  readonly bottomBarItems: NavItem[] = [
     {
-      label: 'General',
-      items: [
-        {
-          id: 'quests',
-          label: 'Quests',
-          pixelIcon: 'assets/icons/quests.png',
-          badgeType: 'qp',
-          component: QuestsComponent,
-        },
-        {
-          id: 'character',
-          label: 'Character',
-          pixelIcon: 'assets/icons/character.png',
-          badgeType: 'bank-space',
-          component: CharacterComponent,
-          unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 0 },
-          highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 },
-        },
-        {
-          id: 'shop',
-          label: 'General Store',
-          pixelIcon: 'assets/icons/shop.png',
-          badgeType: 'gold',
-          component: ShopComponent,
-          locked: true,
-        },
-        {
-          id: 'map',
-          label: 'Map',
-          pixelIcon: 'assets/objects/map.png',
-          badgeType: 'location',
-          component: MapComponent,
-          locked: false,
-        },
-        {
-          id: 'house',
-          label: 'House',
-          pixelIcon: 'assets/icons/house.png',
-          badgeType: 'house-level',
-          component: HouseComponent,
-          locked: true,
-        },
-      ],
+      id: 'quests',
+      label: 'Quests',
+      pixelIcon: 'assets/icons/quests.png',
+      badgeType: 'qp',
+      component: QuestsComponent,
     },
+    {
+      id: 'character',
+      label: 'Character',
+      pixelIcon: 'assets/icons/character.png',
+      badgeType: 'bank-space',
+      component: CharacterComponent,
+      unlockedByQuestStep: { questId: 'tutorial-island', stepIndex: 0 },
+      highlightedByQuestStep: { questId: 'tutorial-island', stepIndex: 1 },
+    },
+    {
+      id: 'shop',
+      label: 'General Store',
+      pixelIcon: 'assets/icons/shop.png',
+      badgeType: 'gold',
+      component: ShopComponent,
+      locked: true,
+    },
+    {
+      id: 'map',
+      label: 'Map',
+      pixelIcon: 'assets/objects/map.png',
+      badgeType: 'location',
+      component: MapComponent,
+      locked: false,
+    },
+    {
+      id: 'house',
+      label: 'House',
+      pixelIcon: 'assets/icons/house.png',
+      badgeType: 'house-level',
+      component: HouseComponent,
+      locked: true,
+    },
+  ];
+
+  readonly sections: NavSection[] = [
     {
       label: 'Combat Stats',
       items: [
@@ -226,6 +240,7 @@ export class GameComponent {
         {
           id: 'magic',
           label: 'Magic',
+          subtitle: 'Cast spells and enchant items',
           pixelIcon: 'assets/icons/magic.png',
           badgeType: 'skill',
           component: MagicComponent,
@@ -234,6 +249,7 @@ export class GameComponent {
         {
           id: 'prayer',
           label: 'Prayer',
+          subtitle: 'Commune with the gods for divine buffs',
           pixelIcon: 'assets/icons/prayer.png',
           badgeType: 'skill',
           component: PrayerComponent,
@@ -242,6 +258,7 @@ export class GameComponent {
         {
           id: 'slayer',
           label: 'Slayer',
+          subtitle: 'Hunt assigned monsters for rewards',
           pixelIcon: 'assets/icons/slayer.png',
           badgeType: 'skill',
           component: SlayerComponent,
@@ -255,6 +272,7 @@ export class GameComponent {
         {
           id: 'woodcutting',
           label: 'Woodcutting',
+          subtitle: 'Chop trees and gather logs',
           pixelIcon: 'assets/icons/woodcutting.png',
           badgeType: 'skill',
           component: WoodcuttingComponent,
@@ -264,6 +282,7 @@ export class GameComponent {
         {
           id: 'firemaking',
           label: 'Firemaking',
+          subtitle: 'Burn logs for experience and warmth',
           pixelIcon: 'assets/icons/firemaking.png',
           badgeType: 'skill',
           component: FiremakingComponent,
@@ -273,6 +292,7 @@ export class GameComponent {
         {
           id: 'fishing',
           label: 'Fishing',
+          subtitle: 'Catch fish from rivers and seas',
           pixelIcon: 'assets/icons/fishing.png',
           badgeType: 'skill',
           component: FishingComponent,
@@ -282,6 +302,7 @@ export class GameComponent {
         {
           id: 'cooking',
           label: 'Cooking',
+          subtitle: 'Prepare food to restore health',
           pixelIcon: 'assets/icons/cooking.png',
           badgeType: 'skill',
           component: CookingComponent,
@@ -291,6 +312,8 @@ export class GameComponent {
         {
           id: 'mining',
           label: 'Mining',
+          subtitle: 'Extract ores and gems from the earth',
+          helpText: 'Mining allows you to extract ores and gems from rock formations. Mined ores can be smelted via Smithing into bars and crafted into equipment.',
           pixelIcon: 'assets/icons/mining.png',
           badgeType: 'skill',
           component: MiningComponent,
@@ -300,6 +323,7 @@ export class GameComponent {
         {
           id: 'smithing',
           label: 'Smithing',
+          subtitle: 'Smelt ores into bars and forge equipment',
           pixelIcon: 'assets/icons/smithing.png',
           badgeType: 'skill',
           component: SmithingComponent,
@@ -309,6 +333,7 @@ export class GameComponent {
         {
           id: 'crafting',
           label: 'Crafting',
+          subtitle: 'Create jewelry, armor, and accessories',
           pixelIcon: 'assets/icons/crafting.png',
           badgeType: 'skill',
           component: CraftingComponent,
@@ -318,6 +343,7 @@ export class GameComponent {
         {
           id: 'fletching',
           label: 'Fletching',
+          subtitle: 'Craft bows, arrows, and ranged ammunition',
           pixelIcon: 'assets/icons/fletching.png',
           badgeType: 'skill',
           component: FletchingComponent,
@@ -327,6 +353,7 @@ export class GameComponent {
         {
           id: 'crystallisation',
           label: 'Crystallisation',
+          subtitle: 'Harness crystals for unique rewards',
           pixelIcon: 'assets/icons/crystallisation.png',
           badgeType: 'skill',
           component: CrystallisationComponent,
@@ -335,6 +362,7 @@ export class GameComponent {
         {
           id: 'farming',
           label: 'Farming',
+          subtitle: 'Grow crops and herbs over time',
           pixelIcon: 'assets/icons/farming.png',
           badgeType: 'skill',
           component: FarmingComponent,
@@ -343,6 +371,7 @@ export class GameComponent {
         {
           id: 'agility',
           label: 'Agility',
+          subtitle: 'Train your body for speed and shortcuts',
           pixelIcon: 'assets/icons/agility.png',
           badgeType: 'skill',
           component: AgilityComponent,
@@ -351,6 +380,7 @@ export class GameComponent {
         {
           id: 'herblore',
           label: 'Herblore',
+          subtitle: 'Brew potions with powerful effects',
           pixelIcon: 'assets/icons/herblore.png',
           badgeType: 'skill',
           component: HerbloreComponent,
@@ -359,6 +389,7 @@ export class GameComponent {
         {
           id: 'thieving',
           label: 'Thieving',
+          subtitle: 'Pickpocket and steal for profit',
           pixelIcon: 'assets/icons/thieving.png',
           badgeType: 'skill',
           component: ThievingComponent,
@@ -367,6 +398,7 @@ export class GameComponent {
         {
           id: 'hunter',
           label: 'Hunter',
+          subtitle: 'Track and catch creatures',
           pixelIcon: 'assets/icons/hunter.png',
           badgeType: 'skill',
           component: HunterComponent,
@@ -375,6 +407,7 @@ export class GameComponent {
         {
           id: 'construction',
           label: 'Construction',
+          subtitle: 'Build and furnish your player-owned house',
           pixelIcon: 'assets/icons/construction.png',
           badgeType: 'skill',
           component: ConstructionComponent,
@@ -397,13 +430,20 @@ export class GameComponent {
     },
   ];
 
-  get activeItem(): NavItem | null {
+  readonly activeItem = computed<NavItem | null>(() => {
+    const panel = this.activePanel();
     for (const section of this.sections) {
-      const found = section.items.find((i) => i.id === this.activePanel());
+      const found = section.items.find((i) => i.id === panel);
       if (found) return found;
     }
-    return null;
-  }
+    return this.bottomBarItems.find((i) => i.id === panel) ?? null;
+  });
+
+  readonly activeSkillData = computed<SkillData | null>(() => {
+    const item = this.activeItem();
+    if (!item || item.badgeType !== 'skill') return null;
+    return this.playerService.skill(item.id as SkillId);
+  });
 
   /** Badge text for a nav item — fully derived from PlayerService. */
   badgeFor(item: NavItem): string | null {
@@ -471,6 +511,17 @@ export class GameComponent {
     if (this.isItemDisabled(item)) return;
     this.activePanel.set(item.navigateTo ?? item.id);
     this.questService.onNavigation(item.id);
+  }
+
+  toggleBottomBar(): void {
+    this.bottomBarOpen.update((v) => !v);
+  }
+
+  selectBottomItem(item: NavItem): void {
+    if (this.isItemDisabled(item)) return;
+    this.activePanel.set(item.navigateTo ?? item.id);
+    this.questService.onNavigation(item.id);
+    this.bottomBarOpen.set(false);
   }
 
   navigateToTrackedQuest(): void {

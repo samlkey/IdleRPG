@@ -46,6 +46,11 @@ export class ActivityComponent implements OnDestroy {
   readonly critRemaining = signal(1);
   readonly isCaught      = signal(false);
 
+  readonly fillClipPath = computed(() => {
+    const top = Math.max(0, 100 - this.progressPct());
+    return `inset(${top}% 0 0 0)`;
+  });
+
   readonly chargeSegments = computed(() =>
     Array.from({ length: this.maxCharges() }, (_, i) => i)
   );

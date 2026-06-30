@@ -1,158 +1,285 @@
 <div class="game">
-  <!-- Sidebar -->
-  <nav class="sidebar" aria-label="Navigation">
+  <div class="game__body">
+    <!-- Sidebar -->
+    <nav class="sidebar" aria-label="Navigation">
+      <div class="sidebar__scroll">
+        @for (section of sections; track section.label) {
+          <div class="sidebar__divider"></div>
+          <div class="sidebar__section">
+            <ul class="sidebar__nav" role="list">
+              @for (item of section.items; track item.id) {
+                <li>
+                  <button
+                    class="nav-item"
+                    [class.nav-item--active]="activePanel() === item.id"
+                    [class.nav-item--running]="
+                      playerService.mainActivitySkill() === item.id
+                    "
+                    [class.nav-item--locked]="isItemLocked(item)"
+                    [class.nav-item--no-component]="
+                      !item.component && !isItemLocked(item) && !item.navigateTo
+                    "
+                    [class.nav-item--highlighted]="isItemHighlighted(item)"
+                    [disabled]="isItemDisabled(item)"
+                    (click)="select(item)"
+                    [attr.aria-label]="item.label"
+                    [attr.aria-current]="
+                      activePanel() === item.id ? 'page' : null
+                    "
+                    [title]="item.label"
+                  >
+                    @if (item.badgeType === 'skill') {
+                      <div class="nav-item__icon-wrap">
+                        <svg class="nav-item__xp-ring" viewBox="0 0 44 44" aria-hidden="true">
+                          <circle class="nav-item__xp-ring-track" cx="22" cy="22" r="19"/>
+                          <circle class="nav-item__xp-ring-fill" cx="22" cy="22" r="19"
+                            stroke-linecap="round"
+                            [attr.stroke-dasharray]="NAV_RING_C"
+                            [attr.stroke-dashoffset]="NAV_RING_C * (1 - navXpProgress(item.id))"
+                            transform="rotate(-90 22 22)"
+                          />
+                        </svg>
+                        <img class="nav-item__pixel-icon" [src]="item.pixelIcon" [alt]="item.label" />
+                      </div>
+                    } @else {
+                      <img
+                        class="nav-item__pixel-icon"
+                        [src]="item.pixelIcon"
+                        [alt]="item.label"
+                      />
+                    }
+                  </button>
 
-    <!-- Scrollable nav -->
-    <div class="sidebar__scroll">
-    @for (section of sections; track section.label) {
-      <div class="sidebar__divider"></div>
-      <div class="sidebar__section">
-        <span class="sidebar__section-label">{{ section.label }}</span>
-        <ul class="sidebar__nav" role="list">
-          @for (item of section.items; track item.id) {
-            <li>
-              <button
-                class="nav-item"
-                [class.nav-item--active]="activePanel() === item.id"
-                [class.nav-item--running]="playerService.mainActivitySkill() === item.id"
-                [class.nav-item--locked]="isItemLocked(item)"
-                [class.nav-item--no-component]="!item.component && !isItemLocked(item) && !item.navigateTo"
-                [class.nav-item--highlighted]="isItemHighlighted(item)"
-                [disabled]="isItemDisabled(item)"
-                (click)="select(item)"
-                [attr.aria-current]="activePanel() === item.id ? 'page' : null"
-              >
-                <img class="nav-item__pixel-icon" [src]="item.pixelIcon" [alt]="item.label" aria-hidden="true" />
-                <span class="nav-item__label">{{ item.label }}</span>
-                @if (isItemLocked(item)) {
-                  <svg class="nav-item__lock" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                  </svg>
-                } @else {
-                  @if (badgeFor(item)) {
-                    <span class="nav-item__level">{{ badgeFor(item) }}</span>
-                  }
-                }
-              </button>
-
-              @if (item.children?.length) {
-                <div class="nav-children">
-                  @for (child of item.children!; track child.id) {
-                    <button
-                      class="nav-item nav-item--child"
-                      [class.nav-item--running]="playerService.mainActivitySkill() === child.id"
-                      [class.nav-item--locked]="isItemLocked(child)"
-                      [disabled]="isItemDisabled(child)"
-                      (click)="select(child)"
-                    >
-                      <img class="nav-item__pixel-icon" [src]="child.pixelIcon" [alt]="child.label" aria-hidden="true" />
-                      <span class="nav-item__label">{{ child.label }}</span>
-                      @if (badgeFor(child)) {
-                        <span class="nav-item__level">{{ badgeFor(child) }}</span>
+                  @if (item.children?.length) {
+                    <div class="nav-children">
+                      @for (child of item.children!; track child.id) {
+                        <button
+                          class="nav-item nav-item--child"
+                          [class.nav-item--running]="
+                            playerService.mainActivitySkill() === child.id
+                          "
+                          [class.nav-item--locked]="isItemLocked(child)"
+                          [disabled]="isItemDisabled(child)"
+                          (click)="select(child)"
+                          [attr.aria-label]="child.label"
+                          [title]="child.label"
+                        >
+                          @if (child.badgeType === 'skill') {
+                            <div class="nav-item__icon-wrap">
+                              <svg class="nav-item__xp-ring" viewBox="0 0 44 44" aria-hidden="true">
+                                <circle class="nav-item__xp-ring-track" cx="22" cy="22" r="19"/>
+                                <circle class="nav-item__xp-ring-fill" cx="22" cy="22" r="19"
+                                  stroke-linecap="round"
+                                  [attr.stroke-dasharray]="NAV_RING_C"
+                                  [attr.stroke-dashoffset]="NAV_RING_C * (1 - navXpProgress(child.id))"
+                                  transform="rotate(-90 22 22)"
+                                />
+                              </svg>
+                              <img class="nav-item__pixel-icon" [src]="child.pixelIcon" [alt]="child.label" />
+                            </div>
+                          } @else {
+                            <img
+                              class="nav-item__pixel-icon"
+                              [src]="child.pixelIcon"
+                              [alt]="child.label"
+                            />
+                          }
+                        </button>
                       }
-                    </button>
+                    </div>
                   }
-                </div>
+                </li>
               }
-            </li>
-          }
-        </ul>
-      </div>
-    }
-    </div><!-- /.sidebar__scroll -->
-
-    <!-- Tracked quest strip -->
-    @if (playerService.trackedQuest(); as tq) {
-      <button class="tracked-quest" (click)="navigateToTrackedQuest()" type="button"
-        title="Go to {{ tq.questName }}">
-        <span class="tracked-quest__label">Tracking</span>
-        @for (task of trackedStep()?.tasks ?? []; track $index) {
-          <div class="tracked-quest__step">
-            @if (task.icon) {
-              <img class="tracked-quest__icon" [src]="task.icon" [alt]="" aria-hidden="true" />
-            }
-            <span class="tracked-quest__action">{{ task.action }} {{ task.description }}</span>
-            @if (taskProgress(task); as prog) {
-              <span class="tracked-quest__progress">{{ prog.current }}/{{ prog.total }}</span>
-            }
+            </ul>
           </div>
         }
-        <span class="tracked-quest__name">{{ tq.questName }}</span>
-      </button>
-    }
+      </div>
+    </nav>
 
-    <!-- Character panel (pinned to bottom) -->
+    <!-- Character panel (floating, bottom-left beside sidebar) -->
     <div class="char-panel">
-    <button
-      class="char-panel__toggle"
-      type="button"
-      (click)="charCollapsed.set(!charCollapsed())"
-      [attr.aria-expanded]="!charCollapsed()"
-      title="{{ charCollapsed() ? 'Show character' : 'Hide character' }}"
-    >
-      <svg class="char-panel__toggle-chevron" [class.char-panel__toggle-chevron--up]="!charCollapsed()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-    <div class="char-card">
-      <div class="char-card__row">
-        <div class="char-card__avatar" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/>
-          </svg>
-        </div>
-        <div class="char-card__info">
-          <span class="char-card__name">{{ playerService.player().name }}</span>
-          <div class="char-card__levels">
-            <span class="char-card__level">Total Lvl {{ playerService.totalLevel() }}</span>
-            <span class="char-card__combat-level">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"/>
-              </svg>
-              Combat {{ playerService.player().combatLevel }}
-            </span>
+      <app-notifications />
+      <div
+        class="char-panel__scene"
+        [class.char-panel__scene--collapsed]="charCollapsed()"
+      >
+        <app-player-character [showEquipToggle]="true" />
+      </div>
+      <div class="char-card">
+        <div class="char-card__row">
+          <div class="char-card__avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"
+              />
+            </svg>
+          </div>
+          <div class="char-card__info">
+            <span class="char-card__name">{{
+              playerService.player().name
+            }}</span>
+            <div class="char-card__levels">
+              <span class="char-card__level"
+                >Total Lvl {{ playerService.totalLevel() }}</span
+              >
+              <span class="char-card__combat-level">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zm-5 0c-.83 0-1.5-.67-1.5-1.5v-5C8 2.67 8.67 2 9.5 2S11 2.67 11 3.5v5c0 .83-.67 1.5-1.5 1.5zm-5 5c-.83 0-1.5-.67-1.5-1.5v-5C3 7.67 3.67 7 4.5 7S6 7.67 6 8.5v5c0 .83-.67 1.5-1.5 1.5zm14 0c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5zM17 20H7v-2h10v2z"
+                  />
+                </svg>
+                Combat {{ playerService.player().combatLevel }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="char-card__hp">
-        <div class="char-card__hp-label">
-          <span>HP</span>
-          <span>{{ playerService.player().hp }} / {{ playerService.player().maxHp }}</span>
+        <div class="char-card__hp">
+          <div class="char-card__hp-label">
+            <span>HP</span>
+            <span
+              >{{ playerService.player().hp }} /
+              {{ playerService.player().maxHp }}</span
+            >
+          </div>
+          <div class="char-card__hp-track">
+            <div
+              class="char-card__hp-fill"
+              [style.width.%]="playerService.hpPercent()"
+            ></div>
+          </div>
         </div>
-        <div class="char-card__hp-track">
-          <div class="char-card__hp-fill" [style.width.%]="playerService.hpPercent()"></div>
+        <app-active-buffs />
+      </div>
+      <button
+        class="current-location"
+        (click)="activePanel.set('map')"
+        type="button"
+        title="Open Map"
+      >
+        <span class="current-location__label">Location</span>
+        <div class="current-location__row">
+          <img
+            class="current-location__icon"
+            src="assets/objects/map.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <span class="current-location__name">{{
+            locationService.current().name
+          }}</span>
         </div>
-      </div>
-      <app-active-buffs />
+      </button>
     </div>
 
-    <!-- Location strip -->
-    <button class="current-location" (click)="activePanel.set('map')" type="button" title="Open Map">
-      <span class="current-location__label">Location</span>
-      <div class="current-location__row">
-        <img class="current-location__icon" src="assets/objects/map.png" alt="" aria-hidden="true" />
-        <span class="current-location__name">{{ locationService.current().name }}</span>
-      </div>
-    </button>
-    <div class="char-panel__scene" [class.char-panel__scene--collapsed]="charCollapsed()">
-      <app-player-character />
+    <!-- Content panel -->
+    <div class="content-area">
+      @if (activeSkillData(); as skillData) {
+        <app-skill-top-bar
+          [title]="activeItem()!.label"
+          [subtitle]="activeItem()!.subtitle ?? ''"
+          [pixelIcon]="activeItem()!.pixelIcon"
+          [skillData]="skillData"
+          [showHelp]="!!activeItem()!.helpText"
+          (helpClick)="helpOpen.set(true)"
+        />
+      }
+      <main class="content" role="main">
+        @if (activeItem()?.component) {
+          <ng-container
+            *ngComponentOutlet="
+              activeItem()!.component!;
+              inputs: { pixelIcon: activeItem()!.pixelIcon }
+            "
+          />
+        }
+      </main>
     </div>
-    </div>
-
-  </nav>
-
-  <!-- Content panel -->
-  <main class="content" role="main">
-    @if (activeItem?.component) {
-      <ng-container *ngComponentOutlet="activeItem!.component!; inputs: { pixelIcon: activeItem!.pixelIcon }" />
-    } 
-  </main>
+  </div>
+  <!-- /.game__body -->
 </div>
 
-<app-notifications />
 <app-level-up />
 
-@if (questService.completionModalQuest(); as quest) {
-  <app-quest-complete-modal [quest]="quest" (close)="questService.dismissCompletionModal()" />
+<!-- Bottom dock — outside .game so overflow:hidden on game__body doesn't clip it -->
+<div class="bottom-dock" [class.bottom-dock--open]="bottomBarOpen()">
+  <button
+    class="bottom-dock__toggle"
+    (click)="toggleBottomBar()"
+    type="button"
+    aria-label="Toggle general menu"
+  >
+    <svg
+      class="bottom-dock__chevron"
+      [class.bottom-dock__chevron--open]="bottomBarOpen()"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+    <span class="bottom-dock__toggle-label">Menu</span>
+    <svg
+      class="bottom-dock__chevron"
+      [class.bottom-dock__chevron--open]="bottomBarOpen()"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  </button>
+  <div class="bottom-dock__panel">
+    @for (item of bottomBarItems; track item.id) {
+      <button
+        class="bottom-dock__item"
+        [class.bottom-dock__item--active]="activePanel() === item.id"
+        [class.bottom-dock__item--locked]="isItemLocked(item)"
+        [class.bottom-dock__item--highlighted]="isItemHighlighted(item)"
+        [disabled]="isItemDisabled(item)"
+        (click)="selectBottomItem(item)"
+        [title]="item.label"
+        type="button"
+      >
+        <img
+          class="bottom-dock__item-icon"
+          [src]="item.pixelIcon"
+          [alt]="item.label"
+        />
+        <span class="bottom-dock__item-label">{{ item.label }}</span>
+      </button>
+    }
+  </div>
+</div>
+
+@if (helpOpen() && activeItem()?.helpText) {
+  <app-modal
+    [title]="activeItem()!.label"
+    [icon]="activeItem()!.pixelIcon"
+    (close)="helpOpen.set(false)"
+  >
+    <p>{{ activeItem()!.helpText }}</p>
+  </app-modal>
 }
 
+@if (questService.completionModalQuest(); as quest) {
+  <app-quest-complete-modal
+    [quest]="quest"
+    (close)="questService.dismissCompletionModal()"
+  />
+}

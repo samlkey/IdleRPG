@@ -1,88 +1,232 @@
-$bg:          #09090f;
+$bg: #09090f;
 $content-pad: 2rem;
 
-// ── Hero banner ──────────────────────────────────────────
-.skill-panel__hero {
+// ── Skill panel root ──────────────────────────────────────
+.skill-panel {
   position: relative;
-  margin: -$content-pad (-$content-pad) 0;
-  height: 220px;
-  overflow: hidden;
+  height: 100%;
+  gap: 0;
 }
 
-.skill-panel__hero-bg {
+// ── Full-panel background image ───────────────────────────
+.skill-panel__bg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: -$content-pad;
+  left: -$content-pad;
+  right: -$content-pad;
+  bottom: -$content-pad;
+  width: calc(100% + #{$content-pad * 2});
+  height: calc(100% + #{$content-pad * 2});
   object-fit: cover;
   object-position: center 40%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  transform: scale(1.02);
+  z-index: 0;
 }
 
-.skill-panel__hero-gradient {
+// ── Content area (fills remaining height, no scroll) ──────
+.skill-panel__content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  z-index: 1;
+  margin: (-$content-pad) (-$content-pad) (-$content-pad);
+  // padding: 1.25rem $content-pad $content-pad;
+}
+
+// ── Mining layout ─────────────────────────────────────────
+.mining-layout {
+  position: relative;
+  height: 100%;
+}
+
+// ── Resource detail (fills full area, centers the card) ───
+.resource-detail {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba($bg, 0.05)  0%,
-    rgba($bg, 0.2)   45%,
-    rgba($bg, 0.78)  75%,
-    $bg              100%
-  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.skill-panel__hero .skill-panel__header {
+// ── Resource selector (floating panel, right overlay) ─────
+.resource-selector {
   position: absolute;
+  top: 0;
+  right: 0;
   bottom: 0;
-  left: $content-pad;
-  right: $content-pad;
-  padding: 0 0 1.25rem;
-  border-bottom: none;
-  z-index: 1;
-
-  .skill-panel__title,
-  .skill-panel__subtitle {
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-  }
-}
-
-.skill-info {
+  width: 230px;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
+  background: rgba(4, 4, 10, 0.52);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
 
-  &__item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 1rem;
-
-    & + & {
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
+  &__header {
+    padding: 0.6rem 1rem 0.5rem;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(203, 193, 228, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
   }
 
-  &__label {
-    font-size: 0.8rem;
-    color: rgba(203, 193, 228, 0.45);
+  &__list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0.35rem;
+    gap: 0.1rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+  }
+}
+
+// ── Resource item ─────────────────────────────────────────
+.resource-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+
+  &__icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    opacity: 0.85;
+    transition:
+      opacity 150ms ease,
+      filter 150ms ease;
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.78rem;
+    color: rgba(203, 193, 228, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__stats {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  &__level {
+    font-size: 0.62rem;
+    color: rgba(203, 193, 228, 0.4);
     letter-spacing: 0.04em;
   }
 
-  &__value {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgba(203, 193, 228, 0.85);
-    font-variant-numeric: tabular-nums;
+  &__xp {
+    font-size: 0.62rem;
+    color: rgba(203, 193, 228, 0.3);
+    letter-spacing: 0.04em;
+
+    &::before {
+      content: "·";
+      margin-right: 0.35rem;
+      color: rgba(203, 193, 228, 0.2);
+    }
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+
+    .resource-item__icon {
+      opacity: 1;
+      filter: brightness(1.1);
+    }
+    .resource-item__name {
+      color: rgba(203, 193, 228, 0.95);
+    }
+  }
+
+  &--active {
+    background: rgba(#7c3aed, 0.15);
+    border-color: rgba(#7c3aed, 0.3);
+
+    .resource-item__icon {
+      opacity: 1;
+      filter: brightness(1.2) drop-shadow(0 0 4px rgba(167, 139, 250, 0.5));
+    }
+    .resource-item__name {
+      color: #c4b5fd;
+    }
+    .resource-item__level {
+      color: rgba(196, 181, 253, 0.55);
+    }
+    .resource-item__xp {
+      color: rgba(196, 181, 253, 0.4);
+    }
+  }
+
+  &--running {
+    background: rgba(#22c55e, 0.1);
+    border-color: rgba(#22c55e, 0.4);
+
+    .resource-item__icon {
+      opacity: 1;
+      filter: brightness(1.15) drop-shadow(0 0 5px rgba(34, 197, 94, 0.55));
+    }
+    .resource-item__name {
+      color: #86efac;
+    }
+    .resource-item__level,
+    .resource-item__xp {
+      color: rgba(134, 239, 172, 0.55);
+    }
+    .resource-item__xp::before {
+      color: rgba(134, 239, 172, 0.25);
+    }
+  }
+
+  &--locked {
+    opacity: 0.38;
+    cursor: not-allowed;
+    .resource-item__icon {
+      filter: grayscale(1);
+    }
   }
 }
 
-.activity-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+.resource-detail__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(203, 193, 228, 0.3);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.activity-wrap {
+  width: 480px;
 }

@@ -14,9 +14,8 @@ interface Particle {
 
 const COLORS = ['#fbbf24', '#fcd34d', '#f59e0b', '#fff7ed', '#a78bfa', '#c4b5fd', '#86efac'];
 const PARTICLE_COUNT = 60;
-// Matches the notification stack position in notifications.component.scss
-const NOTIF_RIGHT  = 24;
-const NOTIF_BOTTOM = 24;
+// Matches the notification stack position (above char-panel, beside sidebar)
+const NOTIF_LEFT   = 64; // sidebar width
 const CANVAS_W = 320;
 const CANVAS_H = 260;
 
@@ -26,8 +25,8 @@ const CANVAS_H = 260;
   styles: [`
     .level-up-canvas {
       position: fixed;
-      bottom: ${NOTIF_BOTTOM}px;
-      right: ${NOTIF_RIGHT}px;
+      bottom: 0;
+      left: ${NOTIF_LEFT}px;
       width: ${CANVAS_W}px;
       height: ${CANVAS_H}px;
       pointer-events: none;

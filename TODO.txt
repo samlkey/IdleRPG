@@ -77,3 +77,7 @@ combat is through equipped wands and staffs. These take crystals to charge and c
 PIXI.JS FOR COMBAT TAB
 
 LOOT WILL BE IN THE COMBAT-ARENA
+
+IDEAS UI:
+
+Keep the XP Bar, but implement the Melvor 2 current woodcutitng widget above it.
