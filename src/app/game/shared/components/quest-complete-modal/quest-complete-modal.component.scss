@@ -70,7 +70,7 @@ $text-muted: rgba(203, 193, 228, 0.45);
 
   &__title {
     margin: 0;
-    font-family: 'Georgia', serif;
+    font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 700;
     color: #f0e6ff;

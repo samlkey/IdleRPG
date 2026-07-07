@@ -3,7 +3,10 @@ import { NgComponentOutlet } from '@angular/common';
 import { NotificationsComponent } from './shared/components/notifications/notifications.component';
 import { LevelUpComponent } from './shared/components/level-up/level-up.component';
 import { QuestCompleteModalComponent } from './shared/components/quest-complete-modal/quest-complete-modal.component';
-import { SkillTopBarComponent } from './shared/components/skill-top-bar/skill-top-bar.component';
+import {
+  SkillTopBarComponent,
+  TopBarMenuItem,
+} from './shared/components/skill-top-bar/skill-top-bar.component';
 import { ModalComponent } from './shared/components/modal/modal.component';
 // General
 import { QuestsComponent } from './general/quests/quests.component';
@@ -114,7 +117,6 @@ export class GameComponent {
 
   activePanel = signal<PanelId>('quests');
   charCollapsed = signal(false);
-  bottomBarOpen = signal(false);
   helpOpen = signal(false);
 
   readonly NAV_RING_C = 2 * Math.PI * 19;
@@ -445,6 +447,20 @@ export class GameComponent {
     return this.playerService.skill(item.id as SkillId);
   });
 
+  // Map is omitted — the location button already covers navigating there.
+  readonly topBarMenuItems = computed<TopBarMenuItem[]>(() =>
+    this.bottomBarItems
+      .filter((item) => item.id !== 'map')
+      .map((item) => ({
+        id: item.id,
+        label: item.label,
+        pixelIcon: item.pixelIcon,
+        active: this.activePanel() === item.id,
+        locked: this.isItemLocked(item),
+        highlighted: this.isItemHighlighted(item),
+      })),
+  );
+
   /** Badge text for a nav item — fully derived from PlayerService. */
   badgeFor(item: NavItem): string | null {
     const p = this.playerService.player();
@@ -513,15 +529,15 @@ export class GameComponent {
     this.questService.onNavigation(item.id);
   }
 
-  toggleBottomBar(): void {
-    this.bottomBarOpen.update((v) => !v);
-  }
-
   selectBottomItem(item: NavItem): void {
     if (this.isItemDisabled(item)) return;
     this.activePanel.set(item.navigateTo ?? item.id);
     this.questService.onNavigation(item.id);
-    this.bottomBarOpen.set(false);
+  }
+
+  selectBottomItemById(id: string): void {
+    const item = this.bottomBarItems.find((i) => i.id === id);
+    if (item) this.selectBottomItem(item);
   }
 
   navigateToTrackedQuest(): void {

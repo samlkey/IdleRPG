@@ -111,7 +111,7 @@ $status-completed:   #22c55e;
 
 .quest-card__name {
   flex: 1;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
   color: #e2d9f3;

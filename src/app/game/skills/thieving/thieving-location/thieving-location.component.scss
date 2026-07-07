@@ -48,7 +48,7 @@ $text-base:  rgba(203, 193, 228, 0.85);
 
   &__name {
     margin: 0;
-    font-family: 'Georgia', serif;
+    font-family: var(--font-display);
     font-size: 1.15rem;
     font-weight: 700;
     color: #fff;

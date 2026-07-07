@@ -87,13 +87,13 @@
   text-transform: uppercase;
   color: rgba(167, 139, 250, 0.7);
   margin: 0;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-fantasy);
 }
 
 .title {
   margin: 0;
   line-height: 1;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: var(--font-fantasy);
   font-weight: 900;
   letter-spacing: -0.02em;
 }

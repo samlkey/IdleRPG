@@ -229,13 +229,13 @@ export class CombatArenaComponent implements AfterViewInit, OnDestroy {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  private makeText(text: string, size: number, color: number, serif = false): Text {
+  private makeText(text: string, size: number, color: number, emphasis = false): Text {
     return new Text({
       text,
       style: new TextStyle({
-        fontFamily: serif ? 'Georgia, serif' : 'system-ui, sans-serif',
+        fontFamily: 'Clash Display, system-ui, sans-serif',
         fontSize:   size,
-        fontWeight: serif ? 'bold' : 'normal',
+        fontWeight: emphasis ? 'bold' : 'normal',
         fill:       color,
       }),
     });

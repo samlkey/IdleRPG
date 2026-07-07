@@ -87,7 +87,7 @@ $hc-glow:     rgba(239, 68, 68, 0.22);
 
 .page-title {
   margin: 0;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 3vw, 1.8rem);
   font-weight: 700;
   color: #e2d9f3;
@@ -137,7 +137,7 @@ $hc-glow:     rgba(239, 68, 68, 0.22);
   border-radius: 6px;
   color: #e2d9f3;
   font-size: 1rem;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-display);
   letter-spacing: 0.04em;
   transition: border-color 150ms, box-shadow 150ms;
   outline: none;
@@ -232,7 +232,7 @@ $hc-glow:     rgba(239, 68, 68, 0.22);
   }
 
   &__name {
-    font-family: 'Georgia', serif;
+    font-family: var(--font-display);
     font-size: 1.2rem;
     font-weight: 700;
     color: #e2d9f3;

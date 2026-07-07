@@ -158,25 +158,6 @@
         </div>
         <app-active-buffs />
       </div>
-      <button
-        class="current-location"
-        (click)="activePanel.set('map')"
-        type="button"
-        title="Open Map"
-      >
-        <span class="current-location__label">Location</span>
-        <div class="current-location__row">
-          <img
-            class="current-location__icon"
-            src="assets/objects/map.png"
-            alt=""
-            aria-hidden="true"
-          />
-          <span class="current-location__name">{{
-            locationService.current().name
-          }}</span>
-        </div>
-      </button>
     </div>
 
     <!-- Content panel -->
@@ -188,9 +169,51 @@
           [pixelIcon]="activeItem()!.pixelIcon"
           [skillData]="skillData"
           [showHelp]="!!activeItem()!.helpText"
+          [menuItems]="topBarMenuItems()"
+          [gold]="playerService.player().gold"
           (helpClick)="helpOpen.set(true)"
+          (locationClick)="activePanel.set('map')"
+          (menuItemClick)="selectBottomItemById($event)"
         />
       }
+
+      <div class="top-left-stack">
+        @if (playerService.trackedQuest(); as tq) {
+          <button
+            class="tracked-quest"
+            (click)="navigateToTrackedQuest()"
+            type="button"
+            title="Go to {{ tq.questName }}"
+          >
+            <span class="tracked-quest__header">Quest Log</span>
+            <span class="tracked-quest__name">{{ tq.questName }}</span>
+            <div class="tracked-quest__objectives">
+              @for (task of trackedStep()?.tasks ?? []; track $index) {
+                <div class="tracked-quest__objective">
+                  <span class="tracked-quest__dash">-</span>
+                  @if (task.icon) {
+                    <img
+                      class="tracked-quest__icon"
+                      [src]="task.icon"
+                      alt=""
+                      aria-hidden="true"
+                    />
+                  }
+                  <span class="tracked-quest__action"
+                    >{{ task.action }} {{ task.description }}</span
+                  >
+                  @if (taskProgress(task); as prog) {
+                    <span class="tracked-quest__progress"
+                      >({{ prog.current }}/{{ prog.total }})</span
+                    >
+                  }
+                </div>
+              }
+            </div>
+          </button>
+        }
+      </div>
+
       <main class="content" role="main">
         @if (activeItem()?.component) {
           <ng-container
@@ -207,65 +230,6 @@
 </div>
 
 <app-level-up />
-
-<!-- Bottom dock — outside .game so overflow:hidden on game__body doesn't clip it -->
-<div class="bottom-dock" [class.bottom-dock--open]="bottomBarOpen()">
-  <button
-    class="bottom-dock__toggle"
-    (click)="toggleBottomBar()"
-    type="button"
-    aria-label="Toggle general menu"
-  >
-    <svg
-      class="bottom-dock__chevron"
-      [class.bottom-dock__chevron--open]="bottomBarOpen()"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="18 15 12 9 6 15" />
-    </svg>
-    <span class="bottom-dock__toggle-label">Menu</span>
-    <svg
-      class="bottom-dock__chevron"
-      [class.bottom-dock__chevron--open]="bottomBarOpen()"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="18 15 12 9 6 15" />
-    </svg>
-  </button>
-  <div class="bottom-dock__panel">
-    @for (item of bottomBarItems; track item.id) {
-      <button
-        class="bottom-dock__item"
-        [class.bottom-dock__item--active]="activePanel() === item.id"
-        [class.bottom-dock__item--locked]="isItemLocked(item)"
-        [class.bottom-dock__item--highlighted]="isItemHighlighted(item)"
-        [disabled]="isItemDisabled(item)"
-        (click)="selectBottomItem(item)"
-        [title]="item.label"
-        type="button"
-      >
-        <img
-          class="bottom-dock__item-icon"
-          [src]="item.pixelIcon"
-          [alt]="item.label"
-        />
-        <span class="bottom-dock__item-label">{{ item.label }}</span>
-      </button>
-    }
-  </div>
-</div>
 
 @if (helpOpen() && activeItem()?.helpText) {
   <app-modal

@@ -175,7 +175,7 @@ $divider:   rgba(255, 255, 255, 0.07);
 
 .activity-card__target {
   margin: 0;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-display);
   font-size: 1.55rem;
   font-weight: 700;
   color: #ede9f8;

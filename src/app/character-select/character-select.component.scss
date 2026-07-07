@@ -84,7 +84,7 @@
 
 .page-title {
   margin: 0;
-  font-family: 'Georgia', serif;
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 3vw, 1.8rem);
   font-weight: 700;
   color: #e2d9f3;
@@ -195,7 +195,7 @@
 }
 
 .slot-name {
-  font-family: 'Georgia', serif;
+  font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 700;
   color: #e2d9f3;

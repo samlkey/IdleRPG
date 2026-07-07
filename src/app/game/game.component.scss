@@ -198,7 +198,7 @@ $text-base: rgba(203, 193, 228, 0.85);
   }
 
   &__name {
-    font-family: "Georgia", serif;
+    font-family: var(--font-display);
     font-size: 0.9rem;
     font-weight: 700;
     color: #ffffff;
@@ -491,6 +491,19 @@ $text-base: rgba(203, 193, 228, 0.85);
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
+  position: relative;
+}
+
+// ── Top-left overlay stack (location + tracked quest) ─────
+.top-left-stack {
+  position: absolute;
+  top: 86px;
+  left: 2rem;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 300px;
 }
 
 .content {
@@ -519,315 +532,114 @@ $text-base: rgba(203, 193, 228, 0.85);
   }
 }
 
-// ── Current location strip ────────────────────────────────
-.current-location {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.6rem 1rem 0.65rem;
-  background: rgba($surface, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid $border;
-  border-top: none;
-  border-left: 2px solid rgba(52, 211, 153, 0.5);
-  // button reset
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    border-left-color 150ms ease;
-
-  &:hover {
-    background: rgba(52, 211, 153, 0.06);
-    border-left-color: rgba(52, 211, 153, 0.85);
-  }
-
-  &__label {
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(52, 211, 153, 0.7);
-  }
-
-  &__row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  &__icon {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    image-rendering: pixelated;
-    mix-blend-mode: screen;
-    filter: brightness(1.2);
-  }
-
-  &__name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: rgba(203, 193, 228, 0.9);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+// ── Tracked quest widget (WoW-style quest tracker) ────────
+$wow-gold: #ffd100;
+@mixin wow-text-shadow() {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 2px 6px rgba(0, 0, 0, 0.85),
+    0 0 12px rgba(0, 0, 0, 0.6);
 }
 
-// ── Tracked quest strip ───────────────────────────────────
 .tracked-quest {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.6rem 1rem 0.65rem;
-  border-top: 1px solid $border;
-  background: rgba(245, 158, 11, 0.04);
-  border-left: 2px solid rgba(245, 158, 11, 0.5);
+  gap: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   animation: tracked-in 200ms ease;
   // button reset
   width: 100%;
   text-align: left;
-  border-top: none;
-  border-right: none;
   cursor: pointer;
-  transition:
-    background 150ms ease,
-    border-left-color 150ms ease;
 
   &:hover {
-    background: rgba(245, 158, 11, 0.09);
-    border-left-color: rgba(245, 158, 11, 0.85);
+    .tracked-quest__name {
+      color: #ffe066;
+    }
   }
 
   &:focus-visible {
-    outline: 2px solid rgba(245, 158, 11, 0.6);
-    outline-offset: -2px;
+    outline: 1px dashed rgba(255, 209, 0, 0.6);
+    outline-offset: 4px;
   }
 
-  &__label {
-    font-size: 0.62rem;
+  &__header {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(245, 158, 11, 0.7);
+    color: rgba(230, 235, 245, 0.9);
+    @include wow-text-shadow();
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    margin-bottom: 0.15rem;
   }
 
-  &__step {
+  &__name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $wow-gold;
+    letter-spacing: 0.01em;
+    @include wow-text-shadow();
+    transition: color 120ms ease;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  &__objectives {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__objective {
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  &__icon {
-    width: 14px;
-    height: 14px;
+  &__dash {
     flex-shrink: 0;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    @include wow-text-shadow();
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
     image-rendering: pixelated;
-    mix-blend-mode: screen;
-    filter: brightness(1.2);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
   }
 
   &__action {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: rgba(203, 193, 228, 0.9);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     flex: 1;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    @include wow-text-shadow();
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   &__progress {
     flex-shrink: 0;
-    font-size: 0.7rem;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
-    color: rgba(245, 158, 11, 0.9);
-    background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    border-radius: 4px;
-    padding: 0 0.3rem;
-    line-height: 1.5;
-  }
-
-  &__name {
-    font-size: 0.68rem;
-    color: $text-muted;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-// ── Bottom dock ──────────────────────────────────────────
-.bottom-dock {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.bottom-dock__toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1.5rem 0.35rem;
-  background: rgba($surface, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid $border;
-  border-bottom: none;
-  border-radius: 10px 10px 0 0;
-  color: $text-muted;
-  cursor: pointer;
-  transition:
-    color 150ms ease,
-    background 150ms ease;
-
-  &:hover {
-    color: $text-base;
-    background: rgba($surface, 1);
-  }
-}
-
-.bottom-dock__panel {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0;
-  background: rgba($surface, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid $border;
-  border-top: none;
-  border-radius: 14px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    max-height 260ms cubic-bezier(0.4, 0, 0.2, 1),
-    padding 260ms cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 200ms ease;
-
-  .bottom-dock--open & {
-    padding: 0.85rem 1rem;
-    max-height: 110px;
-    opacity: 1;
-    pointer-events: all;
-  }
-}
-
-.bottom-dock__toggle-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.bottom-dock__chevron {
-  width: 13px;
-  height: 13px;
-  transition: transform 260ms ease;
-
-  &--open {
-    transform: rotate(180deg);
-  }
-}
-
-.bottom-dock__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.55rem 0.85rem;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background: none;
-  cursor: pointer;
-  transition:
-    background 150ms ease,
-    border-color 150ms ease;
-
-  &-icon {
-    width: 30px;
-    height: 30px;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    mix-blend-mode: screen;
-    opacity: 0.8;
-    transition:
-      opacity 150ms ease,
-      filter 150ms ease;
-  }
-
-  &-label {
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: $text-muted;
-    white-space: nowrap;
-    transition: color 150ms ease;
-  }
-
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.05);
-
-    .bottom-dock__item-icon {
-      opacity: 1;
-      filter: brightness(1.2);
-    }
-
-    .bottom-dock__item-label {
-      color: $text-base;
-    }
-  }
-
-  &--active {
-    background: rgba($accent, 0.15);
-    border-color: rgba($accent, 0.3);
-
-    .bottom-dock__item-icon {
-      opacity: 1;
-      filter: brightness(1.3) drop-shadow(0 0 4px rgba(167, 139, 250, 0.6));
-    }
-
-    .bottom-dock__item-label {
-      color: #c4b5fd;
-    }
-  }
-
-  &--locked {
-    opacity: 0.35;
-    cursor: not-allowed;
-    pointer-events: none;
-
-    .bottom-dock__item-icon {
-      filter: grayscale(1);
-    }
-  }
-
-  &--highlighted {
-    border-color: rgba(#fbbf24, 0.45);
-    background: rgba(#fbbf24, 0.08);
-    animation: nav-highlight-pulse 2s ease-in-out infinite;
-
-    .bottom-dock__item-icon {
-      opacity: 1;
-      filter: brightness(1.25) drop-shadow(0 0 5px rgba(251, 191, 36, 0.55));
-    }
-
-    .bottom-dock__item-label {
-      color: #fcd34d;
-    }
+    color: #ffffff;
+    @include wow-text-shadow();
   }
 }
 

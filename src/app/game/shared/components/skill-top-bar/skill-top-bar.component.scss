@@ -1,26 +1,46 @@
 $content-pad: 2rem;
 
+$hero-height: 70px;
+$content-box-height: 120px;
+
 .skill-panel__hero {
   position: relative;
-  height: 70px;
-  overflow: hidden;
+  height: $hero-height;
+  overflow: visible;
   flex-shrink: 0;
   z-index: 1;
   background-color: #181b1b;
   justify-content: center;
 }
 
-.skill-panel__brand {
+.skill-panel__left {
   position: absolute;
   top: 50%;
   left: $content-pad;
   transform: translateY(-50%);
-  font-family: 'Georgia', 'Times New Roman', serif;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.skill-panel__right {
+  position: absolute;
+  top: 50%;
+  right: $content-pad;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.skill-panel__brand {
+  font-family: var(--font-fantasy);
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.02em;
   pointer-events: none;
-  z-index: 2;
+  flex-shrink: 0;
 
   &-idle {
     display: block;
@@ -42,6 +62,227 @@ $content-pad: 2rem;
   }
 }
 
+// ── Location button ────────────────────────────────────────
+.skill-panel__location {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+  flex-shrink: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 40, 34, 0.92) 0%,
+    rgba(10, 16, 15, 0.92) 100%
+  );
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 10px;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(52, 211, 153, 0.08);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+
+  &:hover {
+    border-color: rgba(52, 211, 153, 0.75);
+    transform: translateY(-1px);
+
+    .skill-panel__location-icon-badge {
+      box-shadow:
+        0 0 0 1px rgba(52, 211, 153, 0.7),
+        0 0 12px rgba(52, 211, 153, 0.5);
+    }
+  }
+}
+
+.skill-panel__location-icon-badge {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(52, 211, 153, 0.22) 0%,
+    rgba(52, 211, 153, 0.05) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(52, 211, 153, 0.4),
+    0 0 8px rgba(52, 211, 153, 0.25);
+  transition: box-shadow 150ms ease;
+}
+
+.skill-panel__location-icon {
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  filter: brightness(1.3);
+}
+
+.skill-panel__location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.skill-panel__location-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(110, 231, 183, 0.75);
+}
+
+.skill-panel__location-name {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ecfdf5;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+// ── Menu buttons ───────────────────────────────────────────
+.skill-panel__divider {
+  align-self: stretch;
+  width: 1px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.skill-panel__menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.skill-panel__menu-btn {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+
+  &-icon {
+    width: 30px;
+    height: 30px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    mix-blend-mode: screen;
+    opacity: 0.85;
+    transition:
+      opacity 150ms ease,
+      filter 150ms ease;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(124, 58, 237, 0.14);
+    border-color: rgba(124, 58, 237, 0.4);
+    transform: translateY(-1px);
+
+    .skill-panel__menu-btn-icon {
+      opacity: 1;
+      filter: brightness(1.2);
+    }
+  }
+
+  &--active {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(124, 58, 237, 0.5);
+
+    .skill-panel__menu-btn-icon {
+      opacity: 1;
+      filter: brightness(1.3) drop-shadow(0 0 4px rgba(167, 139, 250, 0.6));
+    }
+  }
+
+  &--locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+
+    .skill-panel__menu-btn-icon {
+      filter: grayscale(1);
+    }
+  }
+
+  &--highlighted {
+    border-color: rgba(251, 191, 36, 0.5);
+    background: rgba(251, 191, 36, 0.1);
+    animation: skill-panel-menu-highlight 2s ease-in-out infinite;
+
+    .skill-panel__menu-btn-icon {
+      opacity: 1;
+      filter: brightness(1.25) drop-shadow(0 0 5px rgba(251, 191, 36, 0.55));
+    }
+  }
+}
+
+@keyframes skill-panel-menu-highlight {
+  0%,
+  100% {
+    border-color: rgba(251, 191, 36, 0.5);
+    background: rgba(251, 191, 36, 0.1);
+  }
+  50% {
+    border-color: rgba(251, 191, 36, 0.8);
+    background: rgba(251, 191, 36, 0.18);
+  }
+}
+
+// ── Gold indicator ─────────────────────────────────────────
+.skill-panel__gold {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0 0.9rem;
+  background: linear-gradient(
+    135deg,
+    rgba(80, 58, 8, 0.55) 0%,
+    rgba(20, 14, 4, 0.55) 100%
+  );
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.08);
+}
+
+.skill-panel__gold-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6));
+}
+
+.skill-panel__gold-amount {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fcd34d;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
 .skill-panel__header {
   position: absolute;
   top: 0;
@@ -53,6 +294,7 @@ $content-pad: 2rem;
   z-index: 1;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
 
   .skill-panel__title,
@@ -61,12 +303,24 @@ $content-pad: 2rem;
   }
 }
 
+.skill-panel__content-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: fit-content;
+  height: $content-box-height;
+  padding: 0 1.25rem;
+  background: #202428;
+}
+
 .skill-panel__header-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
   flex: 1;
+  margin-top: 1.5rem;
 }
 
 .skill-panel__pixel-icon {
@@ -123,7 +377,7 @@ $content-pad: 2rem;
     font-size: 0.78rem;
     font-weight: 700;
     color: rgba(203, 193, 228, 0.95);
-    font-family: "Georgia", serif;
+    font-family: var(--font-display);
     font-variant-numeric: tabular-nums;
     pointer-events: none;
   }
