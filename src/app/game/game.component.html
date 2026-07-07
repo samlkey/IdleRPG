@@ -28,18 +28,37 @@
                     "
                     [title]="item.label"
                   >
-                    @if (item.badgeType === 'skill') {
+                    @if (item.badgeType === "skill") {
                       <div class="nav-item__icon-wrap">
-                        <svg class="nav-item__xp-ring" viewBox="0 0 44 44" aria-hidden="true">
-                          <circle class="nav-item__xp-ring-track" cx="22" cy="22" r="19"/>
-                          <circle class="nav-item__xp-ring-fill" cx="22" cy="22" r="19"
+                        <svg
+                          class="nav-item__xp-ring"
+                          viewBox="0 0 44 44"
+                          aria-hidden="true"
+                        >
+                          <circle
+                            class="nav-item__xp-ring-track"
+                            cx="22"
+                            cy="22"
+                            r="19"
+                          />
+                          <circle
+                            class="nav-item__xp-ring-fill"
+                            cx="22"
+                            cy="22"
+                            r="19"
                             stroke-linecap="round"
                             [attr.stroke-dasharray]="NAV_RING_C"
-                            [attr.stroke-dashoffset]="NAV_RING_C * (1 - navXpProgress(item.id))"
+                            [attr.stroke-dashoffset]="
+                              NAV_RING_C * (1 - navXpProgress(item.id))
+                            "
                             transform="rotate(-90 22 22)"
                           />
                         </svg>
-                        <img class="nav-item__pixel-icon" [src]="item.pixelIcon" [alt]="item.label" />
+                        <img
+                          class="nav-item__pixel-icon"
+                          [src]="item.pixelIcon"
+                          [alt]="item.label"
+                        />
                       </div>
                     } @else {
                       <img
@@ -64,18 +83,37 @@
                           [attr.aria-label]="child.label"
                           [title]="child.label"
                         >
-                          @if (child.badgeType === 'skill') {
+                          @if (child.badgeType === "skill") {
                             <div class="nav-item__icon-wrap">
-                              <svg class="nav-item__xp-ring" viewBox="0 0 44 44" aria-hidden="true">
-                                <circle class="nav-item__xp-ring-track" cx="22" cy="22" r="19"/>
-                                <circle class="nav-item__xp-ring-fill" cx="22" cy="22" r="19"
+                              <svg
+                                class="nav-item__xp-ring"
+                                viewBox="0 0 44 44"
+                                aria-hidden="true"
+                              >
+                                <circle
+                                  class="nav-item__xp-ring-track"
+                                  cx="22"
+                                  cy="22"
+                                  r="19"
+                                />
+                                <circle
+                                  class="nav-item__xp-ring-fill"
+                                  cx="22"
+                                  cy="22"
+                                  r="19"
                                   stroke-linecap="round"
                                   [attr.stroke-dasharray]="NAV_RING_C"
-                                  [attr.stroke-dashoffset]="NAV_RING_C * (1 - navXpProgress(child.id))"
+                                  [attr.stroke-dashoffset]="
+                                    NAV_RING_C * (1 - navXpProgress(child.id))
+                                  "
                                   transform="rotate(-90 22 22)"
                                 />
                               </svg>
-                              <img class="nav-item__pixel-icon" [src]="child.pixelIcon" [alt]="child.label" />
+                              <img
+                                class="nav-item__pixel-icon"
+                                [src]="child.pixelIcon"
+                                [alt]="child.label"
+                              />
                             </div>
                           } @else {
                             <img
@@ -173,7 +211,7 @@
           [gold]="playerService.player().gold"
           (helpClick)="helpOpen.set(true)"
           (locationClick)="activePanel.set('map')"
-          (menuItemClick)="selectBottomItemById($event)"
+          (menuItemClick)="onTopBarMenuOpen($event)"
         />
       }
 
@@ -181,7 +219,6 @@
         @if (playerService.trackedQuest(); as tq) {
           <button
             class="tracked-quest"
-            (click)="navigateToTrackedQuest()"
             type="button"
             title="Go to {{ tq.questName }}"
           >

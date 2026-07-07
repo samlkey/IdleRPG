@@ -316,6 +316,42 @@ $status-completed:   #22c55e;
   to   { opacity: 1; transform: translateY(0); }
 }
 
+// ── Show/hide previous steps ─────────────────────────────
+.quest-card__show-previous {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  margin: 0.85rem 0 0.6rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.55rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  color: $text-muted;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+
+  &:hover {
+    color: $accent-lt;
+    border-color: rgba($accent-lt, 0.35);
+    background: rgba($accent, 0.08);
+  }
+}
+
+.quest-card__show-previous-chevron {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+
+  &--open {
+    transform: rotate(180deg);
+  }
+}
+
 .quest-card__step {
   display: flex;
   gap: 0.85rem;

@@ -65,6 +65,7 @@ interface NavItem {
   subtitle?: string;
   helpText?: string;
   /** 'skill' → reads level from PlayerService; 'qp' → quest points; 'none' → no badge */
+  /* TODO: remove the badge for the top bar items*/
   badgeType?:
     | 'skill'
     | 'qp'
@@ -115,7 +116,7 @@ export class GameComponent {
   readonly itemService = inject(ItemService);
   readonly questService = inject(QuestService);
 
-  activePanel = signal<PanelId>('quests');
+  activePanel = signal<PanelId>('woodcutting');
   charCollapsed = signal(false);
   helpOpen = signal(false);
 
@@ -315,7 +316,8 @@ export class GameComponent {
           id: 'mining',
           label: 'Mining',
           subtitle: 'Extract ores and gems from the earth',
-          helpText: 'Mining allows you to extract ores and gems from rock formations. Mined ores can be smelted via Smithing into bars and crafted into equipment.',
+          helpText:
+            'Mining allows you to extract ores and gems from rock formations. Mined ores can be smelted via Smithing into bars and crafted into equipment.',
           pixelIcon: 'assets/icons/mining.png',
           badgeType: 'skill',
           component: MiningComponent,
@@ -455,9 +457,9 @@ export class GameComponent {
         id: item.id,
         label: item.label,
         pixelIcon: item.pixelIcon,
-        active: this.activePanel() === item.id,
         locked: this.isItemLocked(item),
         highlighted: this.isItemHighlighted(item),
+        component: item.component,
       })),
   );
 
@@ -529,21 +531,17 @@ export class GameComponent {
     this.questService.onNavigation(item.id);
   }
 
-  selectBottomItem(item: NavItem): void {
-    if (this.isItemDisabled(item)) return;
-    this.activePanel.set(item.navigateTo ?? item.id);
-    this.questService.onNavigation(item.id);
+  /** Called when a top-bar menu popover is opened — counts as "visiting" that tab for quest tracking. */
+  onTopBarMenuOpen(id: string): void {
+    this.questService.onNavigation(id);
   }
 
-  selectBottomItemById(id: string): void {
-    const item = this.bottomBarItems.find((i) => i.id === id);
-    if (item) this.selectBottomItem(item);
-  }
+  /*TODO  Fix to work on the modal*/
 
-  navigateToTrackedQuest(): void {
-    const tq = this.playerService.trackedQuest();
-    if (!tq) return;
-    this.activePanel.set('quests');
-    this.playerService.requestExpandQuest(tq.questId);
-  }
+  // navigateToTrackedQuest(): void {
+  //   const tq = this.playerService.trackedQuest();
+  //   if (!tq) return;
+  //   this.activePanel.set('quests');
+  //   this.playerService.requestExpandQuest(tq.questId);
+  // }
 }

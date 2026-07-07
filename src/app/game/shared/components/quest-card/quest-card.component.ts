@@ -165,6 +165,7 @@ export class QuestCardComponent implements OnDestroy {
 
   // ── Expand state ──────────────────────────────────────────────────────────
   expanded = signal(false);
+  showPreviousSteps = signal(false);
 
   constructor() {
     // Auto-expand this card when navigated to via the tracked quest strip
@@ -298,6 +299,7 @@ export class QuestCardComponent implements OnDestroy {
    *  Pass `overrideIdx` when quest() input may still be stale (e.g. after advancing a step). */
   private openSteps(overrideIdx?: number): void {
     this.resetDialog();
+    this.showPreviousSteps.set(false);
     const questId = this.quest().id;
     // When overrideIdx is provided we trust it; otherwise derive from quest() input as normal
     const si = overrideIdx ?? this.currentStepIndex;

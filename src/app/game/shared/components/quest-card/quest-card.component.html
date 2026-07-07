@@ -152,8 +152,19 @@
   <!-- ── Steps panel (in-progress only) ────────────────── -->
   @if (quest().status === 'in-progress' && expanded() && quest().steps?.length) {
     <div class="quest-card__steps">
+      @if (currentStepIndex > 0) {
+        <button class="quest-card__show-previous" type="button"
+          (click)="showPreviousSteps.set(!showPreviousSteps())">
+          <svg class="quest-card__show-previous-chevron" [class.quest-card__show-previous-chevron--open]="showPreviousSteps()"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+          {{ showPreviousSteps() ? 'Hide previous steps' : 'Show previous steps' }} ({{ currentStepIndex }})
+        </button>
+      }
       @for (step of quest().steps!; track $index; let i = $index, last = $last) {
-        @if (stepState(i) !== 'upcoming') {
+        @if (stepState(i) === 'current' || (stepState(i) === 'completed' && showPreviousSteps())) {
         <div class="quest-card__step quest-card__step--{{ stepState(i) }}" [class.quest-card__step--ready]="step.readyToAdvance">
 
           <!-- Timeline node + connector -->
@@ -266,7 +277,7 @@
           </div>
 
         </div>
-        } <!-- @if not upcoming -->
+        } <!-- @if current or (completed and revealed) -->
       }
     </div>
   }

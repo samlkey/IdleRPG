@@ -29,12 +29,13 @@
         @for (item of menuItems(); track item.id) {
           <button
             class="skill-panel__menu-btn"
-            [class.skill-panel__menu-btn--active]="item.active"
+            [class.skill-panel__menu-btn--active]="openMenuId() === item.id"
             [class.skill-panel__menu-btn--locked]="item.locked"
             [class.skill-panel__menu-btn--highlighted]="item.highlighted"
             [disabled]="item.locked"
-            (click)="menuItemClick.emit(item.id)"
+            (click)="toggleMenu(item)"
             [title]="item.label"
+            [attr.aria-expanded]="openMenuId() === item.id"
             type="button"
           >
             <img
@@ -44,6 +45,43 @@
             />
           </button>
         }
+      </div>
+    }
+
+    @if (openMenuItem(); as item) {
+      <div class="skill-panel__popover-backdrop" (click)="closeMenu()"></div>
+      <div class="skill-panel__popover" (click)="$event.stopPropagation()">
+        <div class="skill-panel__popover-header">
+          <img
+            class="skill-panel__popover-icon"
+            [src]="item.pixelIcon"
+            alt=""
+            aria-hidden="true"
+          />
+          <span class="skill-panel__popover-title">{{ item.label }}</span>
+          <button
+            class="skill-panel__popover-close"
+            (click)="closeMenu()"
+            type="button"
+            aria-label="Close"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+        <div class="skill-panel__popover-body">
+          @if (item.component) {
+            <ng-container *ngComponentOutlet="item.component" />
+          }
+        </div>
       </div>
     }
 
