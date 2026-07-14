@@ -1,34 +1,87 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { ModalComponent } from '../../shared/components/modal/modal.component';
-import { ActivityBadgeComponent } from '../../shared/components/activity-badge/activity-badge.component';
+import { ActivityComponent } from '../../shared/components/activity/activity.component';
 import { PlayerService } from '../../services/player.service';
+import { ActivityService } from '../../services/activity.service';
 import { LocationService } from '../../services/location.service';
-import { FishingLocationComponent, FishingLocation } from './fishing-location/fishing-location.component';
+import { DropTable, GameItem } from '../../services/item.service';
+
+interface FishEntry {
+  name: string;
+  src: string;
+  level: number;
+  xp: number;
+  duration: number;
+  catchChance: number;
+  dropTable: DropTable;
+}
+
+interface FishingSpot {
+  name: string;
+  background: string;
+  levelReq: number;
+  fish: FishEntry[];
+}
 
 @Component({
   selector: 'app-fishing',
-  imports: [DecimalPipe, ModalComponent, FishingLocationComponent, ActivityBadgeComponent],
+  imports: [ActivityComponent, DecimalPipe],
   templateUrl: './fishing.component.html',
   styleUrl: './fishing.component.scss',
 })
-export class FishingComponent {
-  pixelIcon = input<string>('');
-  helpOpen  = signal(false);
-
-  readonly playerService   = inject(PlayerService);
+export class FishingComponent implements OnInit {
+  readonly playerService = inject(PlayerService);
+  readonly activityService = inject(ActivityService);
   readonly locationService = inject(LocationService);
 
-  get skillData() { return this.playerService.skill('fishing'); }
+  get skillData() {
+    return this.playerService.skill('fishing');
+  }
 
-  private readonly allLocations: FishingLocation[] = [
+  readonly particleColors = [
+    '#60a5fa',
+    '#38bdf8',
+    '#bae6fd',
+    '#93c5fd',
+    '#e0f2fe',
+  ];
+
+  private fish(
+    name: string,
+    src: string,
+    level: number,
+    xp: number,
+    duration: number,
+    catchChance: number,
+  ): FishEntry {
+    const id = name.toLowerCase().replace(/\s+/g, '-');
+    const item: GameItem = {
+      id,
+      name,
+      description: '',
+      icon: src,
+      type: 'resource',
+      subType: 'fish',
+    };
+    return {
+      name,
+      src,
+      level,
+      xp,
+      duration,
+      catchChance,
+      dropTable: { id, name, drops: [{ item, chance: 1 }] },
+    };
+  }
+
+  private readonly allSpots: FishingSpot[] = [
     {
       name: 'Tutorial Pond',
       background: 'assets/backgrounds/fishing_spot_1.png',
       levelReq: 1,
       fish: [
-        { name: 'Raw Shrimp',   src: 'assets/objects/shrimp.png',   level: 1,  xp: 10,  duration: 5,  catchChance: 0.85 },
-        { name: 'Raw Sardine',  src: 'assets/objects/sardine.png',  level: 1,  xp: 20,  duration: 10,  catchChance: 0.85 }
+        this.fish('Raw Shrimp', 'assets/objects/shrimp.png', 1, 10, 5, 0.1),
+        this.fish('Raw Sardine', 'assets/objects/sardine.png', 1, 20, 10, 0.85),
       ],
     },
     {
@@ -36,9 +89,16 @@ export class FishingComponent {
       background: 'assets/backgrounds/fishing_spot_1.png',
       levelReq: 1,
       fish: [
-        { name: 'Raw Shrimp',   src: 'assets/objects/shrimp.png',   level: 1,  xp: 10,  duration: 5,  catchChance: 0.85 },
-        { name: 'Raw Sardine',  src: 'assets/objects/sardine.png',  level: 1,  xp: 20,  duration: 10,  catchChance: 0.85 },
-        { name: 'Raw Herring',  src: 'assets/objects/herring.png',  level: 10, xp: 30,  duration: 10, catchChance: 0.65 },
+        this.fish('Raw Shrimp', 'assets/objects/shrimp.png', 1, 10, 5, 0.85),
+        this.fish('Raw Sardine', 'assets/objects/sardine.png', 1, 20, 10, 0.85),
+        this.fish(
+          'Raw Herring',
+          'assets/objects/herring.png',
+          10,
+          30,
+          10,
+          0.65,
+        ),
       ],
     },
     {
@@ -46,9 +106,9 @@ export class FishingComponent {
       background: 'assets/backgrounds/fishing_slot_2.png',
       levelReq: 20,
       fish: [
-        { name: 'Raw Trout',  src: 'assets/objects/trout.png',  level: 20, xp: 50,  duration: 12, catchChance: 0.70 },
-        { name: 'Raw Pike',   src: 'assets/objects/pike.png',   level: 25, xp: 60,  duration: 15, catchChance: 0.60 },
-        { name: 'Raw Salmon', src: 'assets/objects/salmon.png', level: 30, xp: 70,  duration: 20, catchChance: 0.55 },
+        this.fish('Raw Trout', 'assets/objects/trout.png', 20, 50, 12, 0.7),
+        this.fish('Raw Pike', 'assets/objects/pike.png', 25, 60, 15, 0.6),
+        this.fish('Raw Salmon', 'assets/objects/salmon.png', 30, 70, 20, 0.55),
       ],
     },
     {
@@ -56,9 +116,16 @@ export class FishingComponent {
       background: 'assets/backgrounds/fishing.png',
       levelReq: 35,
       fish: [
-        { name: 'Raw Tuna',      src: 'assets/objects/tuna.png',      level: 35, xp: 80,  duration: 25, catchChance: 0.60,},
-        { name: 'Raw Lobster',   src: 'assets/objects/lobster.png',   level: 40, xp: 90,  duration: 30, catchChance: 0.50 },
-        { name: 'Raw Swordfish', src: 'assets/objects/swordfish.png', level: 50, xp: 100, duration: 45, catchChance: 0.40 },
+        this.fish('Raw Tuna', 'assets/objects/tuna.png', 35, 80, 25, 0.6),
+        this.fish('Raw Lobster', 'assets/objects/lobster.png', 40, 90, 30, 0.5),
+        this.fish(
+          'Raw Swordfish',
+          'assets/objects/swordfish.png',
+          50,
+          100,
+          45,
+          0.4,
+        ),
       ],
     },
     {
@@ -66,15 +133,76 @@ export class FishingComponent {
       background: 'assets/backgrounds/fishing.png',
       levelReq: 62,
       fish: [
-        { name: 'Raw Monkfish',   src: 'assets/objects/monkfish.png',   level: 62, xp: 120, duration: 55, catchChance: 0.45 },
-        { name: 'Raw Shark',      src: 'assets/objects/shark.png',      level: 76, xp: 110, duration: 50, catchChance: 0.35 },
-        { name: 'Raw Anglerfish', src: 'assets/objects/anglerfish.png', level: 82, xp: 150, duration: 90, catchChance: 0.30 },
+        this.fish(
+          'Raw Monkfish',
+          'assets/objects/monkfish.png',
+          62,
+          120,
+          55,
+          0.45,
+        ),
+        this.fish('Raw Shark', 'assets/objects/shark.png', 76, 110, 50, 0.35),
+        this.fish(
+          'Raw Anglerfish',
+          'assets/objects/anglerfish.png',
+          82,
+          150,
+          90,
+          0.3,
+        ),
       ],
     },
   ];
 
-  readonly activeLocations = computed(() => {
-    const spotName = this.locationService.current().activities.fishingSpot;
-    return this.allLocations.filter(loc => spotName?.includes(loc.name));
+  readonly spots = computed(() => {
+    const spotNames =
+      this.locationService.current().activities.fishingSpot ?? [];
+    return this.allSpots.filter((spot) => spotNames.includes(spot.name));
   });
+
+  readonly selectedSpot = signal<FishingSpot | null>(null);
+  readonly selectedFish = signal<FishEntry | null>(null);
+
+  ngOnInit(): void {
+    const current = this.activityService.current();
+    if (current?.skillPanel !== 'fishing') return;
+    for (const spot of this.allSpots) {
+      const match = spot.fish.find((f) => f.name === current.name);
+      if (match) {
+        this.selectedSpot.set(spot);
+        this.selectedFish.set(match);
+        break;
+      }
+    }
+  }
+
+  selectSpot(spot: FishingSpot): void {
+    this.selectedSpot.set(spot);
+    const current = this.activityService.current();
+    const activeFish =
+      current?.skillPanel === 'fishing'
+        ? (spot.fish.find((f) => f.name === current.name) ?? null)
+        : null;
+    this.selectedFish.set(activeFish);
+  }
+
+  backToSpots(): void {
+    this.selectedSpot.set(null);
+  }
+
+  selectFish(fish: FishEntry): void {
+    if (this.activityService.current()?.name === fish.name) {
+      this.activityService.stop();
+    } else {
+      this.activityService.start({
+        name: fish.name,
+        xp: fish.xp,
+        duration: fish.duration,
+        skillId: 'fishing',
+        skillPanel: 'fishing',
+        catchChance: fish.catchChance,
+        dropTable: fish.dropTable,
+      });
+    }
+  }
 }

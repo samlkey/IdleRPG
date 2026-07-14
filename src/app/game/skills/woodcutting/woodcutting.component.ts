@@ -74,6 +74,8 @@ export class WoodcuttingComponent implements OnInit {
 
   readonly selectedTree = signal<(typeof this.allTrees)[number] | null>(null);
 
+  readonly woodParticleColors = ['#8b5e34', '#a97c50', '#6b4226', '#c9955f', '#79b356', '#9cd67a'];
+
   ngOnInit(): void {
     const current = this.activityService.current();
     if (current?.skillPanel === 'woodcutting') {

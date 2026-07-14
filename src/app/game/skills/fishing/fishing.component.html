@@ -1,61 +1,107 @@
 <div class="skill-panel">
-  <div class="skill-panel__hero">
-    <img class="skill-panel__hero-bg" src="assets/backgrounds/fishing.png" alt="" aria-hidden="true" />
-    <div class="skill-panel__hero-gradient"></div>
-    <div class="skill-panel__header">
-      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
-      <div>
-        <h1 class="skill-panel__title">Fishing</h1>
-        <p class="skill-panel__subtitle">Cast your line and reel in the catch</p>
-        <app-activity-badge type="active" />
+  <img
+    class="skill-panel__bg"
+    src="assets/backgrounds/fishing.png"
+    alt=""
+    aria-hidden="true"
+  />
+
+  <div class="skill-panel__content">
+    <div class="fishing-layout">
+
+      <div class="resource-detail">
+        @if (selectedFish(); as fish) {
+          <div class="activity-wrap">
+            <app-activity
+              [action]="'Fish'"
+              [target]="fish.name"
+              [dropTable]="fish.dropTable"
+              [xp]="fish.xp"
+              [duration]="fish.duration"
+              [catchChance]="fish.catchChance"
+              [image]="fish.src"
+              [particleColors]="particleColors"
+              [active]="activityService.current()?.name === fish.name"
+              [requirements]="
+                fish.level > 1
+                  ? [{ icon: 'assets/icons/fishing.png', level: fish.level, skill: 'Fishing' }]
+                  : []
+              "
+              [disabled]="skillData.level < fish.level"
+              (selected)="selectFish(fish)"
+            />
+          </div>
+        } @else if (selectedSpot()) {
+          <div class="resource-detail__empty">
+            <p>Select a fish to begin fishing</p>
+          </div>
+        } @else {
+          <div class="resource-detail__empty">
+            <p>Select a fishing spot to begin</p>
+          </div>
+        }
       </div>
-      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Fishing">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
-        </svg>
-      </button>
-    </div>
-  </div>
 
-  <div class="xp-bar">
-    <div class="xp-bar__label">
-      <span>Level {{ skillData.level }}</span>
-      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
-    </div>
-    <div class="xp-bar__track">
-      <div class="xp-bar__fill"
-        [style.width.%]="skillData.xpForLevel > 0 ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100 : 100">
+      <div class="resource-selector">
+        @if (selectedSpot(); as spot) {
+          <div class="resource-selector__header resource-selector__header--sub">
+            <button
+              class="resource-selector__back"
+              (click)="backToSpots()"
+              type="button"
+              aria-label="Back to fishing spots"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            <span>{{ spot.name }}</span>
+          </div>
+          <div class="resource-selector__list">
+            @for (fish of spot.fish; track fish.name) {
+              <button
+                class="resource-item"
+                [class.resource-item--active]="selectedFish()?.name === fish.name"
+                [class.resource-item--running]="activityService.current()?.name === fish.name"
+                [class.resource-item--locked]="skillData.level < fish.level"
+                (click)="selectedFish.set(fish)"
+                type="button"
+              >
+                <img class="resource-item__icon" [src]="fish.src" [alt]="fish.name" />
+                <div class="resource-item__info">
+                  <span class="resource-item__name">{{ fish.name }}</span>
+                  <div class="resource-item__stats">
+                    <span class="resource-item__level">Lv {{ fish.level }}</span>
+                    <span class="resource-item__xp">{{ fish.xp | number:'1.0-1' }} XP</span>
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="resource-selector__header">Fishing Spots</div>
+          <div class="resource-selector__list">
+            @for (spot of spots(); track spot.name) {
+              <button
+                class="resource-item"
+                [class.resource-item--locked]="skillData.level < spot.levelReq"
+                (click)="selectSpot(spot)"
+                type="button"
+              >
+                <img class="resource-item__icon resource-item__icon--photo" [src]="spot.background" [alt]="spot.name" />
+                <div class="resource-item__info">
+                  <span class="resource-item__name">{{ spot.name }}</span>
+                  <div class="resource-item__stats">
+                    <span class="resource-item__level">Lv {{ spot.levelReq }}</span>
+                    <span class="resource-item__xp">{{ spot.fish.length }} fish</span>
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+        }
       </div>
+
     </div>
   </div>
-
-  <div class="skill-info">
-    <div class="skill-info__item">
-      <span class="skill-info__label">Skill Level</span>
-      <span class="skill-info__value">{{ skillData.level }}/99</span>
-    </div>
-    <div class="skill-info__item">
-      <span class="skill-info__label">Total Skill XP</span>
-      <span class="skill-info__value">{{ skillData.xp | number }}</span>
-    </div>
-    <div class="skill-info__item">
-      <span class="skill-info__label">Current Rod</span>
-      <span class="skill-info__value">{{ playerService.player().equipment.rod }}</span>
-    </div>
-  </div>
-
-  <div class="location-grid">
-    @for (location of activeLocations(); track location.name) {
-      <app-fishing-location [location]="location" />
-    }
-  </div>
-
 </div>
-
-@if (helpOpen()) {
-  <app-modal title="Fishing" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
-    <p>Fishing lets you catch fish from various fishing spots. Fish can be cooked via the Cooking skill for food that restores Hitpoints during combat.</p>
-  </app-modal>
-}

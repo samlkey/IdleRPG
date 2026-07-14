@@ -75,6 +75,15 @@ $divider:   rgba(255, 255, 255, 0.07);
     .activity-card__image { filter: drop-shadow(0 4px 20px rgba($amber, 0.6)); }
   }
 
+  // ── Impact pulse (fires on every successful cycle) ──────
+  &--impact {
+    animation: impact-punch 300ms cubic-bezier(.36, .07, .19, .97);
+
+    .activity-card__image--fill {
+      animation: impact-flash 300ms ease-out;
+    }
+  }
+
   // ── Caught / delay state ────────────────────────────────
   &--caught {
     border-color: rgba($red, 0.55);
@@ -201,6 +210,11 @@ $divider:   rgba(255, 255, 255, 0.07);
   opacity: 0.35;
 }
 
+.activity-card__catch {
+  color: $text-base;
+  font-weight: 500;
+}
+
 .activity-card__duration {
   display: flex;
   align-items: center;
@@ -268,6 +282,88 @@ $divider:   rgba(255, 255, 255, 0.07);
 }
 .activity-card--caught .activity-card__image--fill {
   filter: drop-shadow(0 0 14px rgba($red, 0.5));
+}
+
+// ── Catch-chance throbber (halos the image — primary "in
+// progress" indicator when there's no progress bar) ────────
+.activity-card__throbber {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 156px;
+  height: 156px;
+  transform: translate(-50%, -50%);
+  stroke: $green-lt;
+  opacity: 0.95;
+  filter:
+    drop-shadow(0 0 8px rgba($green, 0.85))
+    drop-shadow(0 0 26px rgba($green, 0.4));
+  animation:
+    throbber-spin 1.4s linear infinite,
+    throbber-pulse 1.8s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+// ── Chop-impact particle burst ───────────────────────────
+.activity-card__particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+// ── Floating "+xp / +item" reward text ───────────────────
+.activity-card__flyoff {
+  position: absolute;
+  left: 50%;
+  bottom: 58%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 3;
+  animation: flyoff-rise 0.9s ease-out forwards;
+}
+
+.activity-card__flyoff-xp {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: $green-lt;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+}
+
+.activity-card__flyoff-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ede9f8;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  padding: 0.1rem 0.5rem 0.1rem 0.25rem;
+
+  img {
+    width: 16px;
+    height: 16px;
+    image-rendering: pixelated;
+  }
+}
+
+.activity-card__flyoff--crit {
+  .activity-card__flyoff-xp {
+    font-size: 1.05rem;
+    color: $amber-lt;
+    text-shadow: 0 0 10px rgba($amber, 0.8);
+  }
 }
 
 // ── IO Panel ──────────────────────────────────────────────
@@ -568,4 +664,33 @@ $divider:   rgba(255, 255, 255, 0.07);
 @keyframes crit-badge-pulse {
   from { opacity: 0.8; }
   to   { opacity: 1;   }
+}
+
+@keyframes throbber-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes throbber-pulse {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1; }
+}
+
+@keyframes impact-punch {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.975); }
+  55%  { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+
+@keyframes impact-flash {
+  0%   { filter: brightness(2.2) drop-shadow(0 0 22px rgba(255, 255, 255, 0.9)); }
+  100% { filter: none; }
+}
+
+@keyframes flyoff-rise {
+  0%   { opacity: 0; transform: translate(-50%, 6px) scale(0.85); }
+  15%  { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
+  30%  { transform: translate(-50%, -4px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -46px) scale(0.95); }
 }

@@ -286,6 +286,8 @@ export class GameComponent {
           id: 'firemaking',
           label: 'Firemaking',
           subtitle: 'Burn logs for experience and warmth',
+          helpText:
+            'Firemaking allows you to burn logs for XP. Each cycle consumes one log from your inventory, and the activity stops automatically when you run out. Chop logs with Woodcutting first, then come here to burn them.',
           pixelIcon: 'assets/icons/firemaking.png',
           badgeType: 'skill',
           component: FiremakingComponent,
@@ -296,6 +298,8 @@ export class GameComponent {
           id: 'fishing',
           label: 'Fishing',
           subtitle: 'Catch fish from rivers and seas',
+          helpText:
+            'Fishing lets you catch fish from various fishing spots. Fish can be cooked via the Cooking skill for food that restores Hitpoints during combat.',
           pixelIcon: 'assets/icons/fishing.png',
           badgeType: 'skill',
           component: FishingComponent,

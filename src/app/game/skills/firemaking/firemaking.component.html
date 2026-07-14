@@ -1,69 +1,67 @@
 <div class="skill-panel">
-  <div class="skill-panel__hero">
-    <img class="skill-panel__hero-bg" src="assets/backgrounds/firemaking.png" alt="" aria-hidden="true" />
-    <div class="skill-panel__hero-gradient"></div>
-    <div class="skill-panel__header">
-      <img class="skill-panel__pixel-icon" [src]="pixelIcon()" [alt]="pixelIcon()" aria-hidden="true" />
-      <div>
-        <h1 class="skill-panel__title">Firemaking</h1>
-        <p class="skill-panel__subtitle">Burn logs to train your fire-starting skills</p>
-        <app-activity-badge type="active" />
+  <img
+    class="skill-panel__bg"
+    src="assets/backgrounds/firemaking.png"
+    alt=""
+    aria-hidden="true"
+  />
+
+  <div class="skill-panel__content">
+    <div class="firemaking-layout">
+
+      <div class="resource-detail">
+        @if (selectedLog(); as log) {
+          <div class="activity-wrap">
+            <app-activity
+              [action]="'Burn'"
+              [target]="log.item.name"
+              [inputItem]="log.item"
+              [xp]="log.xp"
+              [duration]="log.time"
+              [image]="log.src"
+              [type]="'consumption'"
+              [active]="activityService.current()?.name === log.item.name"
+              [requirements]="
+                log.level > 1
+                  ? [{ icon: 'assets/icons/firemaking.png', level: log.level, skill: 'Firemaking' }]
+                  : []
+              "
+              [disabled]="skillData.level < log.level"
+              (selected)="selectLog(log)"
+            />
+          </div>
+        } @else {
+          <div class="resource-detail__empty">
+            <p>Select a log to begin firemaking</p>
+          </div>
+        }
       </div>
-      <button class="skill-panel__help" (click)="helpOpen.set(true)" aria-label="About Firemaking">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-          <circle cx="12" cy="17" r=".5" fill="currentColor"/>
-        </svg>
-      </button>
-    </div>
-  </div>
 
-  <div class="xp-bar">
-    <div class="xp-bar__label">
-      <span>Level {{ skillData.level }}</span>
-      <span>{{ skillData.xpIntoLevel | number }} / {{ skillData.xpForLevel | number }} XP</span>
-    </div>
-    <div class="xp-bar__track">
-      <div class="xp-bar__fill"
-        [style.width.%]="skillData.xpForLevel > 0 ? (skillData.xpIntoLevel / skillData.xpForLevel) * 100 : 100">
+      <div class="resource-selector">
+        <div class="resource-selector__header">Logs</div>
+        <div class="resource-selector__list">
+          @for (log of allLogs; track log.item.id) {
+            <button
+              class="resource-item"
+              [class.resource-item--active]="selectedLog()?.item?.id === log.item.id"
+              [class.resource-item--running]="activityService.current()?.name === log.item.name"
+              [class.resource-item--locked]="skillData.level < log.level"
+              (click)="selectedLog.set(log)"
+              type="button"
+            >
+              <img class="resource-item__icon" [src]="log.src" [alt]="log.item.name" />
+              <div class="resource-item__info">
+                <span class="resource-item__name">{{ log.item.name }}</span>
+                <div class="resource-item__stats">
+                  <span class="resource-item__level">Lv {{ log.level }}</span>
+                  <span class="resource-item__xp">{{ log.xp | number:'1.0-1' }} XP</span>
+                </div>
+              </div>
+            </button>
+          }
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div class="skill-info">
-    <div class="skill-info__item">
-      <span class="skill-info__label">Skill Level</span>
-      <span class="skill-info__value">{{ skillData.level }}/99</span>
     </div>
-    <div class="skill-info__item">
-      <span class="skill-info__label">Total Skill XP</span>
-      <span class="skill-info__value">{{ skillData.xp | number }}</span>
-    </div>
-  </div>
-
-  <div class="activity-grid">
-    @for (log of allLogs; track log.item.id) {
-      <app-activity
-        [action]="'Burn'"
-        [target]="log.item.name"
-        [inputItem]="log.item"
-        [xp]="log.xp"
-        [duration]="log.time"
-        [image]="log.src"
-        [type]="'consumption'"
-        [active]="activityService.current()?.name === log.item.name"
-        [requirements]="log.level > 1 ? [{ icon: 'assets/icons/firemaking.png', level: log.level, skill: 'Firemaking' }] : []"
-        [disabled]="skillData.level < log.level"
-        (selected)="selectLog(log)"
-      />
-    }
   </div>
 </div>
-
-@if (helpOpen()) {
-  <app-modal title="Firemaking" [icon]="pixelIcon()" (close)="helpOpen.set(false)">
-    <p>Firemaking allows you to burn logs for XP. Each cycle consumes one log from your inventory. The activity stops automatically when you run out of logs.</p>
-    <p>Chop logs with Woodcutting first, then come here to burn them.</p>
-  </app-modal>
-}

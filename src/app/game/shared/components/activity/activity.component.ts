@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, output, signal, OnDestroy } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, output, signal, viewChild, OnDestroy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { PlayerService } from '../../../services/player.service';
 import { ActivityService } from '../../../services/activity.service';
@@ -9,6 +9,22 @@ export interface SkillRequirement {
   icon: string;
   level: number;
   skill?: string;
+}
+
+interface FlyoffState {
+  xp: number;
+  crit: boolean;
+  item: { icon: string; name: string; qty: number } | null;
+}
+
+interface ChipParticle {
+  x: number; y: number;
+  vx: number; vy: number;
+  alpha: number;
+  size: number;
+  color: string;
+  rotation: number;
+  rotationSpeed: number;
 }
 
 const CRIT_WINDOW_MS = 1500;
@@ -39,12 +55,18 @@ export class ActivityComponent implements OnDestroy {
   bonusDamage   = input<number>(2);
   dropTable     = input<DropTable | null>(null);
   inputItem     = input<GameItem | null>(null);
+  /** 0–1 success probability per cycle, shown in the header meta row when set. */
+  catchChance   = input<number | null>(null);
+  /** Colors used for the particle burst on each successful cycle. */
+  particleColors = input<string[]>(['#fbbf24', '#fcd34d', '#f59e0b', '#fff7ed']);
   selected      = output<void>();
 
   readonly progressPct   = signal(0);
   readonly isCrit        = signal(false);
   readonly critRemaining = signal(1);
   readonly isCaught      = signal(false);
+  readonly impactPulse   = signal(false);
+  readonly flyoff        = signal<FlyoffState | null>(null);
 
   readonly fillClipPath = computed(() => {
     const top = Math.max(0, 100 - this.progressPct());
@@ -74,6 +96,12 @@ export class ActivityComponent implements OnDestroy {
   readonly isFullReplenishing = computed(() =>
     this.active() && this.activityService.isFullReplenishing()
   );
+  /** Spinning "waiting on a roll" indicator for chance-based cycles (e.g. fishing). */
+  readonly showThrobber = computed(() =>
+    this.catchChance() != null && this.active() && !this.isCrit() && !this.isCaught()
+  );
+  /** Chance-based cycles have no meaningful "progress toward success" — hide the bar. */
+  readonly showProgressBar = computed(() => this.catchChance() == null);
   readonly inputItemCount = computed(() => {
     const it = this.inputItem();
     if (!it || this.type() !== 'consumption') return null;
@@ -101,6 +129,13 @@ export class ActivityComponent implements OnDestroy {
   private critCloseAt:    number | null = null;
   private critWindowDuration = 0;
   private wasDelayed = false;
+  private pendingCrit = false;
+
+  private readonly particleCanvas = viewChild<ElementRef<HTMLCanvasElement>>('particleCanvas');
+  private particles:    ChipParticle[] = [];
+  private particleRaf:  number | null = null;
+  private impactTimer:  ReturnType<typeof setTimeout> | null = null;
+  private flyoffTimer:  ReturnType<typeof setTimeout> | null = null;
 
   readonly RING_C       = 2 * Math.PI * 22;
   readonly CRIT_WINDOW_S = CRIT_WINDOW_MS / 1000;
@@ -125,11 +160,13 @@ export class ActivityComponent implements OnDestroy {
       const result = this.activityService.lastCycleResult();
       if (result && this.active()) {
         this.clearCrit();
+        if (result.caught) {
+          this.triggerImpact(this.pendingCrit);
+        }
+        this.pendingCrit = false;
         if (!this.activityService.isDelayed()) {
           this.scheduleCritWindow();
         }
-
-
       }
     }, { allowSignalWrites: true });
 
@@ -160,10 +197,99 @@ export class ActivityComponent implements OnDestroy {
       return;
     }
     if (this.active() && this.isCrit()) {
+      this.pendingCrit = true;
       this.activityService.completeCycleNow();
       this.clearCrit();
     } else {
       this.selected.emit();
+    }
+  }
+
+  // ── Impact / particles / flyoff ──────────────────────────────────────────────
+
+  private triggerImpact(big: boolean): void {
+    this.impactPulse.set(false);
+    requestAnimationFrame(() => this.impactPulse.set(true));
+    if (this.impactTimer) clearTimeout(this.impactTimer);
+    this.impactTimer = setTimeout(() => this.impactPulse.set(false), big ? 380 : 260);
+
+    this.spawnParticles(big);
+
+    const guaranteedDrop = this.dropTable()?.drops.find(d => d.chance >= 1) ?? null;
+    this.flyoff.set({
+      xp: this.xp(),
+      crit: big,
+      item: guaranteedDrop
+        ? { icon: guaranteedDrop.item.icon, name: guaranteedDrop.item.name, qty: guaranteedDrop.qty ?? 1 }
+        : null,
+    });
+    if (this.flyoffTimer) clearTimeout(this.flyoffTimer);
+    this.flyoffTimer = setTimeout(() => this.flyoff.set(null), 950);
+  }
+
+  private spawnParticles(big: boolean): void {
+    const canvas = this.particleCanvas()?.nativeElement;
+    if (!canvas) return;
+    const w = canvas.clientWidth  || 160;
+    const h = canvas.clientHeight || 160;
+    canvas.width  = w;
+    canvas.height = h;
+
+    const count   = big ? 26 : 14;
+    const colors  = this.particleColors();
+    const cx = w / 2;
+    const cy = h * 0.62;
+
+    const spawned: ChipParticle[] = Array.from({ length: count }, () => {
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * (big ? 2.6 : 1.9);
+      const speed = (big ? 3.2 : 2.2) + Math.random() * (big ? 3 : 2);
+      return {
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        alpha: 1,
+        size: Math.random() * (big ? 7 : 5) + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.3,
+      };
+    });
+
+    this.particles.push(...spawned);
+    if (this.particleRaf === null) this.animateParticles(canvas);
+  }
+
+  private animateParticles(canvas: HTMLCanvasElement): void {
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let alive = false;
+    for (const p of this.particles) {
+      p.vy += 0.22;
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.alpha -= 0.025;
+      p.rotation += p.rotationSpeed;
+
+      if (p.alpha <= 0) continue;
+      alive = true;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle   = p.color;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
+      ctx.restore();
+    }
+
+    this.particles = this.particles.filter(p => p.alpha > 0);
+
+    if (alive) {
+      this.particleRaf = requestAnimationFrame(() => this.animateParticles(canvas));
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      this.particleRaf = null;
     }
   }
 
@@ -239,5 +365,8 @@ export class ActivityComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopDisplay();
+    if (this.impactTimer) clearTimeout(this.impactTimer);
+    if (this.flyoffTimer) clearTimeout(this.flyoffTimer);
+    if (this.particleRaf !== null) cancelAnimationFrame(this.particleRaf);
   }
 }

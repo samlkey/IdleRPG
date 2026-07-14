@@ -12,12 +12,23 @@ interface Particle {
   shape: 'rect' | 'circle';
 }
 
-const COLORS = ['#fbbf24', '#fcd34d', '#f59e0b', '#fff7ed', '#a78bfa', '#c4b5fd', '#86efac'];
-const PARTICLE_COUNT = 60;
-// Matches the notification stack position (above char-panel, beside sidebar)
-const NOTIF_LEFT   = 64; // sidebar width
-const CANVAS_W = 320;
-const CANVAS_H = 260;
+interface Cannon {
+  x: number;
+  y: number;
+  /** Fan angle range, in radians (0 = +x, -PI/2 = straight up). */
+  minAngle: number;
+  maxAngle: number;
+  minSpeed: number;
+  maxSpeed: number;
+  share: number;
+}
+
+const COLORS = ['#fbbf24', '#fcd34d', '#f59e0b', '#fff7ed', '#a78bfa', '#c4b5fd', '#86efac', '#f472b6', '#60a5fa'];
+const PARTICLE_COUNT = 260;
+const GRAVITY = 0.25;
+const FADE_RATE = 0.008;
+
+const deg = (d: number) => (d * Math.PI) / 180;
 
 @Component({
   selector: 'app-level-up',
@@ -25,10 +36,9 @@ const CANVAS_H = 260;
   styles: [`
     .level-up-canvas {
       position: fixed;
-      bottom: 0;
-      left: ${NOTIF_LEFT}px;
-      width: ${CANVAS_W}px;
-      height: ${CANVAS_H}px;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
       pointer-events: none;
       z-index: 999;
     }
@@ -50,21 +60,42 @@ export class LevelUpComponent implements OnDestroy {
 
   private burst(): void {
     const canvas = this.canvasRef().nativeElement;
-    canvas.width  = CANVAS_W;
-    canvas.height = CANVAS_H;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width  = w;
+    canvas.height = h;
 
-    this.particles = Array.from({ length: PARTICLE_COUNT }, () => ({
-      x: Math.random() * CANVAS_W,
-      y: CANVAS_H,
-      vx: (Math.random() - 0.5) * 5,
-      vy: Math.random() * -7 - 3,
-      alpha: 1,
-      size: Math.random() * 8 + 4,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      rotation: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.2,
-      shape: Math.random() > 0.4 ? 'rect' : 'circle',
-    }));
+    // Three confetti cannons along the bottom edge, fanning up and across
+    // the full width so the burst reads as screen-wide rather than a
+    // single corner pop.
+    const cannons: Cannon[] = [
+      { x: w * 0.04, y: h, minAngle: deg(-80), maxAngle: deg(-15),  minSpeed: 9,  maxSpeed: 16, share: 0.34 },
+      { x: w * 0.5,  y: h, minAngle: deg(-120), maxAngle: deg(-60), minSpeed: 7,  maxSpeed: 13, share: 0.32 },
+      { x: w * 0.96, y: h, minAngle: deg(-165), maxAngle: deg(-100), minSpeed: 9, maxSpeed: 16, share: 0.34 },
+    ];
+
+    const spawned: Particle[] = [];
+    for (const cannon of cannons) {
+      const count = Math.round(PARTICLE_COUNT * cannon.share);
+      for (let i = 0; i < count; i++) {
+        const angle = cannon.minAngle + Math.random() * (cannon.maxAngle - cannon.minAngle);
+        const speed = cannon.minSpeed + Math.random() * (cannon.maxSpeed - cannon.minSpeed);
+        spawned.push({
+          x: cannon.x,
+          y: cannon.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          size: Math.random() * 9 + 5,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.25,
+          shape: Math.random() > 0.4 ? 'rect' : 'circle',
+        });
+      }
+    }
+
+    this.particles = spawned;
 
     if (this.rafId !== null) cancelAnimationFrame(this.rafId);
     this.animate(canvas);
@@ -76,10 +107,10 @@ export class LevelUpComponent implements OnDestroy {
 
     let alive = false;
     for (const p of this.particles) {
-      p.vy  += 0.18; // gravity
+      p.vy  += GRAVITY;
       p.x   += p.vx;
       p.y   += p.vy;
-      p.alpha = Math.max(0, p.alpha - 0.012);
+      p.alpha = Math.max(0, p.alpha - FADE_RATE);
       p.rotation += p.rotationSpeed;
 
       if (p.alpha <= 0) continue;

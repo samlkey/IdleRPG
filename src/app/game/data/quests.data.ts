@@ -10,7 +10,7 @@ export const QUESTS: Quest[] = [
       'Manuel gives you a firm handshake and a warm smile. "You\'ve proven yourself capable — the mainland awaits. Safe travels, adventurer."',
     icon: 'assets/objects/map.png',
     questPoints: 1,
-    status: 'in-progress',
+    status: 'completed',
     requirements: [],
     rewards: [
       { type: 'coins', amount: 500 },

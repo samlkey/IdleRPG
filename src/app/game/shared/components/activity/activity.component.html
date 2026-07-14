@@ -5,6 +5,7 @@
   [class.activity-card--active]="active() && !isCrit() && !isCaught()"
   [class.activity-card--crit]="isCrit()"
   [class.activity-card--caught]="isCaught()"
+  [class.activity-card--impact]="impactPulse()"
   [disabled]="disabled()"
   (click)="onClick()"
   type="button"
@@ -67,6 +68,10 @@
           {{ duration() }}s
         </span>
       }
+      @if (catchChance() != null) {
+        <span class="activity-card__sep">·</span>
+        <span class="activity-card__catch">{{ catchChance()! * 100 | number:'1.0-0' }}% catch</span>
+      }
     </div>
   </div>
 
@@ -81,6 +86,26 @@
         <img class="activity-card__image activity-card__image--fill"
              [src]="image()" alt="" aria-hidden="true"
              [style.clip-path]="fillClipPath()" />
+      </div>
+    }
+
+    <canvas class="activity-card__particles" #particleCanvas aria-hidden="true"></canvas>
+
+    @if (showThrobber()) {
+      <svg class="activity-card__throbber" viewBox="0 0 52 52" aria-hidden="true">
+        <circle cx="26" cy="26" r="22" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="40 98" />
+      </svg>
+    }
+
+    @if (flyoff(); as f) {
+      <div class="activity-card__flyoff" [class.activity-card__flyoff--crit]="f.crit" aria-hidden="true">
+        <span class="activity-card__flyoff-xp">+{{ f.xp | number:'1.0-1' }} XP</span>
+        @if (f.item) {
+          <span class="activity-card__flyoff-item">
+            <img [src]="f.item.icon" [alt]="f.item.name" />
+            +{{ f.item.qty }}
+          </span>
+        }
       </div>
     }
   </div>
@@ -151,18 +176,20 @@
   <!-- Footer: progress + bars -->
   <div class="activity-card__foot">
 
-    <div class="activity-card__progress-row">
-      <div class="activity-card__progress-track">
-        <div class="activity-card__progress-fill" [style.width.%]="progressPct()"></div>
+    @if (showProgressBar()) {
+      <div class="activity-card__progress-row">
+        <div class="activity-card__progress-track">
+          <div class="activity-card__progress-fill" [style.width.%]="progressPct()"></div>
+        </div>
+        <span class="activity-card__progress-label">
+          @if (active() || isCrit()) {
+            {{ progressPct() | number:'1.0-0' }}%
+          } @else {
+            0%
+          }
+        </span>
       </div>
-      <span class="activity-card__progress-label">
-        @if (active() || isCrit()) {
-          {{ progressPct() | number:'1.0-0' }}%
-        } @else {
-          0%
-        }
-      </span>
-    </div>
+    }
 
     @if (type() === 'depletion') {
       <div class="activity-card__depletion">
